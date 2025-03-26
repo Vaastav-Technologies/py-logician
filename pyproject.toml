@@ -47,6 +47,7 @@ classifiers = [
 # referred to as "extras". For a more extensive definition see:
 # https://packaging.python.org/en/latest/specifications/dependency-specifiers/#extras
 [project.optional-dependencies]
+dev = ["mypy"]
 test = ["pytest", "coverage"]
 multitest = ["tox"]
 doc = ["sphinx", "sphinx-argparse"]
