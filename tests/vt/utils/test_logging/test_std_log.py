@@ -15,4 +15,3 @@ def test_initial_logging():
     logger.warning('warning message')
     logger.error('error message')
     logger.critical('critical message')
-    logger.critical('critical message', stacklevel=1)

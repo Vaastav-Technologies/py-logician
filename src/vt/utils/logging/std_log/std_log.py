@@ -33,29 +33,29 @@ class BasicStdLevelLogger(StdLevelLogger):
         return self.__underlying_logger
 
     @override
-    def debug(self, msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs) -> None:
-        self.underlying_logger.debug(msg, *args, stacklevel=stacklevel, **kwargs)
+    def debug(self, msg, *args, **kwargs) -> None:
+        self.underlying_logger.debug(msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs)
 
     @override
-    def info(self, msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs) -> None:
-        self.underlying_logger.info(msg, *args, stacklevel=stacklevel, **kwargs)
+    def info(self, msg, *args, **kwargs) -> None:
+        self.underlying_logger.info(msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs)
 
     @override
-    def warning(self, msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs) -> None:
-        self.underlying_logger.warning(msg, *args, stacklevel=stacklevel, **kwargs)
+    def warning(self, msg, *args, **kwargs) -> None:
+        self.underlying_logger.warning(msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs)
 
     @override
-    def error(self, msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs) -> None:
-        self.underlying_logger.error(msg, *args, stacklevel=stacklevel, **kwargs)
+    def error(self, msg, *args, **kwargs) -> None:
+        self.underlying_logger.error(msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs)
 
     @override
-    def critical(self, msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs) -> None:
-        self.underlying_logger.critical(msg, *args, stacklevel=stacklevel, **kwargs)
+    def critical(self, msg, *args, **kwargs) -> None:
+        self.underlying_logger.critical(msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs)
 
     @override
-    def exception(self, msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs) -> None:
-        self.underlying_logger.exception(msg, *args, stacklevel=stacklevel, **kwargs)
+    def exception(self, msg, *args, **kwargs) -> None:
+        self.underlying_logger.exception(msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs)
 
     @override
-    def log(self, level: int, msg: str, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs) -> None:
-        self.underlying_logger.log(level, msg, *args, stacklevel=stacklevel, **kwargs)
+    def log(self, level: int, msg: str, *args, **kwargs) -> None:
+        self.underlying_logger.log(level, msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs)
