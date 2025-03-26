@@ -9,12 +9,6 @@ from typing import Any, Protocol
 from abc import ABC, abstractproperty, abstractmethod
 
 
-class HasUnderlyingLogger(ABC):
-    @abstractproperty
-    def underlying_logger(self) -> Any:
-        pass
-
-
 class LogLogProtocol(Protocol):
     def log(self, level: int, msg: str, *args, **kwargs) -> None:
         ...
@@ -48,6 +42,12 @@ class CriticalLogProtocol(Protocol):
 class StdLogProtocol(LogLogProtocol, DebugLogProtocol, InfoLogProtocol, WarningLogProtocol, ErrorLogProtocol,
                      CriticalLogProtocol, Protocol):
     pass
+
+
+class HasUnderlyingLogger(ABC):
+    @abstractproperty
+    def underlying_logger(self) -> StdLogProtocol:
+        pass
 
 
 class LogLevelLogger(HasUnderlyingLogger):
