@@ -21,7 +21,7 @@ class StdStdLogProtocol(StdLogProtocol):
 
 
 class BasicStdLevelLogger(StdLevelLogger):
-    def __init__(self, underlying_logger:StdStdLogProtocol|None=None):
+    def __init__(self, underlying_logger:StdStdLogProtocol):
         self.__underlying_logger = underlying_logger
         self.name = underlying_logger.name
         self.level = underlying_logger.level
