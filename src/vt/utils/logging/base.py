@@ -46,7 +46,7 @@ class CriticalLogProtocol(Protocol):
 
 
 class StdLogProtocol(LogLogProtocol, DebugLogProtocol, InfoLogProtocol, WarningLogProtocol, ErrorLogProtocol,
-                     CriticalLogProtocol):
+                     CriticalLogProtocol, Protocol):
     pass
 
 
