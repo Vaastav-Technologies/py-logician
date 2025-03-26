@@ -1,0 +1,82 @@
+[build-system]
+# A list of packages that are needed to build your package:
+requires = ["setuptools", "wheel"]  # REQUIRED if [build-system] table is used
+# The name of the Python object that frontends will use to perform the build:
+build-backend = "setuptools.build_meta"  # If not defined, then legacy behavior can happen.
+
+
+[project]
+name = "vt-logger"
+version = "0.0.0"
+description = "Project to implement logging utility for Vaastav Technologies (vt) projects using just the standard python logging."
+readme = "README"
+keywords = ["log", "logging", "logger"]
+authors = [
+    {name = "Suhas Krishna Srivastava", email = "suhas.srivastava@vaastav.tech"}
+]
+maintainers = [
+    {name = "Suhas Krishna Srivastava", email = "suhas.srivastava@vaastav.tech"}
+]
+requires-python = ">=3.12"
+# For a list of valid classifiers, see https://pypi.org/classifiers/
+classifiers = [
+  "Development Status :: 1 - Planning",
+
+  "Intended Audience :: Developers",
+  "Intended Audience :: Education",
+  "Intended Audience :: End Users/Desktop",
+
+  "Topic :: Education",
+  "Topic :: System :: Logging",
+
+  "License :: License :: Free For Educational Use",
+
+  # Specify the Python versions you support here. In particular, ensure
+  # that you indicate you support Python 3. These classifiers are *not*
+  # checked by "pip install". See instead "requires-python" key in this file.
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3 :: Only",
+]
+# List additional groups of dependencies here (e.g. development
+# dependencies). Users will be able to install these using the "extras"
+# syntax, for example:
+#
+#   $ pip install sampleproject[dev]
+#
+# Optional dependencies the project provides. These are commonly
+# referred to as "extras". For a more extensive definition see:
+# https://packaging.python.org/en/latest/specifications/dependency-specifiers/#extras
+[project.optional-dependencies]
+test = ["pytest", "coverage"]
+multitest = ["tox"]
+doc = ["sphinx", "sphinx-argparse"]
+
+[tool.setuptools.packages.find]
+where = ["src/"]
+exclude = ["*.py"]
+
+[tool.tox]
+legacy_tox_ini = """
+    [tox]
+    env_list =
+        py312
+
+    [testenv]
+    deps =
+      pytest
+      sphinx
+      sphinx-argparse
+    commands =
+      python -m pytest --doctest-glob=*.rst --doctest-modules .
+      python -m doctest README.md
+      sphinx-build -q -b doctest docs/source docs/build/doctest
+      # TODO: try to see if docs/enc/*.md can work
+      # python -m doctest docs/enc/enc-init.md
+
+    [testenv:docs]
+    deps =
+      sphinx
+      sphinx-argparse
+    commands =
+      sphinx-build -q -b html docs/source docs/build/html
+"""
