@@ -5,8 +5,8 @@
 Logging base interfaces are defined.
 """
 
-from typing import Any, Protocol
-from abc import ABC, abstractproperty, abstractmethod
+from abc import ABC, abstractmethod
+from typing import Protocol
 
 
 class LogLogProtocol(Protocol):
