@@ -1,6 +1,6 @@
 import logging
 
-from vt.utils.logging.logging.std_log.std_log import BasicStdLevelLogger
+from vt.utils.logging.logging.std_log.std_log import BasicStdProtocolLevelLogger
 
 TIMED_DETAIL_LOG_FMT = '%(asctime)s: %(name)s: [%(levelname)s]: [%(filename)s:%(lineno)d - ' \
                        '%(funcName)10s() ]: %(message)s'
@@ -12,7 +12,7 @@ def test_initial_logging():
     log = logging.getLogger('init.logging')
     log.addHandler(sh)
     log.setLevel(logging.DEBUG)
-    logger = BasicStdLevelLogger(log) # noqa, IDE known bug: https://stackoverflow.com/a/79009762
+    logger = BasicStdProtocolLevelLogger(log) # noqa, IDE known bug: https://stackoverflow.com/a/79009762
     logger.debug('debug message')
     logger.info('info message')
     logger.warning('warning message')
