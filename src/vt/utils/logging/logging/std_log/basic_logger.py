@@ -22,26 +22,26 @@ from vt.utils.logging.logging.std_log import StdLogProtocol
 from vt.utils.logging.logging.std_log._base_impl import _BaseStdLevelLogger
 
 
-class BasicStdProtocolLevelLogger(_BaseStdLevelLogger): # implementation inheritance, not is-a
+class ProtocolStdLevelLogger(_BaseStdLevelLogger): # implementation inheritance, not is-a
 
     def __init__(self, underlying_logger: StdLogProtocol):
         """
-        Basic logger that implements all the logging levels of python standard logging protocol and simply delegates
+        Logger that implements all the logging levels of python standard logging PROTOCOL and simply delegates
         method calls to the underlying logger.
 
-        :param underlying_logger: logger (python standard logger) that actually performs the logging.
+        :param underlying_logger: logger (python standard logger logging PROTOCOL) that actually performs the logging.
         """
         super().__init__(underlying_logger)
 
 
-class BasicStdLevelLogger(_BaseStdLevelLogger): # implementation inheritance, not is-a
+class DirectStdLevelLogger(_BaseStdLevelLogger): # implementation inheritance, not is-a
 
     def __init__(self, underlying_logger: Logger):
         """
-        Basic logger that implements all the logging levels of python standard logging and simply delegates method
+        Logger that implements all the logging levels of python standard logging DIRECTLY. It simply delegates method
         calls to the underlying logger.
 
-        :param underlying_logger: logger (python standard logger) that actually performs the logging.
+        :param underlying_logger: logger (actual python standard logger) that actually performs the logging.
         """
         super().__init__(underlying_logger) # noqa
 

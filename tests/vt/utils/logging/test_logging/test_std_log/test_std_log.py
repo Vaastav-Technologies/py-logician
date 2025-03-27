@@ -2,12 +2,12 @@ import logging
 
 import pytest
 
-from vt.utils.logging.logging.std_log.basic_logger import BasicStdProtocolLevelLogger, BasicStdLevelLogger
+from vt.utils.logging.logging.std_log.basic_logger import ProtocolStdLevelLogger, DirectStdLevelLogger
 
 TIMED_DETAIL_LOG_FMT = '%(asctime)s: %(name)s: [%(levelname)s]: [%(filename)s:%(lineno)d - ' \
                        '%(funcName)10s() ]: %(message)s'
 
-@pytest.mark.parametrize("level_logger", [BasicStdProtocolLevelLogger, BasicStdLevelLogger])
+@pytest.mark.parametrize("level_logger", [ProtocolStdLevelLogger, DirectStdLevelLogger])
 def test_initial_logging(level_logger):
     logging.basicConfig()
     sh = logging.StreamHandler()
