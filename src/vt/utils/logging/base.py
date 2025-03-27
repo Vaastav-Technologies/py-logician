@@ -126,10 +126,6 @@ class MinLevelLogger(_BasicLevelLogger, ABC):
     pass
 
 
-class StdLevelLogger(_BasicLevelLogger, FatalLevelLogger, ExceptionLevelLogger, ABC):
-    pass
-
-
 class AllLevelLogger(TraceLevelLogger, _BasicLevelLogger, SuccessLevelLogger, NoticeLevelLogger, FatalLevelLogger,
                      ExceptionLevelLogger, ABC):
     pass

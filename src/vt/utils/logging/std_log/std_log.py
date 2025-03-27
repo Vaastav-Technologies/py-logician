@@ -4,31 +4,15 @@
 """
 Logging interface implementation by the standard logging library of python.
 """
-from typing import override, Protocol, Any, Mapping
+from typing import override
 
-from vt.utils.logging import StdLevelLogger, MinLogProtocol
+from vt.utils.logging import StdLevelLogger, StdLogProtocol
 from vt.utils.logging.std_log.__constants__ import DEFAULT_STACK_LEVEL
-
-
-class StdLogProtocol(MinLogProtocol, Protocol):
-    name: str
-    level: int
-    disabled: bool
-
-    def fatal(self, msg: str, *args, **kwargs) -> None:
-        ...
-
-    # noinspection SpellCheckingInspection
-    # required for the param stack-level because this method signature from the protocol needs to correctly match that
-    # of the std logging method signature.
-    def exception(self, msg: object, *args: object, exc_info: Any = ..., stack_info: bool = ...,
-                  stacklevel: int = ..., extra: Mapping[str, object] | None = ...) -> None:
-        ...
 
 
 class BasicStdLevelLogger(StdLevelLogger):
 
-    def __init__(self, underlying_logger:StdLogProtocol):
+    def __init__(self, underlying_logger: StdLogProtocol):
         self.__underlying_logger = underlying_logger
         self.name = underlying_logger.name
         self.level = underlying_logger.level
