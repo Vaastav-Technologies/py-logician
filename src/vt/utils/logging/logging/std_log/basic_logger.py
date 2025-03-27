@@ -22,7 +22,7 @@ from vt.utils.logging.logging.std_log import StdLogProtocol
 from vt.utils.logging.logging.std_log._base_impl import _BaseStdLevelLogger
 
 
-class BasicStdProtocolLevelLogger(_BaseStdLevelLogger):
+class BasicStdProtocolLevelLogger(_BaseStdLevelLogger): # implementation inheritance, not is-a
 
     def __init__(self, underlying_logger: StdLogProtocol):
         """
@@ -34,7 +34,7 @@ class BasicStdProtocolLevelLogger(_BaseStdLevelLogger):
         super().__init__(underlying_logger)
 
 
-class BasicStdLevelLogger(_BaseStdLevelLogger):
+class BasicStdLevelLogger(_BaseStdLevelLogger): # implementation inheritance, not is-a
 
     def __init__(self, underlying_logger: Logger):
         """
