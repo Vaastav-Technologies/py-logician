@@ -18,23 +18,24 @@ Basic loggers only support operations::
 from logging import Logger
 from typing import override, cast
 
-from vt.utils.logging.logging.std_log import StdLogProtocol
+from vt.utils.logging.logging.std_log import StdLogProtocol, StdLevelLogger
 from vt.utils.logging.logging.std_log.basic_logger_impl import BaseStdLevelLoggerImpl
 
 
-class ProtocolStdLevelLogger(BaseStdLevelLoggerImpl): # implementation inheritance, not is-a
+class ProtocolStdLevelLogger(StdLevelLogger): # implementation inheritance, not is-a
 
-    def __init__(self, underlying_logger: StdLogProtocol):
+    def __init__(self, logger_impl: BaseStdLevelLoggerImpl):
         """
         Logger that implements all the logging levels of python standard logging PROTOCOL and simply delegates
         method calls to the underlying logger.
 
         :param underlying_logger: logger (python standard logger logging PROTOCOL) that actually performs the logging.
         """
-        super().__init__(underlying_logger)
+        self.logger_impl = logger_impl
+        self._underlying_logger = logger_impl.underlying_logger
 
 
-class DirectStdLevelLogger(BaseStdLevelLoggerImpl): # implementation inheritance, not is-a
+class DirectStdLevelLogger(StdLevelLogger): # implementation inheritance, not is-a
 
     def __init__(self, underlying_logger: Logger):
         """
