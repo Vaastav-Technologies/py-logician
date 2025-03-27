@@ -1,18 +1,21 @@
 import logging
 
-from vt.utils.logging.logging.std_log.std_log import BasicStdProtocolLevelLogger
+import pytest
+
+from vt.utils.logging.logging.std_log.std_log import BasicStdProtocolLevelLogger, BasicStdLevelLogger
 
 TIMED_DETAIL_LOG_FMT = '%(asctime)s: %(name)s: [%(levelname)s]: [%(filename)s:%(lineno)d - ' \
                        '%(funcName)10s() ]: %(message)s'
 
-def test_initial_logging():
+@pytest.mark.parametrize("level_logger", [BasicStdProtocolLevelLogger, BasicStdLevelLogger])
+def test_initial_logging(level_logger):
     logging.basicConfig()
     sh = logging.StreamHandler()
     sh.setFormatter(logging.Formatter(fmt=TIMED_DETAIL_LOG_FMT))
-    log = logging.getLogger('init.logging')
+    log = logging.getLogger(level_logger.__qualname__)
     log.addHandler(sh)
     log.setLevel(logging.DEBUG)
-    logger = BasicStdProtocolLevelLogger(log) # noqa, IDE known bug: https://stackoverflow.com/a/79009762
+    logger = level_logger(log) # noqa, IDE known bug: https://stackoverflow.com/a/79009762
     logger.debug('debug message')
     logger.info('info message')
     logger.warning('warning message')

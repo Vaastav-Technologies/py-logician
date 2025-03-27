@@ -4,10 +4,9 @@
 """
 Logging interface implementation by the standard logging library of python.
 """
-import logging
 from abc import ABC
 from logging import Logger
-from typing import override
+from typing import override, cast
 
 from vt.utils.logging.logging.std_log import StdLevelLogger, StdLogProtocol
 from vt.utils.logging.logging.std_log.__constants__ import DEFAULT_STACK_LEVEL
@@ -69,15 +68,12 @@ class BasicStdProtocolLevelLogger(_BaseStdLevelLogger):
 
     def __init__(self, underlying_logger: StdLogProtocol):
         """
-        Basic logger that implements all the logging levels of python standard logging and simply delegates method
-        calls to the underlying logger.
+        Basic logger that implements all the logging levels of python standard logging protocol and simply delegates
+        method calls to the underlying logger.
 
         :param underlying_logger: logger (python standard logger) that actually performs the logging.
         """
         super().__init__(underlying_logger)
-
-
-BasicStdProtocolLevelLogger(logging.getLogger())
 
 
 class BasicStdLevelLogger(_BaseStdLevelLogger):
@@ -94,4 +90,4 @@ class BasicStdLevelLogger(_BaseStdLevelLogger):
     @override
     @property
     def underlying_logger(self) -> Logger:
-        return self._underlying_logger
+        return cast(Logger, self._underlying_logger)
