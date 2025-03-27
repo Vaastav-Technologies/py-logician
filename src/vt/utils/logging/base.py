@@ -45,7 +45,8 @@ class StdLogProtocol(LogLogProtocol, DebugLogProtocol, InfoLogProtocol, WarningL
 
 
 class HasUnderlyingLogger(ABC):
-    @abstractproperty
+    @abstractmethod
+    @property
     def underlying_logger(self) -> StdLogProtocol:
         pass
 
