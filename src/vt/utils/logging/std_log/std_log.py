@@ -6,7 +6,7 @@ Logging interface implementation by the standard logging library of python.
 """
 from typing import override, Protocol, Any, Mapping
 
-from vt.utils.logging import MinLevelLogger, StdLogProtocol
+from vt.utils.logging import StdLevelLogger, StdLogProtocol
 from vt.utils.logging.std_log.__constants__ import DEFAULT_STACK_LEVEL
 
 
@@ -14,6 +14,9 @@ class StdStdLogProtocol(StdLogProtocol, Protocol):
     name: str
     level: int
     disabled: bool
+
+    def fatal(self, msg: str, *args, **kwargs) -> None:
+        ...
 
     # noinspection SpellCheckingInspection
     # required for the param stack-level because this method signature from the protocol needs to correctly match that
@@ -23,7 +26,8 @@ class StdStdLogProtocol(StdLogProtocol, Protocol):
         ...
 
 
-class BasicStdLevelLogger(MinLevelLogger):
+class BasicStdLevelLogger(StdLevelLogger):
+
     def __init__(self, underlying_logger:StdStdLogProtocol):
         self.__underlying_logger = underlying_logger
         self.name = underlying_logger.name
@@ -54,6 +58,10 @@ class BasicStdLevelLogger(MinLevelLogger):
     @override
     def critical(self, msg, *args, **kwargs) -> None:
         self.underlying_logger.critical(msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs)
+
+    @override
+    def fatal(self, msg, *args, **kwargs) -> None:
+        self.underlying_logger.fatal(msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs)
 
     @override
     def exception(self, msg, *args, **kwargs) -> None:

@@ -5,4 +5,4 @@
 Logging related library
 """
 
-from .base import MinLevelLogger, AllLevelLogger, StdLogProtocol
+from .base import MinLevelLogger, AllLevelLogger, StdLogProtocol, StdLevelLogger

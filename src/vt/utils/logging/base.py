@@ -117,12 +117,19 @@ class FatalLevelLogger(HasUnderlyingLogger):
         pass
 
 
-class MinLevelLogger(DebugLevelLogger, InfoLevelLogger, WarningLevelLogger, ErrorLevelLogger, CriticalLevelLogger,
-                     ExceptionLevelLogger, LogLevelLogger, HasUnderlyingLogger, ABC):
+class _BasicLevelLogger(LogLevelLogger, DebugLevelLogger, InfoLevelLogger, WarningLevelLogger, ErrorLevelLogger,
+                     CriticalLevelLogger, HasUnderlyingLogger, ABC):
     pass
 
 
-class AllLevelLogger(TraceLevelLogger, DebugLevelLogger, InfoLevelLogger, SuccessLevelLogger, NoticeLevelLogger,
-                     WarningLevelLogger, ErrorLevelLogger, CriticalLevelLogger, FatalLevelLogger, ExceptionLevelLogger,
-                     LogLevelLogger, HasUnderlyingLogger, ABC):
+class MinLevelLogger(_BasicLevelLogger, ABC):
+    pass
+
+
+class StdLevelLogger(_BasicLevelLogger, FatalLevelLogger, ExceptionLevelLogger, ABC):
+    pass
+
+
+class AllLevelLogger(TraceLevelLogger, _BasicLevelLogger, SuccessLevelLogger, NoticeLevelLogger, FatalLevelLogger,
+                     ExceptionLevelLogger, ABC):
     pass
