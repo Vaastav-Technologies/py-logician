@@ -11,7 +11,7 @@ def test_initial_logging():
     log = logging.getLogger('init.logging')
     log.addHandler(sh)
     log.setLevel(logging.DEBUG)
-    logger = BasicStdLevelLogger(log)
+    logger = BasicStdLevelLogger(log) # noqa, IDE known bug: https://stackoverflow.com/a/79009762
     logger.debug('debug message')
     logger.info('info message')
     logger.warning('warning message')
