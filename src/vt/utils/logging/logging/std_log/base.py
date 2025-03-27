@@ -12,6 +12,20 @@ from vt.utils.logging.logging.base import _BasicLevelLogger, FatalLevelLogger, E
 
 
 class StdLogProtocol(MinLogProtocol, Protocol):
+    """
+    Logger protocol that is followed (for methods) by the python std logging.
+
+    Two additional methods are added on top of the MinLogProtocol::
+
+        - fatal
+        - exception
+
+    along with properties that python std logger provides::
+
+        - name
+        - level
+        - disabled
+    """
     name: str
     level: int
     disabled: bool
@@ -28,4 +42,15 @@ class StdLogProtocol(MinLogProtocol, Protocol):
 
 
 class StdLevelLogger(_BasicLevelLogger, FatalLevelLogger, ExceptionLevelLogger, ABC):
+    """
+    Logger that implements python standard logging methods::
+
+        - debug
+        - info
+        - warning
+        - error
+        - critical
+        - fatal
+        - exception
+    """
     pass
