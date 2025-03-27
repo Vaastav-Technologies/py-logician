@@ -117,7 +117,7 @@ class FatalLevelLogger(HasUnderlyingLogger):
         pass
 
 
-class StdLevelLogger(DebugLevelLogger, InfoLevelLogger, WarningLevelLogger, ErrorLevelLogger, CriticalLevelLogger,
+class MinLevelLogger(DebugLevelLogger, InfoLevelLogger, WarningLevelLogger, ErrorLevelLogger, CriticalLevelLogger,
                      ExceptionLevelLogger, LogLevelLogger, HasUnderlyingLogger, ABC):
     pass
 
