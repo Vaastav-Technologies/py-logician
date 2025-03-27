@@ -39,7 +39,7 @@ class CriticalLogProtocol(Protocol):
         ...
 
 
-class StdLogProtocol(LogLogProtocol, DebugLogProtocol, InfoLogProtocol, WarningLogProtocol, ErrorLogProtocol,
+class MinLogProtocol(LogLogProtocol, DebugLogProtocol, InfoLogProtocol, WarningLogProtocol, ErrorLogProtocol,
                      CriticalLogProtocol, Protocol):
     pass
 
@@ -47,7 +47,7 @@ class StdLogProtocol(LogLogProtocol, DebugLogProtocol, InfoLogProtocol, WarningL
 class HasUnderlyingLogger(ABC):
     @property
     @abstractmethod
-    def underlying_logger(self) -> StdLogProtocol:
+    def underlying_logger(self) -> MinLogProtocol:
         pass
 
 

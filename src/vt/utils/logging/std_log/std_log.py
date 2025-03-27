@@ -6,11 +6,11 @@ Logging interface implementation by the standard logging library of python.
 """
 from typing import override, Protocol, Any, Mapping
 
-from vt.utils.logging import StdLevelLogger, StdLogProtocol
+from vt.utils.logging import StdLevelLogger, MinLogProtocol
 from vt.utils.logging.std_log.__constants__ import DEFAULT_STACK_LEVEL
 
 
-class StdStdLogProtocol(StdLogProtocol, Protocol):
+class StdLogProtocol(MinLogProtocol, Protocol):
     name: str
     level: int
     disabled: bool
@@ -28,7 +28,7 @@ class StdStdLogProtocol(StdLogProtocol, Protocol):
 
 class BasicStdLevelLogger(StdLevelLogger):
 
-    def __init__(self, underlying_logger:StdStdLogProtocol):
+    def __init__(self, underlying_logger:StdLogProtocol):
         self.__underlying_logger = underlying_logger
         self.name = underlying_logger.name
         self.level = underlying_logger.level
@@ -36,7 +36,7 @@ class BasicStdLevelLogger(StdLevelLogger):
 
     @override
     @property
-    def underlying_logger(self) -> StdStdLogProtocol:
+    def underlying_logger(self) -> StdLogProtocol:
         return self.__underlying_logger
 
     @override
