@@ -13,6 +13,12 @@ from vt.utils.logging.logging.std_log.__constants__ import DEFAULT_STACK_LEVEL
 class BasicStdLevelLogger(StdLevelLogger):
 
     def __init__(self, underlying_logger: StdLogProtocol):
+        """
+        Basic logger that implements all the logging levels of python standard logging and simply delegates method
+        calls to the underlying logger.
+
+        :param underlying_logger: logger (python standard logger) that actually performs the logging.
+        """
         self.__underlying_logger = underlying_logger
         self.name = underlying_logger.name
         self.level = underlying_logger.level
