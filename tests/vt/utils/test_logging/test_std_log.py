@@ -1,5 +1,6 @@
-from vt.utils.logging.std_log.std_log import BasicStdLevelLogger
 import logging
+
+from vt.utils.logging.std_log.std_log import BasicStdLevelLogger
 
 TIMED_DETAIL_LOG_FMT = '%(asctime)s: %(name)s: [%(levelname)s]: [%(filename)s:%(lineno)d - ' \
                        '%(funcName)10s() ]: %(message)s'
@@ -17,3 +18,8 @@ def test_initial_logging():
     logger.warning('warning message')
     logger.error('error message')
     logger.critical('critical message')
+    try:
+        raise ValueError('A value is wrong.')
+    except ValueError:
+        logger.exception('an error')
+    logger.fatal('fatal message')
