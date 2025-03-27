@@ -2,7 +2,7 @@
 # coding=utf-8
 
 """
-Logging interface implementation by the standard logging library of python
+Logging interface implementation by the standard logging library of python.
 """
 from typing import override, Protocol, Any, Mapping
 
@@ -15,7 +15,9 @@ class StdStdLogProtocol(StdLogProtocol, Protocol):
     level: int
     disabled: bool
 
-    def exception(self, msg, *args, **kwargs) -> None:
+    # noinspection SpellCheckingInspection
+    # required for the param stack-level because this method signature from the protocol needs to correctly match that
+    # of the std logging method signature.
     def exception(self, msg: object, *args: object, exc_info: Any = ..., stack_info: bool = ...,
                   stacklevel: int = ..., extra: Mapping[str, object] | None = ...) -> None:
         ...
