@@ -7,6 +7,7 @@ Classes w.r.t implementation inheritance are defined here.
 from abc import ABC
 from typing import override
 
+from vt.utils.logging.logging import AllLevelLogger
 from vt.utils.logging.logging.std_log import StdLevelLogger, StdLogProtocol, DEFAULT_STACK_LEVEL
 
 
@@ -60,3 +61,18 @@ class _BaseStdLevelLogger(StdLevelLogger, ABC):
     @override
     def log(self, level: int, msg: str, *args, **kwargs) -> None:
         self.underlying_logger.log(level, msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs)
+
+
+class _BaseAllLevelLogger(_BaseStdLevelLogger, AllLevelLogger): # implementation inheritance, not is-a
+
+    def __init__(self, underlying_logger: StdLogProtocol):
+        super().__init__(underlying_logger)
+
+    def trace(self, msg, *args, **kwargs) -> None:
+        pass
+
+    def success(self, msg, *args, **kwargs) -> None:
+        pass
+
+    def notice(self, msg, *args, **kwargs) -> None:
+        pass
