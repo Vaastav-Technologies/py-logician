@@ -8,7 +8,7 @@ from abc import ABC
 from typing import Protocol, Any, Mapping
 
 from vt.utils.logging.logging import MinLogProtocol
-from vt.utils.logging.logging.base import _BasicLevelLogger, FatalLevelLogger, ExceptionLevelLogger
+from vt.utils.logging.logging.base import _MinLevelLogger, FatalLevelLogger, ExceptionLevelLogger
 
 
 class StdLogProtocol(MinLogProtocol, Protocol):
@@ -41,7 +41,7 @@ class StdLogProtocol(MinLogProtocol, Protocol):
         ...
 
 
-class StdLevelLogger(_BasicLevelLogger, FatalLevelLogger, ExceptionLevelLogger, ABC):
+class StdLevelLogger(_MinLevelLogger, FatalLevelLogger, ExceptionLevelLogger, ABC):
     """
     Logger that implements python standard logging methods::
 

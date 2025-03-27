@@ -183,8 +183,8 @@ class FatalLevelLogger(HasUnderlyingLogger):
         pass
 
 
-class _BasicLevelLogger(LogLevelLogger, DebugLevelLogger, InfoLevelLogger, WarningLevelLogger, ErrorLevelLogger,
-                     CriticalLevelLogger, HasUnderlyingLogger, ABC):
+class _MinLevelLogger(LogLevelLogger, DebugLevelLogger, InfoLevelLogger, WarningLevelLogger, ErrorLevelLogger,
+                      CriticalLevelLogger, HasUnderlyingLogger, ABC):
     """
     This logger interface is designed for extension but not direct implementation.
 
@@ -199,7 +199,7 @@ class _BasicLevelLogger(LogLevelLogger, DebugLevelLogger, InfoLevelLogger, Warni
     pass
 
 
-class MinLevelLogger(_BasicLevelLogger, ABC):
+class MinLevelLogger(_MinLevelLogger, ABC):
     """
     Logger that has all the basic logging levels common to most (nearly all) loggers, i.e.::
 
@@ -212,7 +212,7 @@ class MinLevelLogger(_BasicLevelLogger, ABC):
     pass
 
 
-class AllLevelLogger(TraceLevelLogger, _BasicLevelLogger, SuccessLevelLogger, NoticeLevelLogger, FatalLevelLogger,
+class AllLevelLogger(TraceLevelLogger, _MinLevelLogger, SuccessLevelLogger, NoticeLevelLogger, FatalLevelLogger,
                      ExceptionLevelLogger, ABC):
     """
     Logger which supports all the common Logging levels, i.e.::
