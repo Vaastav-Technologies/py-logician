@@ -12,7 +12,7 @@ from vt.utils.logging.logging.std_log import StdLevelLogger, StdLogProtocol, DEF
     NOTICE_LOG_LEVEL, SUCCESS_LOG_LEVEL
 
 
-class _BaseStdLevelLogger(StdLevelLogger, ABC):
+class BaseStdLevelLoggerImpl(StdLevelLogger, ABC):
 
     def __init__(self, underlying_logger: StdLogProtocol):
         """
@@ -64,7 +64,7 @@ class _BaseStdLevelLogger(StdLevelLogger, ABC):
         self.underlying_logger.log(level, msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs)
 
 
-class _BaseAllLevelLogger(_BaseStdLevelLogger, AllLevelLogger): # implementation inheritance, not is-a
+class BaseAllLevelLoggerImpl(BaseStdLevelLoggerImpl, AllLevelLogger): # implementation inheritance, not is-a
 
     def __init__(self, underlying_logger: StdLogProtocol):
         super().__init__(underlying_logger)

@@ -19,10 +19,10 @@ from logging import Logger
 from typing import override, cast
 
 from vt.utils.logging.logging.std_log import StdLogProtocol
-from vt.utils.logging.logging.std_log.basic_logger_impl import _BaseStdLevelLogger
+from vt.utils.logging.logging.std_log.basic_logger_impl import BaseStdLevelLoggerImpl
 
 
-class ProtocolStdLevelLogger(_BaseStdLevelLogger): # implementation inheritance, not is-a
+class ProtocolStdLevelLogger(BaseStdLevelLoggerImpl): # implementation inheritance, not is-a
 
     def __init__(self, underlying_logger: StdLogProtocol):
         """
@@ -34,7 +34,7 @@ class ProtocolStdLevelLogger(_BaseStdLevelLogger): # implementation inheritance,
         super().__init__(underlying_logger)
 
 
-class DirectStdLevelLogger(_BaseStdLevelLogger): # implementation inheritance, not is-a
+class DirectStdLevelLogger(BaseStdLevelLoggerImpl): # implementation inheritance, not is-a
 
     def __init__(self, underlying_logger: Logger):
         """
