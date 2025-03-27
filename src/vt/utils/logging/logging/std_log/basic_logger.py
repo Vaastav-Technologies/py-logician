@@ -19,7 +19,7 @@ from logging import Logger
 from typing import override, cast
 
 from vt.utils.logging.logging.std_log import StdLogProtocol
-from vt.utils.logging.logging.std_log._base_impl import _BaseStdLevelLogger
+from vt.utils.logging.logging.std_log.basic_logger_impl import _BaseStdLevelLogger
 
 
 class ProtocolStdLevelLogger(_BaseStdLevelLogger): # implementation inheritance, not is-a
