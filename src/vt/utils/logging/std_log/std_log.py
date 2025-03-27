@@ -4,10 +4,9 @@
 """
 Logging interface implementation by the standard logging library of python
 """
-import logging
-from typing import Any, override
+from typing import override
 
-from vt.utils.logging import StdLevelLogger, AllLevelLogger, StdLogProtocol
+from vt.utils.logging import StdLevelLogger, StdLogProtocol
 from vt.utils.logging.std_log.__constants__ import DEFAULT_STACK_LEVEL
 
 
