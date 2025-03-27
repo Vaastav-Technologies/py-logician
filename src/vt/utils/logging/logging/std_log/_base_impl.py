@@ -8,7 +8,8 @@ from abc import ABC
 from typing import override
 
 from vt.utils.logging.logging import AllLevelLogger
-from vt.utils.logging.logging.std_log import StdLevelLogger, StdLogProtocol, DEFAULT_STACK_LEVEL
+from vt.utils.logging.logging.std_log import StdLevelLogger, StdLogProtocol, DEFAULT_STACK_LEVEL, TRACE_LOG_LEVEL, \
+    NOTICE_LOG_LEVEL, SUCCESS_LOG_LEVEL
 
 
 class _BaseStdLevelLogger(StdLevelLogger, ABC):
@@ -69,10 +70,10 @@ class _BaseAllLevelLogger(_BaseStdLevelLogger, AllLevelLogger): # implementation
         super().__init__(underlying_logger)
 
     def trace(self, msg, *args, **kwargs) -> None:
-        pass
+        self.underlying_logger.log(TRACE_LOG_LEVEL, msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs)
 
     def success(self, msg, *args, **kwargs) -> None:
-        pass
+        self.underlying_logger.log(SUCCESS_LOG_LEVEL, msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs)
 
     def notice(self, msg, *args, **kwargs) -> None:
-        pass
+        self.underlying_logger.log(NOTICE_LOG_LEVEL, msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs)

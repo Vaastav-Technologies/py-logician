@@ -37,3 +37,12 @@ Prints ::
     log_caller_class.py | INFO | callling_meth | info msg
 
 """
+
+TRACE_LOG_LEVEL = 5
+TRACE_LOG_STR = 'TRACE'
+
+SUCCESS_LOG_LEVEL = 25
+SUCCESS_LOG_STR = 'SUCCESS'
+
+NOTICE_LOG_LEVEL = 27
+NOTICE_LOG_STR = 'NOTICE'
