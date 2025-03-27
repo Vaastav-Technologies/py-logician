@@ -24,5 +24,5 @@ def test_initial_logging(level_logger):
     try:
         raise ValueError('A value is wrong.')
     except ValueError:
-        logger.exception('an error')
+        logger.exception('an exception')
     logger.fatal('fatal message')
