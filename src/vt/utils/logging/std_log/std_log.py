@@ -4,18 +4,20 @@
 """
 Logging interface implementation by the standard logging library of python
 """
-from typing import override
+from typing import override, Protocol, Any, Mapping
 
 from vt.utils.logging import StdLevelLogger, StdLogProtocol
 from vt.utils.logging.std_log.__constants__ import DEFAULT_STACK_LEVEL
 
 
-class StdStdLogProtocol(StdLogProtocol):
+class StdStdLogProtocol(StdLogProtocol, Protocol):
     name: str
     level: int
     disabled: bool
 
     def exception(self, msg, *args, **kwargs) -> None:
+    def exception(self, msg: object, *args: object, exc_info: Any = ..., stack_info: bool = ...,
+                  stacklevel: int = ..., extra: Mapping[str, object] | None = ...) -> None:
         ...
 
 
@@ -53,7 +55,7 @@ class BasicStdLevelLogger(StdLevelLogger):
 
     @override
     def exception(self, msg, *args, **kwargs) -> None:
-        self.underlying_logger.exception(msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs)
+        self.underlying_logger.exception(msg, *args, exc_info=True, stacklevel=DEFAULT_STACK_LEVEL, **kwargs)
 
     @override
     def log(self, level: int, msg: str, *args, **kwargs) -> None:
