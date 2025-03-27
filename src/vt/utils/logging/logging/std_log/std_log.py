@@ -6,8 +6,8 @@ Logging interface implementation by the standard logging library of python.
 """
 from typing import override
 
-from vt.utils.logging.std_log import StdLevelLogger, StdLogProtocol
-from vt.utils.logging.std_log.__constants__ import DEFAULT_STACK_LEVEL
+from vt.utils.logging.logging.std_log import StdLevelLogger, StdLogProtocol
+from vt.utils.logging.logging.std_log.__constants__ import DEFAULT_STACK_LEVEL
 
 
 class BasicStdLevelLogger(StdLevelLogger):
