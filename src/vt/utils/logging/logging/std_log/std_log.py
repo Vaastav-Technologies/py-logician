@@ -2,7 +2,18 @@
 # coding=utf-8
 
 """
-Logging interface implementation by the standard logging library of python.
+Basic logging interface implementation by the standard logging library of python.
+
+Basic loggers only support operations::
+
+    - log
+    - debug
+    - info
+    - warning
+    - error
+    - exception
+    - critical
+    - fatal
 """
 from abc import ABC
 from logging import Logger
@@ -17,7 +28,7 @@ class _BaseStdLevelLogger(StdLevelLogger, ABC):
     def __init__(self, underlying_logger: StdLogProtocol):
         """
         Basic logger that implements all the logging levels of python standard logging and simply delegates method
-        calls to the underlying logger.
+        calls to the underlying logger. Created for implementation inheritance.
 
         :param underlying_logger: logger (python standard logger) that actually performs the logging.
         """
