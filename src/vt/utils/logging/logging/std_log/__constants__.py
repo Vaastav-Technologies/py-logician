@@ -17,8 +17,8 @@ the source information of the caller-class must be shown. This is just one level
 stacklevel=DEFAULT_STACK_LEVEL=2 is chosen.
 
 
-Illustration for ``stacklevel=1`` ::
-------------------------------------
+Illustration for ``stacklevel=1``
+---------------------------------
 
     log_caller_src.py :: log.info('info msg') -> log_capturing_class.py :: self.underlying_logger.info('info msg')
     
@@ -27,8 +27,8 @@ Prints ::
     log_capturing_class.py | INFO | undelrying_logger.info | info msg
 
 
-Illustration for ``stacklevel=2`` ::
-------------------------------------
+Illustration for ``stacklevel=2``
+---------------------------------
 
     log_caller_src.py :: log.info('info msg') -> log_capturing_class.py :: self.underlying_logger.info('info msg')
     
