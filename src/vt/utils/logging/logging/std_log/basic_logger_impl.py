@@ -12,9 +12,9 @@ from vt.utils.logging.logging.std_log import StdLevelLogger, StdLogProtocol, DEF
     NOTICE_LOG_LEVEL, SUCCESS_LOG_LEVEL
 
 
-class BaseStdLevelLoggerImpl(StdLevelLogger, ABC):
+class BaseStdLevelLoggerImpl[T: StdLogProtocol](StdLevelLogger, ABC):
 
-    def __init__(self, underlying_logger: StdLogProtocol):
+    def __init__(self, underlying_logger: T):
         """
         Basic logger that implements all the logging levels of python standard logging and simply delegates method
         calls to the underlying logger. Created for implementation inheritance.
@@ -28,7 +28,7 @@ class BaseStdLevelLoggerImpl(StdLevelLogger, ABC):
 
     @override
     @property
-    def underlying_logger(self) -> StdLogProtocol:
+    def underlying_logger(self) -> T:
         return self._underlying_logger
 
     @override
@@ -64,7 +64,7 @@ class BaseStdLevelLoggerImpl(StdLevelLogger, ABC):
         self.underlying_logger.log(level, msg, *args, stacklevel=DEFAULT_STACK_LEVEL, **kwargs)
 
 
-class BaseAllLevelLoggerImpl(BaseStdLevelLoggerImpl, AllLevelLogger): # implementation inheritance, not is-a
+class BaseAllLevelLoggerImpl[T: StdLogProtocol](BaseStdLevelLoggerImpl[T], AllLevelLogger): # implementation inheritance, not is-a
 
     def __init__(self, underlying_logger: StdLogProtocol):
         super().__init__(underlying_logger)
