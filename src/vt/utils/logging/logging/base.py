@@ -195,6 +195,15 @@ class _MinLevelLogger(LogLevelLogger, DebugLevelLogger, InfoLevelLogger, Warning
 
         AllLevelLogger has all the methods of MinLevelLogger but conceptually AllLevelLogger cannot be put in place
         of MinLevelLogger, i.e. there is no is-a relationship between them.
+
+
+    Logger that has all the basic logging levels common to most (nearly all) loggers, i.e.::
+
+        - DEBUG
+        - INFO
+        - WARNING
+        - ERROR
+        - CRITICAL
     """
     pass
 
