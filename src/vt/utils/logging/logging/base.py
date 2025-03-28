@@ -225,6 +225,7 @@ class AllLevelLogger(TraceLevelLogger, _MinLevelLogger, SuccessLevelLogger, Noti
 
     It also tries to add more levels that may facilitate users, additional log levels are::
 
+        - TRACE
         - SUCCESS
         - NOTICE
         - FATAL
