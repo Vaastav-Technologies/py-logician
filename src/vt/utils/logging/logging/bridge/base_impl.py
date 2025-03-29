@@ -71,7 +71,7 @@ class DelegatingProtocolMinLevelLogger(BaseDelegatingLogger, MinLevelLogger, ABC
     @property
     @abstractmethod
     @override
-    def logger_impl(self) -> ProtocolMinLevelLoggerImplBase:
+    def logger_impl(self) -> ProtocolMinLevelLoggerImplABC:
         pass
 
 
