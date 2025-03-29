@@ -8,7 +8,7 @@ from abc import ABC
 from logging import Logger
 from typing import override, cast
 
-from vt.utils.logging.logging.base_impl import ProtocolMinLevelLoggerImplABC, AllLevelLoggerImplABC
+from vt.utils.logging.logging.bridge.base_impl import ProtocolMinLevelLoggerImplABC, AllLevelLoggerImplABC
 from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, \
     NOTICE_LOG_LEVEL, SUCCESS_LOG_LEVEL, StdLevelLogger, StdLogProtocol, INDIRECTION_STACK_LEVEL
 
