@@ -16,4 +16,4 @@ at the time of vt.utils.logging.logger creation and hence client can configure t
 supplying the logger class to perform delegation onto by this library.
 """
 
-from .base import MinLevelLogger, AllLevelLogger, MinLogProtocol
+from vt.utils.logging.logging.base import MinLevelLogger, AllLevelLogger, MinLogProtocol
