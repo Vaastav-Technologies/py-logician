@@ -6,7 +6,6 @@ Classes w.r.t implementation inheritance for base logger are defined here.
 """
 
 from abc import ABC, abstractmethod
-from typing import override
 
 from vt.utils.logging.logging import MinLevelLogger, AllLevelLogger
 from vt.utils.logging.logging.base import _MinLevelLogger
