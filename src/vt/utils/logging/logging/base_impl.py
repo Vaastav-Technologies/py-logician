@@ -12,12 +12,48 @@ from vt.utils.logging.logging.base import _MinLevelLogger
 
 
 class _ProtocolMinLevelLoggerImplBase(_MinLevelLogger, ABC):
+    """
+    Bridge implementation base for extension in unrelated (non is-a relationship) loggers which support
+    these operations::
+
+        - DEBUG
+        - INFO
+        - WARNING
+        - ERROR
+        - CRITICAL.
+    """
     pass
 
 
 class ProtocolMinLevelLoggerImplABC(_ProtocolMinLevelLoggerImplBase, MinLevelLogger, ABC):
+    """
+    Bridge implementation base for extension by Min Log level loggers, i.e. loggers which support these operations::
+
+        - DEBUG
+        - INFO
+        - WARNING
+        - ERROR
+        - CRITICAL
+    """
     pass
 
 
 class AllLevelLoggerImplABC(_ProtocolMinLevelLoggerImplBase, AllLevelLogger, ABC):
+    """
+    Bridge implementation base for extension by loggers which supports all the common Logging levels, i.e.::
+
+        - DEBUG
+        - INFO
+        - WARNING
+        - ERROR
+        - CRITICAL
+
+    It also tries to add more levels that may facilitate users, additional log levels are::
+
+        - TRACE
+        - SUCCESS
+        - NOTICE
+        - FATAL
+        - EXCEPTION
+    """
     pass
