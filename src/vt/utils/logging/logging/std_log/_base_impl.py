@@ -4,13 +4,12 @@
 """
 Classes w.r.t implementation inheritance are defined here.
 """
+from abc import ABC
 from logging import Logger
 from typing import override, cast
-from abc import ABC, abstractmethod
 
-from vt.utils.logging.logging import AllLevelLogger
 from vt.utils.logging.logging.base_impl import ProtocolMinLevelLoggerImplABC, AllLevelLoggerImplABC
-from vt.utils.logging.logging.std_log import DEFAULT_STACK_LEVEL, TRACE_LOG_LEVEL, \
+from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, \
     NOTICE_LOG_LEVEL, SUCCESS_LOG_LEVEL, StdLevelLogger, StdLogProtocol, INDIRECTION_STACK_LEVEL
 
 
