@@ -20,12 +20,13 @@ from logging import Logger
 from typing import override, cast
 
 from vt.utils.logging.logging import AllLevelLogger
+from vt.utils.logging.logging.bridge.base_impl import BaseDelegatingLogger
 from vt.utils.logging.logging.std_log import StdLogProtocol, StdLevelLogger
 from vt.utils.logging.logging.std_log.basic_logger_impl import ProtocolStdLevelLoggerImpl, BaseDirectStdLevelLoggerImpl, \
     BaseDirectAllLevelLoggerImpl
 
 
-class BaseProtocolStdLevelLogger(StdLevelLogger, ABC):
+class BaseProtocolStdLevelLogger(BaseDelegatingLogger, StdLevelLogger, ABC):
     def __init__(self, logger_impl: ProtocolStdLevelLoggerImpl):
         self._logger_impl = logger_impl
         self._underlying_logger = self._logger_impl.underlying_logger
