@@ -6,6 +6,7 @@ Classes w.r.t implementation inheritance for base logger are defined here.
 """
 
 from abc import ABC, abstractmethod
+from typing import override
 
 from vt.utils.logging.logging import MinLevelLogger, AllLevelLogger
 from vt.utils.logging.logging.base import _MinLevelLogger
@@ -59,15 +60,24 @@ class AllLevelLoggerImplABC(_ProtocolMinLevelLoggerImplBase, AllLevelLogger, ABC
     pass
 
 
-class DelegatingProtocolMinLevelLogger(MinLevelLogger, ABC):
+class BaseDelegatingLogger(_MinLevelLogger, ABC):
     @property
     @abstractmethod
-    def logger_impl(self) -> ProtocolMinLevelLoggerImplABC:
+    def logger_impl(self) -> _ProtocolMinLevelLoggerImplBase:
         pass
 
 
-class DelegatingAllLevelLogger(AllLevelLogger, ABC):
+class DelegatingProtocolMinLevelLogger(BaseDelegatingLogger, MinLevelLogger, ABC):
     @property
     @abstractmethod
+    @override
+    def logger_impl(self) -> _ProtocolMinLevelLoggerImplBase:
+        pass
+
+
+class DelegatingAllLevelLogger(BaseDelegatingLogger, AllLevelLogger, ABC):
+    @property
+    @abstractmethod
+    @override
     def logger_impl(self) -> AllLevelLoggerImplABC:
         pass
