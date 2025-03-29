@@ -12,7 +12,7 @@ from vt.utils.logging.logging import MinLevelLogger, AllLevelLogger
 from vt.utils.logging.logging.base import _MinLevelLogger
 
 
-class _ProtocolMinLevelLoggerImplBase(_MinLevelLogger, ABC):
+class ProtocolMinLevelLoggerImplBase(_MinLevelLogger, ABC):
     """
     Bridge implementation base for extension in unrelated (non is-a relationship) loggers which support
     these operations::
@@ -26,7 +26,7 @@ class _ProtocolMinLevelLoggerImplBase(_MinLevelLogger, ABC):
     pass
 
 
-class ProtocolMinLevelLoggerImplABC(_ProtocolMinLevelLoggerImplBase, MinLevelLogger, ABC):
+class ProtocolMinLevelLoggerImplABC(ProtocolMinLevelLoggerImplBase, MinLevelLogger, ABC):
     """
     Bridge implementation base for extension by Min Log level loggers, i.e. loggers which support these operations::
 
@@ -39,7 +39,7 @@ class ProtocolMinLevelLoggerImplABC(_ProtocolMinLevelLoggerImplBase, MinLevelLog
     pass
 
 
-class AllLevelLoggerImplABC(_ProtocolMinLevelLoggerImplBase, AllLevelLogger, ABC):
+class AllLevelLoggerImplABC(ProtocolMinLevelLoggerImplBase, AllLevelLogger, ABC):
     """
     Bridge implementation base for extension by loggers which supports all the common Logging levels, i.e.::
 
@@ -63,7 +63,7 @@ class AllLevelLoggerImplABC(_ProtocolMinLevelLoggerImplBase, AllLevelLogger, ABC
 class BaseDelegatingLogger(_MinLevelLogger, ABC):
     @property
     @abstractmethod
-    def logger_impl(self) -> _ProtocolMinLevelLoggerImplBase:
+    def logger_impl(self) -> ProtocolMinLevelLoggerImplBase:
         pass
 
 
@@ -71,7 +71,7 @@ class DelegatingProtocolMinLevelLogger(BaseDelegatingLogger, MinLevelLogger, ABC
     @property
     @abstractmethod
     @override
-    def logger_impl(self) -> _ProtocolMinLevelLoggerImplBase:
+    def logger_impl(self) -> ProtocolMinLevelLoggerImplBase:
         pass
 
 
