@@ -21,7 +21,7 @@ from typing import override, cast
 
 from vt.utils.logging.logging import AllLevelLogger
 from vt.utils.logging.logging.std_log import StdLogProtocol, StdLevelLogger
-from vt.utils.logging.logging.std_log._base_impl import ProtocolStdLevelLoggerImpl, BaseDirectStdLevelLoggerImpl, \
+from vt.utils.logging.logging.std_log.basic_logger_impl import ProtocolStdLevelLoggerImpl, BaseDirectStdLevelLoggerImpl, \
     BaseDirectAllLevelLoggerImpl
 
 

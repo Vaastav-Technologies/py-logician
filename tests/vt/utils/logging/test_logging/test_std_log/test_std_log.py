@@ -2,7 +2,7 @@ import logging
 
 import pytest
 
-from vt.utils.logging.logging.std_log._base_impl import DirectStdLevelLoggerImpl, DirectAllLevelLoggerImpl
+from vt.utils.logging.logging.std_log.basic_logger_impl import DirectStdLevelLoggerImpl, DirectAllLevelLoggerImpl
 from vt.utils.logging.logging.std_log.basic_logger import ProtocolStdLevelLogger, BaseDirectStdLevelLogger
 
 TIMED_DETAIL_LOG_FMT = '%(asctime)s: %(name)s: [%(levelname)s]: [%(filename)s:%(lineno)d - ' \
