@@ -59,7 +59,7 @@ class AllLevelLoggerImplABC(ProtocolMinLevelLoggerImplBase, AllLevelLogger, ABC)
     pass
 
 
-class BaseDelegatingLogger(_MinLevelLogger, ABC):
+class BaseDelegatingLogger(ABC):
     @property
     @abstractmethod
     def logger_impl(self) -> ProtocolMinLevelLoggerImplBase:
