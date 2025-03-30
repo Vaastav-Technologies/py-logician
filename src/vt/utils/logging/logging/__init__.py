@@ -17,3 +17,8 @@ supplying the logger class to perform delegation onto by this library.
 """
 
 from vt.utils.logging.logging.base import MinLevelLogger, AllLevelLogger, MinLogProtocol
+from vt.utils.logging.logging.std_log import StdLogProtocol, StdLevelLogger, ProtocolStdLevelLogger, \
+    BaseDirectStdLevelLogger, BaseDirectAllLevelLogger
+
+
+
