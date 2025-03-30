@@ -60,7 +60,13 @@ class AllLevelLoggerImplABC(ProtocolMinLevelLoggerImplBase, AllLevelLogger, ABC)
 
 
 class BaseDelegatingLogger(ABC):
+    """
+    A logger which delegates its logging capabilities to another logger implementation to facilitate a bridge.
+    """
     @property
     @abstractmethod
     def logger_impl(self) -> ProtocolMinLevelLoggerImplBase:
+        """
+        :return: the logging-class which implements logging capability.
+        """
         pass
