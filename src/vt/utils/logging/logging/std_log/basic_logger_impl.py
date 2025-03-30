@@ -4,7 +4,7 @@
 """
 Classes w.r.t implementation inheritance are defined here.
 """
-from abc import ABC
+from abc import ABC, abstractmethod
 from logging import Logger
 from typing import override, cast
 
@@ -14,50 +14,23 @@ from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, \
 
 
 class ProtocolStdLevelLoggerImpl(ProtocolMinLevelLoggerImplABC, StdLevelLogger, ABC):
-
-    def __init__(self, underlying_logger: StdLogProtocol):
-        """
-        Basic logger that implements all the logging levels of python standard logging and simply delegates method
-        calls to the underlying logger. Created for implementation inheritance.
-
-        :param underlying_logger: logger (python standard logger) that actually performs the logging.
-        """
-        self._underlying_logger = underlying_logger
-
     @override
     @property
+    @abstractmethod
     def underlying_logger(self) -> StdLogProtocol:
-        return self._underlying_logger
+        pass
 
 
-class BaseDirectStdLevelLoggerImpl(ProtocolStdLevelLoggerImpl, ABC): # implementation inheritance, not is-a
-
-    def __init__(self, underlying_logger: Logger):
-        """
-        Basic logger that implements all the logging levels of python standard logging and simply delegates method
-        calls to the underlying logger. Created for implementation inheritance.
-
-        :param underlying_logger: logger (python standard logger) that actually performs the logging.
-        """
-        super().__init__(underlying_logger) # noqa
-
+class BaseDirectStdLevelLoggerImpl(ProtocolStdLevelLoggerImpl, ABC):
     @override
     @property
+    @abstractmethod
     def underlying_logger(self) -> Logger:
-        return cast(Logger, self._underlying_logger)
+        pass
 
 
-class BaseDirectAllLevelLoggerImpl(BaseDirectStdLevelLoggerImpl, AllLevelLoggerImplABC, ABC): # implementation
-    # inheritance, not is-a
-
-    def __init__(self, underlying_logger: Logger):
-        """
-        Basic logger that implements all the logging levels of python standard logging and simply delegates method
-        calls to the underlying logger. Created for implementation inheritance.
-
-        :param underlying_logger: logger (python standard logger) that actually performs the logging.
-        """
-        super().__init__(underlying_logger)
+class BaseDirectAllLevelLoggerImpl(BaseDirectStdLevelLoggerImpl, AllLevelLoggerImplABC, ABC):
+    pass
 
 
 class DirectStdLevelLoggerImpl(BaseDirectStdLevelLoggerImpl):
@@ -69,7 +42,7 @@ class DirectStdLevelLoggerImpl(BaseDirectStdLevelLoggerImpl):
 
         :param underlying_logger: logger (python standard logger) that actually performs the logging.
         """
-        super().__init__(underlying_logger) # noqa
+        self._underlying_logger = underlying_logger
         self.stack_level = stack_level
 
     @override
@@ -110,8 +83,9 @@ class DirectStdLevelLoggerImpl(BaseDirectStdLevelLoggerImpl):
         self.underlying_logger.log(level, msg, *args, stacklevel=self.stack_level, **kwargs)
 
 
-class DirectAllLevelLoggerImpl(DirectStdLevelLoggerImpl, # implementation inheritance, not is-a
-                               AllLevelLoggerImplABC):
+class DirectAllLevelLoggerImpl(BaseDirectAllLevelLoggerImpl,
+                               DirectStdLevelLoggerImpl, # implementation inheritance, not is-a
+                               ):
 
     def __init__(self, underlying_logger: Logger, stack_level=INDIRECTION_STACK_LEVEL):
         super().__init__(underlying_logger, stack_level)
