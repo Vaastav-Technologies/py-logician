@@ -26,7 +26,7 @@ from vt.utils.logging.logging.std_log.basic_logger_impl import ProtocolStdLevelL
     BaseDirectStdLevelLoggerImpl, BaseDirectAllLevelLoggerImpl
 
 
-class BaseProtocolStdLevelLogger(BaseDelegatingLogger, StdLevelLogger, ABC):
+class BaseProtocolStdLevelLogger(StdLevelLogger, BaseDelegatingLogger, ABC):
     def __init__(self, logger_impl: ProtocolStdLevelLoggerImpl):
         self._logger_impl = logger_impl
         self._underlying_logger = self._logger_impl.underlying_logger
