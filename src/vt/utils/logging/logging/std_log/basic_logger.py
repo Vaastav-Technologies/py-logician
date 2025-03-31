@@ -16,12 +16,15 @@ Basic loggers only support operations::
     - fatal
 """
 from abc import ABC
+import logging
 from logging import Logger
 from typing import override, cast
 
 from vt.utils.logging.logging import AllLevelLogger
 from vt.utils.logging.logging.delegating import BaseDelegatingLogger
-from vt.utils.logging.logging.std_log import StdLogProtocol, StdLevelLogger
+from vt.utils.logging.logging.std_log import StdLogProtocol, StdLevelLogger, TRACE_LOG_LEVEL, TRACE_LOG_STR, \
+    SUCCESS_LOG_LEVEL, SUCCESS_LOG_STR, NOTICE_LOG_LEVEL, NOTICE_LOG_STR, EXCEPTION_TRACEBACK_LOG_LEVEL, \
+    EXCEPTION_TRACEBACK_LOG_STR
 from vt.utils.logging.logging.std_log.basic_logger_impl import ProtocolStdLevelLoggerImpl, \
     BaseDirectStdLevelLoggerImpl, BaseDirectAllLevelLoggerImpl
 
@@ -98,6 +101,10 @@ class BaseDirectStdLevelLogger(ProtocolStdLevelLogger, ABC):
 class BaseDirectAllLevelLogger(BaseDirectStdLevelLogger, AllLevelLogger, ABC):
     def __init__(self, logger_impl: BaseDirectAllLevelLoggerImpl):
         super().__init__(logger_impl)
+        logging.addLevelName(TRACE_LOG_LEVEL, TRACE_LOG_STR)
+        logging.addLevelName(SUCCESS_LOG_LEVEL, SUCCESS_LOG_STR)
+        logging.addLevelName(NOTICE_LOG_LEVEL, NOTICE_LOG_STR)
+        logging.addLevelName(EXCEPTION_TRACEBACK_LOG_LEVEL, EXCEPTION_TRACEBACK_LOG_STR)
 
     @property
     def logger_impl(self) -> BaseDirectAllLevelLoggerImpl:
