@@ -54,3 +54,10 @@ SUCCESS_LOG_STR = 'SUCCESS'
 
 NOTICE_LOG_LEVEL = 27
 NOTICE_LOG_STR = 'NOTICE'
+
+EXCEPTION_TRACEBACK_LOG_LEVEL = TRACE_LOG_LEVEL - 2
+"""
+Exception traces should only be printed when the user really wants to dig deep into the code and hence should have
+very low log level
+"""
+EXCEPTION_TRACEBACK_LOG_STR = "TRACEBACK"
