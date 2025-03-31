@@ -18,9 +18,9 @@ class VerboseLogger(ABC):
     """
     @property
     @abstractmethod
-    def verbosity(self) -> int:
+    def verbosity(self) -> int | None:
         """
-        :return: logger verbosity in int.
+        :return: logger verbosity in int. ``None`` if verbosity remains unset.
         """
         pass
 
@@ -33,9 +33,9 @@ class QuietLogger(ABC):
     """
     @property
     @abstractmethod
-    def quietness(self) -> int:
+    def quietness(self) -> int | None:
         """
-        :return: logger quietness in int.
+        :return: logger quietness in int. ``None`` if quietness remains unset.
         """
         pass
 
@@ -54,7 +54,7 @@ class VerboseQuietLogger(VerboseLogger, QuietLogger, ABC):
         pass
 
     @abstractmethod
-    def set_log_level_vq(self, verbosity: int, quietness: int) -> None:
+    def set_log_level_vq(self, verbosity: int | None, quietness: int | None) -> None:
         """
         Set the log level according to the verbosity and quietness supplied.
 
