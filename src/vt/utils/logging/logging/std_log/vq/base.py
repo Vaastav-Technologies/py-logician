@@ -14,10 +14,10 @@ class VQDirectStdLogger(BaseDirectStdLevelLogger, VerboseQuietLogger):
         self._verbosity = None
         self._quietness = None
 
-    def log_fmt(self) -> str:
+    def log_fmt(self, temp_verbosity: int | None = None, temp_quietness: int | None = None) -> str:
         return ''
 
-    def set_log_level_vq(self, verbosity: int, quietness: int) -> None:
+    def set_log_level_vq(self, verbosity: int | None = None, quietness: int | None = None) -> None:
         pass
 
     @property
