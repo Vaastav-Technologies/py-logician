@@ -18,7 +18,9 @@ supplying the logger class to perform delegation onto by this library.
 
 from vt.utils.logging.logging.base import MinLevelLogger, AllLevelLogger, MinLogProtocol
 from vt.utils.logging.logging.std_log import StdLogProtocol, StdLevelLogger, ProtocolStdLevelLogger, \
-    BaseDirectStdLevelLogger, BaseDirectAllLevelLogger
+    BaseDirectStdLevelLogger, BaseDirectAllLevelLogger, Logger
+from vt.utils.logging.logging.std_log.basic_logger_impl import DirectAllLevelLoggerImpl as _DALImpl
 
 
-
+def get_direct_all_level_logger(logger: Logger) -> BaseDirectAllLevelLogger:
+    return BaseDirectAllLevelLogger(_DALImpl(logger))
