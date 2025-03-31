@@ -42,4 +42,19 @@ class VerboseQuietLogger(VerboseLogger, QuietLogger, ABC):
 
     Verbosity and Quietness is mainly measured in int.
     """
-    pass
+    @abstractmethod
+    def log_fmt(self) -> str:
+        """
+        :return: desired log format for the supplied verbosity or quietness level.
+        """
+        pass
+
+    @abstractmethod
+    def set_log_level_vq(self, verbosity: int, quietness: int) -> None:
+        """
+        Set the log level according to the verbosity and quietness supplied.
+
+        :param verbosity: verbosity level of the logger.
+        :param quietness: quietness level of the logger.
+        """
+        pass
