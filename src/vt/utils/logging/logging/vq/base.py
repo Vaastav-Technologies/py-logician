@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+# coding=utf-8
+
+
 """
 Interfaces for loggers that respect verbose and quiet configurations.
 """
