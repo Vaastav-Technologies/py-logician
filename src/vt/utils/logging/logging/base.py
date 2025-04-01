@@ -77,7 +77,7 @@ class HasUnderlyingLogger(ABC):
         """
         It may not be a good idea to directly call this method to obtain underlying logger after class is
         initialised and its use is started. That is the case because that obtained underlying logger may tie the
-        interfaces with a particular implementation and thi will hinder in swapping logger implementations.
+        interfaces with a particular implementation and this will hinder in swapping logger implementations.
 
         :return: the contained underlying logger.
         """
