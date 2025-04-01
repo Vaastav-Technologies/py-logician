@@ -3,7 +3,8 @@
 
 
 """
-Loggers for commands. These loggers implement all logger levels except CRITICAL is changed to FATAL.
+Loggers for commands. These loggers implement all min logger levels except CRITICAL is changed to FATAL.
 """
 
 
+from vt.utils.logging.logging.cmd.base import MinCmdProtocol
