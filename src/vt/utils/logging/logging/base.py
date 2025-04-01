@@ -65,7 +65,7 @@ class MinLogProtocol(LogLogProtocol, DebugLogProtocol, InfoLogProtocol, WarningL
     pass
 
 
-class HasUnderlyingLogger(ABC):
+class HasUnderlyingLogger(Protocol):
     """
     Insists that an underlying logger is contained in the class implementing this interface.
 
