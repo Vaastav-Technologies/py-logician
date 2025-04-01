@@ -6,6 +6,7 @@ from vt.utils.logging.logging import BaseDirectStdLevelLogger, BaseDirectAllLeve
 from vt.utils.logging.logging.std_log.basic_logger_impl import BaseDirectStdLevelLoggerImpl, \
     BaseDirectAllLevelLoggerImpl
 from vt.utils.logging.logging.vq import VerboseQuietLogger
+from vt.utils.logging.logging.vq.base import ChangingFormatVQLogger
 
 
 class VQDirectStdLogger(BaseDirectStdLevelLogger, VerboseQuietLogger):
@@ -13,9 +14,6 @@ class VQDirectStdLogger(BaseDirectStdLevelLogger, VerboseQuietLogger):
         super().__init__(logger_impl)
         self._verbosity = None
         self._quietness = None
-
-    def log_fmt(self, temp_verbosity: int | None = None, temp_quietness: int | None = None) -> str:
-        return ''
 
     def set_log_level_vq(self, verbosity: int | None = None, quietness: int | None = None) -> None:
         pass
@@ -27,6 +25,12 @@ class VQDirectStdLogger(BaseDirectStdLevelLogger, VerboseQuietLogger):
     @property
     def quietness(self) -> int | None:
         return self._quietness
+
+
+class ChangingFmtVQDirectStdLogger(VQDirectStdLogger, ChangingFormatVQLogger):
+
+    def log_fmt(self, temp_verbosity: int | None, temp_quietness: int | None) -> str:
+        pass
 
 
 class VQDirectStdLevelLogger(VQDirectStdLogger):

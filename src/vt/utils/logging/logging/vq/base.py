@@ -7,10 +7,11 @@ Interfaces for loggers that respect verbose and quiet configurations.
 """
 
 
-from abc import ABC, abstractmethod
+from typing import Protocol
+from abc import abstractmethod
 
 
-class VerboseLogger(ABC):
+class VerboseLogger(Protocol):
     """
     Interface declaring that a logger supports verbosity settings.
 
@@ -25,7 +26,7 @@ class VerboseLogger(ABC):
         pass
 
 
-class QuietLogger(ABC):
+class QuietLogger(Protocol):
     """
     Interface declaring that a logger supports quietness settings.
 
@@ -40,16 +41,33 @@ class QuietLogger(ABC):
         pass
 
 
-class VerboseQuietLogger(VerboseLogger, QuietLogger, ABC):
+class VerboseQuietLogger(VerboseLogger, QuietLogger, Protocol):
     """
     Interface declaring that a logger supports verbosity and quietness settings.
 
     Verbosity and Quietness is mainly measured in int.
     """
+
+    @abstractmethod
+    def set_log_level_vq(self, verbosity: int | None, quietness: int | None) -> None:
+        """
+        Set the log level according to the verbosity and quietness supplied.
+
+        :param verbosity: verbosity level of the logger.
+        :param quietness: quietness level of the logger.
+        """
+        pass
+
+
+class ChangingFormatVQLogger(VerboseQuietLogger, Protocol):
+    """
+    This logger supports changes in the log format on different verbosity and quietness levels.
+    """
+
     @abstractmethod
     def log_fmt(self, temp_verbosity: int | None, temp_quietness: int | None) -> str:
         """
-        Computes the log format required when verbosity or quietness levels are given. Different log formats can be
+        Computes the log format when verbosity or quietness levels are given. Different log formats can be
         returned for different combinations of the supplied verbosity and quietness levels.
 
         Note::
@@ -61,15 +79,5 @@ class VerboseQuietLogger(VerboseLogger, QuietLogger, ABC):
         :param temp_verbosity: verbosity level to determine a certain log format.
         :param temp_quietness: quietness level to determine a certain log format.
         :return: desired log format for the supplied verbosity or quietness level.
-        """
-        pass
-
-    @abstractmethod
-    def set_log_level_vq(self, verbosity: int | None, quietness: int | None) -> None:
-        """
-        Set the log level according to the verbosity and quietness supplied.
-
-        :param verbosity: verbosity level of the logger.
-        :param quietness: quietness level of the logger.
         """
         pass
