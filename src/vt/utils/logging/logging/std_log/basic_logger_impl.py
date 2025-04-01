@@ -6,14 +6,15 @@ Classes w.r.t implementation inheritance are defined here.
 """
 from abc import ABC, abstractmethod
 from logging import Logger
-from typing import override, cast
+from typing import override, cast, Protocol
 
+from vt.utils.logging.logging import AllLevelLogger
 from vt.utils.logging.logging.delegating import ProtocolMinLevelLoggerImplABC, AllLevelLoggerImplABC
 from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, \
     NOTICE_LOG_LEVEL, SUCCESS_LOG_LEVEL, StdLevelLogger, StdLogProtocol, INDIRECTION_STACK_LEVEL
 
 
-class ProtocolStdLevelLoggerImpl(ProtocolMinLevelLoggerImplABC, StdLevelLogger, ABC):
+class StdProtocolAllLevelLoggerImpl(AllLevelLoggerImplABC, Protocol):
     @override
     @property
     @abstractmethod
@@ -21,19 +22,19 @@ class ProtocolStdLevelLoggerImpl(ProtocolMinLevelLoggerImplABC, StdLevelLogger, 
         pass
 
 
-class BaseDirectStdLevelLoggerImpl(ProtocolStdLevelLoggerImpl, ABC):
+class BaseDirectStdAllLevelLoggerImpl(StdProtocolAllLevelLoggerImpl, Protocol):
     @override
     @property
     @abstractmethod
-    def underlying_logger(self) -> Logger:
+    def underlying_logger(self) -> Logger: # noqa
         pass
 
 
-class BaseDirectAllLevelLoggerImpl(BaseDirectStdLevelLoggerImpl, AllLevelLoggerImplABC, ABC):
+class BaseDirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl, Protocol):
     pass
 
 
-class DirectStdLevelLoggerImpl(BaseDirectStdLevelLoggerImpl):
+class DirectAllLevelLoggerImpl(BaseDirectAllLevelLoggerImpl):
 
     def __init__(self, underlying_logger: Logger, stack_level=INDIRECTION_STACK_LEVEL):
         """
@@ -47,7 +48,7 @@ class DirectStdLevelLoggerImpl(BaseDirectStdLevelLoggerImpl):
 
     @override
     @property
-    def underlying_logger(self) -> Logger:
+    def underlying_logger(self) -> Logger: # noqa
         return cast(Logger, self._underlying_logger)
 
     @override
@@ -81,14 +82,6 @@ class DirectStdLevelLoggerImpl(BaseDirectStdLevelLoggerImpl):
     @override
     def log(self, level: int, msg: str, *args, **kwargs) -> None:
         self.underlying_logger.log(level, msg, *args, stacklevel=self.stack_level, **kwargs)
-
-
-class DirectAllLevelLoggerImpl(BaseDirectAllLevelLoggerImpl,
-                               DirectStdLevelLoggerImpl, # implementation inheritance, not is-a
-                               ):
-
-    def __init__(self, underlying_logger: Logger, stack_level=INDIRECTION_STACK_LEVEL):
-        super().__init__(underlying_logger, stack_level)
 
     @override
     def trace(self, msg, *args, **kwargs) -> None:

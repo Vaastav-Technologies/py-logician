@@ -5,13 +5,14 @@
 Loggers which are designed to delegate responsibility of logging to certain logging bridges.
 """
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
+from typing import Protocol
 
-from vt.utils.logging.logging import MinLevelLogger, AllLevelLogger
-from vt.utils.logging.logging.base import _MinLevelLogger
+from vt.utils.logging.logging import MinLogProtocol, AllLevelLogger
+from vt.utils.logging.logging.base import _MinLogProtocol
 
 
-class ProtocolMinLevelLoggerImplBase(_MinLevelLogger, ABC):
+class ProtocolMinLevelLoggerImplBase(_MinLogProtocol, Protocol):
     """
     Bridge implementation base for extension in unrelated (non is-a relationship) loggers which support
     these operations::
@@ -25,7 +26,7 @@ class ProtocolMinLevelLoggerImplBase(_MinLevelLogger, ABC):
     pass
 
 
-class ProtocolMinLevelLoggerImplABC(ProtocolMinLevelLoggerImplBase, MinLevelLogger, ABC):
+class ProtocolMinLevelLoggerImplABC(ProtocolMinLevelLoggerImplBase, MinLogProtocol, Protocol):
     """
     Bridge implementation base for extension by Min Log level loggers, i.e. loggers which support these operations::
 
@@ -38,7 +39,7 @@ class ProtocolMinLevelLoggerImplABC(ProtocolMinLevelLoggerImplBase, MinLevelLogg
     pass
 
 
-class AllLevelLoggerImplABC(ProtocolMinLevelLoggerImplBase, AllLevelLogger, ABC):
+class AllLevelLoggerImplABC(ProtocolMinLevelLoggerImplBase, AllLevelLogger, Protocol):
     """
     Bridge implementation base for extension by loggers which supports all the common Logging levels, i.e.::
 
@@ -59,7 +60,7 @@ class AllLevelLoggerImplABC(ProtocolMinLevelLoggerImplBase, AllLevelLogger, ABC)
     pass
 
 
-class BaseDelegatingLogger(ABC):
+class BaseDelegatingLogger(Protocol):
     """
     A logger which delegates its logging capabilities to another logger implementation to facilitate a bridge.
     """

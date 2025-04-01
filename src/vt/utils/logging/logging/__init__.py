@@ -21,8 +21,8 @@ from logging import Logger
 
 
 from vt.utils.logging.logging.base import AllLevelLogger, MinLogProtocol
-from vt.utils.logging.logging.std_log import StdLogProtocol, StdLevelLogger, ProtocolStdLevelLogger, \
-    BaseDirectStdLevelLogger, BaseDirectAllLevelLogger
+from vt.utils.logging.logging.std_log import StdLogProtocol, StdLevelLogger, StdProtocolAllLevelLogger, \
+    BaseDirectStdAllLevelLogger, BaseDirectAllLevelLogger
 from vt.utils.logging.logging.std_log.basic_logger_impl import DirectAllLevelLoggerImpl as _DALImpl
 
 

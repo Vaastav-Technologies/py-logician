@@ -15,22 +15,22 @@ Basic loggers only support operations::
     - critical
     - fatal
 """
-from abc import ABC
 import logging
+from abc import ABC
 from logging import Logger
 from typing import override, cast
 
 from vt.utils.logging.logging import AllLevelLogger
 from vt.utils.logging.logging.delegating import BaseDelegatingLogger
-from vt.utils.logging.logging.std_log import StdLogProtocol, StdLevelLogger, TRACE_LOG_LEVEL, TRACE_LOG_STR, \
+from vt.utils.logging.logging.std_log import StdLogProtocol, TRACE_LOG_LEVEL, TRACE_LOG_STR, \
     SUCCESS_LOG_LEVEL, SUCCESS_LOG_STR, NOTICE_LOG_LEVEL, NOTICE_LOG_STR, EXCEPTION_TRACEBACK_LOG_LEVEL, \
     EXCEPTION_TRACEBACK_LOG_STR
-from vt.utils.logging.logging.std_log.basic_logger_impl import ProtocolStdLevelLoggerImpl, \
-    BaseDirectStdLevelLoggerImpl, BaseDirectAllLevelLoggerImpl
+from vt.utils.logging.logging.std_log.basic_logger_impl import StdProtocolAllLevelLoggerImpl, \
+    BaseDirectStdAllLevelLoggerImpl, BaseDirectAllLevelLoggerImpl
 
 
-class BaseProtocolStdLevelLogger(StdLevelLogger, BaseDelegatingLogger, ABC):
-    def __init__(self, logger_impl: ProtocolStdLevelLoggerImpl):
+class BaseStdProtocolAllLevelLogger(AllLevelLogger, BaseDelegatingLogger, ABC):
+    def __init__(self, logger_impl: StdProtocolAllLevelLoggerImpl):
         self._logger_impl = logger_impl
         self._underlying_logger = self._logger_impl.underlying_logger
         self.name = self._logger_impl.underlying_logger.name
@@ -38,7 +38,7 @@ class BaseProtocolStdLevelLogger(StdLevelLogger, BaseDelegatingLogger, ABC):
         self.disabled = self._logger_impl.underlying_logger.disabled
 
     @property
-    def logger_impl(self) -> ProtocolStdLevelLoggerImpl:
+    def logger_impl(self) -> StdProtocolAllLevelLoggerImpl:
         return self._logger_impl
 
     @override
@@ -47,12 +47,24 @@ class BaseProtocolStdLevelLogger(StdLevelLogger, BaseDelegatingLogger, ABC):
         return self._underlying_logger
 
     @override
+    def trace(self, msg, *args, **kwargs) -> None:
+        self.logger_impl.trace(msg, *args, **kwargs)
+
+    @override
     def debug(self, msg, *args, **kwargs) -> None:
         self.logger_impl.debug(msg, *args, **kwargs)
 
     @override
     def info(self, msg, *args, **kwargs) -> None:
         self.logger_impl.info(msg, *args, **kwargs)
+
+    @override
+    def notice(self, msg, *args, **kwargs) -> None:
+        self.logger_impl.notice(msg, *args, **kwargs)
+
+    @override
+    def success(self, msg, *args, **kwargs) -> None:
+        self.logger_impl.success(msg, *args, **kwargs)
 
     @override
     def warning(self, msg, *args, **kwargs) -> None:
@@ -79,26 +91,26 @@ class BaseProtocolStdLevelLogger(StdLevelLogger, BaseDelegatingLogger, ABC):
         self.logger_impl.log(level, msg, *args, **kwargs)
 
 
-class ProtocolStdLevelLogger(BaseProtocolStdLevelLogger, ABC):
-    def __init__(self, logger_impl: ProtocolStdLevelLoggerImpl):
+class StdProtocolAllLevelLogger(BaseStdProtocolAllLevelLogger, ABC):
+    def __init__(self, logger_impl: StdProtocolAllLevelLoggerImpl):
         super().__init__(logger_impl)
 
 
-class BaseDirectStdLevelLogger(ProtocolStdLevelLogger, ABC):
-    def __init__(self, logger_impl: BaseDirectStdLevelLoggerImpl):
+class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, ABC):
+    def __init__(self, logger_impl: BaseDirectStdAllLevelLoggerImpl):
         super().__init__(logger_impl)
 
     @property
-    def logger_impl(self) -> BaseDirectStdLevelLoggerImpl:
-        return cast(BaseDirectStdLevelLoggerImpl, self._logger_impl)
+    def logger_impl(self) -> BaseDirectStdAllLevelLoggerImpl:
+        return cast(BaseDirectStdAllLevelLoggerImpl, self._logger_impl)
 
     @override
     @property
-    def underlying_logger(self) -> Logger:
+    def underlying_logger(self) -> Logger: # noqa
         return cast(Logger, self._underlying_logger)
 
 
-class BaseDirectAllLevelLogger(BaseDirectStdLevelLogger, AllLevelLogger, ABC):
+class BaseDirectAllLevelLogger(BaseDirectStdAllLevelLogger, AllLevelLogger, ABC):
     def __init__(self, logger_impl: BaseDirectAllLevelLoggerImpl):
         super().__init__(logger_impl)
         logging.addLevelName(TRACE_LOG_LEVEL, TRACE_LOG_STR)
@@ -109,15 +121,3 @@ class BaseDirectAllLevelLogger(BaseDirectStdLevelLogger, AllLevelLogger, ABC):
     @property
     def logger_impl(self) -> BaseDirectAllLevelLoggerImpl:
         return cast(BaseDirectAllLevelLoggerImpl, self._logger_impl)
-
-    @override
-    def trace(self, msg, *args, **kwargs) -> None:
-        self.logger_impl.trace(msg, *args, **kwargs)
-
-    @override
-    def success(self, msg, *args, **kwargs) -> None:
-        self.logger_impl.success(msg, *args, **kwargs)
-
-    @override
-    def notice(self, msg, *args, **kwargs) -> None:
-        self.logger_impl.notice(msg, *args, **kwargs)

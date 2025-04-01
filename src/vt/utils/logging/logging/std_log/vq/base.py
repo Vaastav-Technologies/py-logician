@@ -2,15 +2,15 @@
 # coding=utf-8
 
 
-from vt.utils.logging.logging import BaseDirectStdLevelLogger, BaseDirectAllLevelLogger
-from vt.utils.logging.logging.std_log.basic_logger_impl import BaseDirectStdLevelLoggerImpl, \
+from vt.utils.logging.logging import BaseDirectStdAllLevelLogger, BaseDirectAllLevelLogger
+from vt.utils.logging.logging.std_log.basic_logger_impl import BaseDirectStdAllLevelLoggerImpl, \
     BaseDirectAllLevelLoggerImpl
 from vt.utils.logging.logging.vq import VerboseQuietLogger
 from vt.utils.logging.logging.vq.base import ChangingFormatVQLogger
 
 
-class VQDirectStdLogger(BaseDirectStdLevelLogger, VerboseQuietLogger):
-    def __init__(self, logger_impl: BaseDirectStdLevelLoggerImpl):
+class VQDirectStdAllLogger(BaseDirectStdAllLevelLogger, VerboseQuietLogger):
+    def __init__(self, logger_impl: BaseDirectStdAllLevelLoggerImpl):
         super().__init__(logger_impl)
         self._verbosity = None
         self._quietness = None
@@ -27,17 +27,17 @@ class VQDirectStdLogger(BaseDirectStdLevelLogger, VerboseQuietLogger):
         return self._quietness
 
 
-class ChangingFmtVQDirectStdLogger(VQDirectStdLogger, ChangingFormatVQLogger):
+class ChangingFmtVQDirectStdLogger(VQDirectStdAllLogger, ChangingFormatVQLogger):
 
     def log_fmt(self, temp_verbosity: int | None, temp_quietness: int | None) -> str:
         pass
 
 
-class VQDirectStdLevelLogger(VQDirectStdLogger):
-    def __init__(self, logger_impl: BaseDirectStdLevelLoggerImpl):
+class VQDirectStdLevelLogger(VQDirectStdAllLogger):
+    def __init__(self, logger_impl: BaseDirectStdAllLevelLoggerImpl):
         super().__init__(logger_impl)
 
 
-class VQDirectAllLevelLogger(VQDirectStdLogger, BaseDirectAllLevelLogger):
+class VQDirectAllLevelLogger(VQDirectStdAllLogger, BaseDirectAllLevelLogger):
     def __init__(self, logger_impl: BaseDirectAllLevelLoggerImpl):
         super().__init__(logger_impl)
