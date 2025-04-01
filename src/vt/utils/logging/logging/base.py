@@ -13,7 +13,17 @@ class LogLogProtocol(Protocol):
     """
     Protocol supporting the log method.
     """
+    @abstractmethod
     def log(self, level: int, msg: str, *args, **kwargs) -> None:
+        ...
+
+
+class TraceLogProtocol(Protocol):
+    """
+    Protocol supporting the trace method.
+    """
+    @abstractmethod
+    def trace(self, msg: str, *args, **kwargs) -> None:
         ...
 
 
@@ -21,6 +31,7 @@ class DebugLogProtocol(Protocol):
     """
     Protocol supporting the debug method.
     """
+    @abstractmethod
     def debug(self, msg: str, *args, **kwargs) -> None:
         ...
 
@@ -29,14 +40,34 @@ class InfoLogProtocol(Protocol):
     """
     Protocol supporting the info method.
     """
+    @abstractmethod
     def info(self, msg: str, *args, **kwargs) -> None:
         ...
+
+
+class SuccessLogProtocol(Protocol):
+    """
+    Protocol supporting the success method.
+    """
+    @abstractmethod
+    def success(self, msg, *args, **kwargs) -> None:
+        pass
+
+
+class NoticeLogProtocol(Protocol):
+    """
+    Protocol supporting the notice method.
+    """
+    @abstractmethod
+    def notice(self, msg, *args, **kwargs) -> None:
+        pass
 
 
 class WarningLogProtocol(Protocol):
     """
     Protocol supporting the warning method.
     """
+    @abstractmethod
     def warning(self, msg: str, *args, **kwargs) -> None:
         ...
 
@@ -45,22 +76,94 @@ class ErrorLogProtocol(Protocol):
     """
     Protocol supporting the error method.
     """
+    @abstractmethod
     def error(self, msg: str, *args, **kwargs) -> None:
         ...
+
+
+class ExceptionLogProtocol(Protocol):
+    """
+    Protocol supporting the exception method.
+    """
+    @abstractmethod
+    def exception(self, msg, *args, **kwargs) -> None:
+        pass
 
 
 class CriticalLogProtocol(Protocol):
     """
     Protocol supporting the critical method.
     """
+    @abstractmethod
     def critical(self, msg: str, *args, **kwargs) -> None:
         ...
 
 
-class MinLogProtocol(LogLogProtocol, DebugLogProtocol, InfoLogProtocol, WarningLogProtocol, ErrorLogProtocol,
-                     CriticalLogProtocol, Protocol):
+class FatalLogProtocol(Protocol):
     """
-    Protocol denoting the minimum logging levels that most (nearly all) of the logger implementations provide.
+    Protocol supporting the critical method.
+    """
+    @abstractmethod
+    def fatal(self, msg, *args, **kwargs) -> None:
+        pass
+
+
+class _MinLogProtocol(LogLogProtocol, DebugLogProtocol, InfoLogProtocol, WarningLogProtocol, ErrorLogProtocol,
+                      CriticalLogProtocol, Protocol):
+    """
+    This logger protocol is designed for extension but not direct implementation.
+
+    Useful when ``is-a`` relationship cannot be established between the interfaces that have most of the methods of
+    each-other but conceptually do not behave in an ``is-a`` relationship.
+
+    e.g.::
+
+        AllLogProtocol has all the methods of MinLogProtocol but conceptually AllLogProtocol cannot be put in place
+        of MinLogProtocol, i.e. there is no is-a relationship between them.
+
+
+    Logger that has all the basic logging levels common to most (nearly all) loggers, i.e.::
+
+        - DEBUG
+        - INFO
+        - WARNING
+        - ERROR
+        - CRITICAL
+    """
+    pass
+
+
+class MinLogProtocol(_MinLogProtocol, Protocol):
+    """
+    Logger protocol that has all the basic logging levels common to most (nearly all) loggers, i.e.::
+
+        - DEBUG
+        - INFO
+        - WARNING
+        - ERROR
+        - CRITICAL
+    """
+    pass
+
+
+class AllLogProtocol(TraceLogProtocol, _MinLogProtocol, SuccessLogProtocol, NoticeLogProtocol, FatalLogProtocol,
+                     ExceptionLogProtocol, Protocol):
+    """
+    Logger protocol which supports all the common Logging levels, i.e.::
+
+        - DEBUG
+        - INFO
+        - WARNING
+        - ERROR
+        - CRITICAL
+
+    It also tries to add more levels that may facilitate users, additional log levels are::
+
+        - TRACE
+        - SUCCESS
+        - NOTICE
+        - FATAL
+        - EXCEPTION
     """
     pass
 
@@ -84,147 +187,9 @@ class HasUnderlyingLogger(Protocol):
         pass
 
 
-class LogLevelLogger(HasUnderlyingLogger):
+class AllLevelLogger(AllLogProtocol, HasUnderlyingLogger, Protocol):
     """
-    Logger that has the log method.
-    """
-    @abstractmethod
-    def log(self, level: int, msg: str, *args, **kwargs) -> None:
-        pass
-
-
-class TraceLevelLogger(HasUnderlyingLogger):
-    """
-    Logger that has the trace method.
-    """
-    @abstractmethod
-    def trace(self, msg, *args, **kwargs) -> None:
-        pass
-
-
-class DebugLevelLogger(HasUnderlyingLogger):
-    """
-    Logger that has the debug method.
-    """
-    @abstractmethod
-    def debug(self, msg, *args, **kwargs) -> None:
-        pass
-
-
-class InfoLevelLogger(HasUnderlyingLogger):
-    """
-    Logger that has the info method.
-    """
-    @abstractmethod
-    def info(self, msg, *args, **kwargs) -> None:
-        pass
-
-
-class SuccessLevelLogger(HasUnderlyingLogger):
-    """
-    Logger that has the success method.
-    """
-    @abstractmethod
-    def success(self, msg, *args, **kwargs) -> None:
-        pass
-
-
-class NoticeLevelLogger(HasUnderlyingLogger):
-    """
-    Logger that has the notice method.
-    """
-    @abstractmethod
-    def notice(self, msg, *args, **kwargs) -> None:
-        pass
-
-
-class WarningLevelLogger(HasUnderlyingLogger):
-    """
-    Logger that has the warning method.
-    """
-    @abstractmethod
-    def warning(self, msg, *args, **kwargs) -> None:
-        pass
-
-
-class ExceptionLevelLogger(HasUnderlyingLogger):
-    """
-    Logger that has the exception method.
-    """
-    @abstractmethod
-    def exception(self, msg, *args, **kwargs) -> None:
-        pass
-
-
-class ErrorLevelLogger(HasUnderlyingLogger):
-    """
-    Logger that has the error method.
-    """
-    @abstractmethod
-    def error(self, msg, *args, **kwargs) -> None:
-        pass
-
-
-class CriticalLevelLogger(HasUnderlyingLogger):
-    """
-    Logger that has the critical method.
-    """
-    @abstractmethod
-    def critical(self, msg, *args, **kwargs) -> None:
-        pass
-
-
-class FatalLevelLogger(HasUnderlyingLogger):
-    """
-    Logger that has the fatal method.
-    """
-    @abstractmethod
-    def fatal(self, msg, *args, **kwargs) -> None:
-        pass
-
-
-class _MinLevelLogger(LogLevelLogger, DebugLevelLogger, InfoLevelLogger, WarningLevelLogger, ErrorLevelLogger,
-                      CriticalLevelLogger, HasUnderlyingLogger, ABC):
-    """
-    This logger interface is designed for extension but not direct implementation.
-
-    Useful when ``is-a`` relationship cannot be established between the interfaces that have most of the methods of
-    each-other but conceptually do not behave in an ``is-a`` relationship.
-
-    e.g.::
-
-        AllLevelLogger has all the methods of MinLevelLogger but conceptually AllLevelLogger cannot be put in place
-        of MinLevelLogger, i.e. there is no is-a relationship between them.
-
-
-    Logger that has all the basic logging levels common to most (nearly all) loggers, i.e.::
-
-        - DEBUG
-        - INFO
-        - WARNING
-        - ERROR
-        - CRITICAL
-    """
-    pass
-
-
-class MinLevelLogger(_MinLevelLogger, ABC):
-    """
-    Logger that has all the basic logging levels common to most (nearly all) loggers, i.e.::
-
-        - DEBUG
-        - INFO
-        - WARNING
-        - ERROR
-        - CRITICAL
-    """
-    pass
-
-
-class AllLevelLogger(TraceLevelLogger, _MinLevelLogger, SuccessLevelLogger, NoticeLevelLogger, FatalLevelLogger,
-                     ExceptionLevelLogger, ABC):
-    """
-    Logger which supports all the common Logging levels, i.e.::
+    Logger protocol which supports all the common Logging levels, i.e.::
 
         - DEBUG
         - INFO
@@ -239,5 +204,7 @@ class AllLevelLogger(TraceLevelLogger, _MinLevelLogger, SuccessLevelLogger, Noti
         - NOTICE
         - FATAL
         - EXCEPTION
+
+    And delegates the actual logging to an ``underlying_logger``, see ``HasUnderlyingLogger``.
     """
     pass
