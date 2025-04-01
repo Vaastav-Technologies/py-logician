@@ -4,7 +4,6 @@
 """
 Logging interfaces for the standard logging library of python.
 """
-from abc import ABC
 from typing import Protocol, Any, Mapping
 
 from vt.utils.logging.logging import MinLogProtocol
