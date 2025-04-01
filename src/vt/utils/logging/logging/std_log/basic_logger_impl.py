@@ -51,12 +51,24 @@ class DirectAllLevelLoggerImpl(BaseDirectAllLevelLoggerImpl):
         return cast(Logger, self._underlying_logger)
 
     @override
+    def trace(self, msg, *args, **kwargs) -> None:
+        self.underlying_logger.log(TRACE_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
+
+    @override
     def debug(self, msg, *args, **kwargs) -> None:
         self.underlying_logger.debug(msg, *args, stacklevel=self.stack_level, **kwargs)
 
     @override
     def info(self, msg, *args, **kwargs) -> None:
         self.underlying_logger.info(msg, *args, stacklevel=self.stack_level, **kwargs)
+
+    @override
+    def success(self, msg, *args, **kwargs) -> None:
+        self.underlying_logger.log(SUCCESS_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
+
+    @override
+    def notice(self, msg, *args, **kwargs) -> None:
+        self.underlying_logger.log(NOTICE_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
 
     @override
     def warning(self, msg, *args, **kwargs) -> None:
@@ -81,15 +93,3 @@ class DirectAllLevelLoggerImpl(BaseDirectAllLevelLoggerImpl):
     @override
     def log(self, level: int, msg: str, *args, **kwargs) -> None:
         self.underlying_logger.log(level, msg, *args, stacklevel=self.stack_level, **kwargs)
-
-    @override
-    def trace(self, msg, *args, **kwargs) -> None:
-        self.underlying_logger.log(TRACE_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
-
-    @override
-    def success(self, msg, *args, **kwargs) -> None:
-        self.underlying_logger.log(SUCCESS_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
-
-    @override
-    def notice(self, msg, *args, **kwargs) -> None:
-        self.underlying_logger.log(NOTICE_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
