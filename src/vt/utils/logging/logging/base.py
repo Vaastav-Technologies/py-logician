@@ -189,7 +189,7 @@ class HasUnderlyingLogger(Protocol):
 
 class AllLevelLogger(AllLogProtocol, HasUnderlyingLogger, Protocol):
     """
-    Logger protocol which supports all the common Logging levels, i.e.::
+    Logger which supports all the common Logging levels, i.e.::
 
         - DEBUG
         - INFO
