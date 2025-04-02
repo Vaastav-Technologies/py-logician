@@ -37,6 +37,31 @@ def test_initial_logging(level_logger, logger_impl):
     logger.fatal('fatal message')
 
 
+def test_logging_basic_types():
+    logging.basicConfig()
+    sh = logging.StreamHandler()
+    sh.setFormatter(logging.Formatter(fmt=TIMED_DETAIL_LOG_FMT))
+    log = logging.getLogger(f"all-basic-types-logging")
+    logger = BaseDirectAllLevelLogger(DirectAllLevelLoggerImpl(log))
+    logger.underlying_logger.addHandler(sh)
+    logger.underlying_logger.setLevel(TRACE_LOG_LEVEL)
+    d = {1: 2, 2: 3, None: 4}
+    logger.trace(d)
+    l = [1, 2, 3, 4, None]
+    logger.debug(l)
+    t = (1, 2, 3, None)
+    logger.info(t)
+    s = {1, 2, 3, 4, None}
+    logger.notice(s)
+    logger.success('success {}'.format(d))
+    logger.warning('warning %s', l)
+    logger.error('error %(t)s', {'t': t})
+    try:
+        raise ValueError(l)
+    except ValueError:
+        logger.exception('Exception: ')
+
+
 def test_all_initial_logging():
     logging.basicConfig()
     sh = logging.StreamHandler()
@@ -58,4 +83,3 @@ def test_all_initial_logging():
     except ValueError:
         logger.exception('an exception')
     logger.fatal('fatal message')
-    logger.log(60, 'some 60 %(level)s message.', {'level': 'level-60'})
