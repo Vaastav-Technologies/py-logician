@@ -6,6 +6,8 @@ Constants related to logging implementation by the python standard logging.
 """
 
 
+import logging
+
 DEFAULT_STACK_LEVEL = 2
 """
 ``2`` chosen as value because the classes that use this constant (e.g. vt.utils.logging.std_log.std_log.BasicStdLevelLogger)
@@ -46,13 +48,13 @@ Just one more level up on the stack for checking logs.
 see DEFAULT_STACK_LEVEL for more details on this.
 """
 
-TRACE_LOG_LEVEL = 5
+TRACE_LOG_LEVEL = logging.DEBUG - 5
 TRACE_LOG_STR = 'TRACE'
 
-SUCCESS_LOG_LEVEL = 25
+SUCCESS_LOG_LEVEL = logging.INFO + 5
 SUCCESS_LOG_STR = 'SUCCESS'
 
-NOTICE_LOG_LEVEL = 27
+NOTICE_LOG_LEVEL = SUCCESS_LOG_LEVEL + 2
 NOTICE_LOG_STR = 'NOTICE'
 
 EXCEPTION_TRACEBACK_LOG_LEVEL = TRACE_LOG_LEVEL - 2
@@ -61,3 +63,6 @@ Exception traces should only be printed when the user really wants to dig deep i
 very low log level
 """
 EXCEPTION_TRACEBACK_LOG_STR = "TRACEBACK"
+
+FATAL_LOG_LEVEL = logging.CRITICAL + 10
+FATAL_LOG_STR = 'FATAL'
