@@ -157,7 +157,7 @@ class AllLogProtocol(TraceLogProtocol, _MinLogProtocol, SuccessLogProtocol, Noti
         - ERROR
         - CRITICAL
 
-    It also tries to add more levels that may facilitate users, additional log levels are::
+    It also tries to add more levels that may facilitate users. Additionally supported log levels are::
 
         - TRACE
         - SUCCESS
@@ -197,7 +197,7 @@ class AllLevelLogger(AllLogProtocol, HasUnderlyingLogger, Protocol):
         - ERROR
         - CRITICAL
 
-    It also tries to add more levels that may facilitate users, additional log levels are::
+    It also tries to add more levels that may facilitate users. Additionally supported log levels are::
 
         - TRACE
         - SUCCESS
