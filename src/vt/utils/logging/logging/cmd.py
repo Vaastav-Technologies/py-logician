@@ -9,7 +9,7 @@ from typing import Protocol
 
 from vt.utils.logging.logging.base import TraceLogProtocol, DebugLogProtocol, InfoLogProtocol, \
     WarningLogProtocol, FatalLogProtocol, LogLogProtocol, ErrorLogProtocol, SuccessLogProtocol, NoticeLogProtocol, \
-    ExceptionLogProtocol
+    ExceptionLogProtocol, HasUnderlyingLogger
 
 
 class MinCmdLogProtocol(LogLogProtocol, DebugLogProtocol, InfoLogProtocol, WarningLogProtocol, ErrorLogProtocol,
@@ -19,4 +19,8 @@ class MinCmdLogProtocol(LogLogProtocol, DebugLogProtocol, InfoLogProtocol, Warni
 
 class AllCmdLogProtocol(TraceLogProtocol, MinCmdLogProtocol, SuccessLogProtocol, NoticeLogProtocol,
                         ExceptionLogProtocol, Protocol):
+    pass
+
+
+class AllLevelCmdLogger(AllCmdLogProtocol, HasUnderlyingLogger, Protocol):
     pass
