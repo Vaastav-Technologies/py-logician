@@ -5,8 +5,7 @@ import logging
 import pytest
 
 from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL
-from vt.utils.logging.logging.std_log.basic_logger_impl import DirectAllLevelLoggerImpl, \
-    DirectStdLevelLoggerImpl
+from vt.utils.logging.logging.std_log.basic_logger_impl import DirectAllLevelLoggerImpl
 from vt.utils.logging.logging.std_log.vq.base import VQDirectStdLevelLogger, VQDirectAllLevelLogger
 
 TIMED_DETAIL_LOG_FMT = '%(asctime)s: %(name)s: [%(levelname)s]: [%(filename)s:%(lineno)d - ' \
@@ -14,7 +13,7 @@ TIMED_DETAIL_LOG_FMT = '%(asctime)s: %(name)s: [%(levelname)s]: [%(filename)s:%(
 
 
 @pytest.mark.parametrize("level_logger", [VQDirectStdLevelLogger, VQDirectAllLevelLogger])
-@pytest.mark.parametrize("logger_impl", [DirectStdLevelLoggerImpl, DirectAllLevelLoggerImpl])
+@pytest.mark.parametrize("logger_impl", [DirectAllLevelLoggerImpl])
 def test_std_level_logger(level_logger, logger_impl):
     logging.basicConfig()
     sh = logging.StreamHandler()

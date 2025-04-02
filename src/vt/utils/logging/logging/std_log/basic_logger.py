@@ -97,8 +97,19 @@ class StdProtocolAllLevelLogger(BaseStdProtocolAllLevelLogger, ABC):
 
 
 class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, ABC):
-    def __init__(self, logger_impl: BaseDirectStdAllLevelLoggerImpl):
+    DEFAULT_LEVEL_MAP: dict[int, str] = {TRACE_LOG_LEVEL: TRACE_LOG_STR,
+                                         SUCCESS_LOG_LEVEL: SUCCESS_LOG_STR,
+                                         NOTICE_LOG_LEVEL: NOTICE_LOG_STR,
+                                         EXCEPTION_TRACEBACK_LOG_LEVEL: EXCEPTION_TRACEBACK_LOG_STR,
+                                         FATAL_LOG_LEVEL: FATAL_LOG_STR}
+
+    def __init__(self, logger_impl: BaseDirectStdAllLevelLoggerImpl,
+                 level_name_map: dict[int, str] | None = None):
         super().__init__(logger_impl)
+        level_name_map = level_name_map if level_name_map else BaseDirectAllLevelLogger.DEFAULT_LEVEL_MAP
+        for l in level_name_map:
+            logging.addLevelName(l, level_name_map[l])
+        self.level_name_map = level_name_map
 
     @property
     def logger_impl(self) -> BaseDirectStdAllLevelLoggerImpl:
@@ -111,19 +122,10 @@ class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, ABC):
 
 
 class BaseDirectAllLevelLogger(BaseDirectStdAllLevelLogger, AllLevelLogger, ABC):
-    DEFAULT_LEVEL_MAP: dict[int, str] = {TRACE_LOG_LEVEL: TRACE_LOG_STR,
-                                         SUCCESS_LOG_LEVEL: SUCCESS_LOG_STR,
-                                         NOTICE_LOG_LEVEL: NOTICE_LOG_STR,
-                                         EXCEPTION_TRACEBACK_LOG_LEVEL: EXCEPTION_TRACEBACK_LOG_STR,
-                                         FATAL_LOG_LEVEL: FATAL_LOG_STR}
 
     def __init__(self, logger_impl: BaseDirectAllLevelLoggerImpl,
-                 level_name_map: dict[int, str] = None):
-        super().__init__(logger_impl)
-        level_name_map = level_name_map if level_name_map else BaseDirectAllLevelLogger.DEFAULT_LEVEL_MAP
-        for l in level_name_map:
-            logging.addLevelName(l, level_name_map[l])
-        self.level_name_map = level_name_map
+                 level_name_map: dict[int, str] | None = None):
+        super().__init__(logger_impl, level_name_map)
 
     @property
     def logger_impl(self) -> BaseDirectAllLevelLoggerImpl:
