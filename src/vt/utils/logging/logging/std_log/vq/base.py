@@ -6,7 +6,7 @@ from vt.utils.logging.logging import BaseDirectStdAllLevelLogger, BaseDirectAllL
 from vt.utils.logging.logging.std_log.basic_logger_impl import BaseDirectStdAllLevelLoggerImpl, \
     BaseDirectAllLevelLoggerImpl
 from vt.utils.logging.logging.vq import VerboseQuietLogger
-from vt.utils.logging.logging.vq.base import ChangingFormatVQLogger
+from vt.utils.logging.logging.vq import ChangingFormatVQLogger
 
 
 class VQDirectStdAllLogger(BaseDirectStdAllLevelLogger, VerboseQuietLogger):
