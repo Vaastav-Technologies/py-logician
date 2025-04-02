@@ -103,12 +103,17 @@ class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, ABC):
                                          EXCEPTION_TRACEBACK_LOG_LEVEL: EXCEPTION_TRACEBACK_LOG_STR,
                                          FATAL_LOG_LEVEL: FATAL_LOG_STR}
 
-    def __init__(self, logger_impl: BaseDirectStdAllLevelLoggerImpl,
-                 level_name_map: dict[int, str] | None = None):
-        super().__init__(logger_impl)
+    @staticmethod
+    def register_levels(level_name_map: dict[int, str] | None = None):
         level_name_map = level_name_map if level_name_map else BaseDirectAllLevelLogger.DEFAULT_LEVEL_MAP
         for l in level_name_map:
             logging.addLevelName(l, level_name_map[l])
+
+    def __init__(self, logger_impl: BaseDirectStdAllLevelLoggerImpl,
+                 level_name_map: dict[int, str] | None = None):
+        super().__init__(logger_impl)
+        if level_name_map:
+            BaseDirectStdAllLevelLogger.register_levels(level_name_map)
         self.level_name_map = level_name_map
 
     @property
