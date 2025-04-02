@@ -10,7 +10,7 @@ from typing import override, cast, Protocol
 
 from vt.utils.logging.logging.delegating import AllLevelLoggerImplABC
 from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, \
-    NOTICE_LOG_LEVEL, SUCCESS_LOG_LEVEL, StdLogProtocol, INDIRECTION_STACK_LEVEL
+    NOTICE_LOG_LEVEL, SUCCESS_LOG_LEVEL, StdLogProtocol, INDIRECTION_STACK_LEVEL, FATAL_LOG_LEVEL
 
 
 class StdProtocolAllLevelLoggerImpl(AllLevelLoggerImplABC, Protocol):
@@ -84,7 +84,7 @@ class DirectAllLevelLoggerImpl(BaseDirectAllLevelLoggerImpl):
 
     @override
     def fatal(self, msg, *args, **kwargs) -> None:
-        self.underlying_logger.fatal(msg, *args, stacklevel=self.stack_level, **kwargs)
+        self.underlying_logger.log(FATAL_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
 
     @override
     def exception(self, msg, *args, **kwargs) -> None:
