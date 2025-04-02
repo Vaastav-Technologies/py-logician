@@ -37,15 +37,14 @@ def test_initial_logging(level_logger, logger_impl):
     logger.fatal('fatal message')
 
 
-@pytest.mark.parametrize("level_logger, logger_impl", [(BaseDirectAllLevelLogger, DirectAllLevelLoggerImpl)])
-def test_all_initial_logging(level_logger, logger_impl):
+def test_all_initial_logging():
     logging.basicConfig()
     sh = logging.StreamHandler()
     sh.setFormatter(logging.Formatter(fmt=TIMED_DETAIL_LOG_FMT))
-    log = logging.getLogger(f"{level_logger.__qualname__}/{logger_impl.__qualname__}")
-    log.addHandler(sh)
-    log.setLevel(TRACE_LOG_LEVEL)
-    logger = level_logger(logger_impl(log))
+    log = logging.getLogger(f"all-init-logging")
+    logger = BaseDirectAllLevelLogger(DirectAllLevelLoggerImpl(log))
+    logger.underlying_logger.addHandler(sh)
+    logger.underlying_logger.setLevel(TRACE_LOG_LEVEL)
     logger.trace('trace message')
     logger.debug('debug message')
     logger.info('info message')
@@ -59,3 +58,4 @@ def test_all_initial_logging(level_logger, logger_impl):
     except ValueError:
         logger.exception('an exception')
     logger.fatal('fatal message')
+    logger.log(60, 'some 60 %(level)s message.', {'level': 'level-60'})
