@@ -7,4 +7,4 @@ Loggers for commands. These loggers implement all min logger levels except CRITI
 """
 
 
-from vt.utils.logging.logging.cmd.base import MinCmdProtocol
+from vt.utils.logging.logging.cmd.base import MinCmdLogProtocol, AllCmdLogProtocol

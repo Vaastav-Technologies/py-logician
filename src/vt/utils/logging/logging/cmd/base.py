@@ -8,9 +8,15 @@ Logger interfaces for commands. These loggers implement all logger levels except
 from typing import Protocol
 
 from vt.utils.logging.logging.base import TraceLogProtocol, DebugLogProtocol, InfoLogProtocol, \
-    WarningLogProtocol, FatalLogProtocol
+    WarningLogProtocol, FatalLogProtocol, LogLogProtocol, ErrorLogProtocol, SuccessLogProtocol, NoticeLogProtocol, \
+    ExceptionLogProtocol
 
 
-class MinCmdProtocol(TraceLogProtocol, DebugLogProtocol, InfoLogProtocol, WarningLogProtocol, FatalLogProtocol,
-                     Protocol):
+class MinCmdLogProtocol(LogLogProtocol, DebugLogProtocol, InfoLogProtocol, WarningLogProtocol, ErrorLogProtocol,
+                        FatalLogProtocol, Protocol):
+    pass
+
+
+class AllCmdLogProtocol(TraceLogProtocol, MinCmdLogProtocol, SuccessLogProtocol, NoticeLogProtocol,
+                        ExceptionLogProtocol, Protocol):
     pass
