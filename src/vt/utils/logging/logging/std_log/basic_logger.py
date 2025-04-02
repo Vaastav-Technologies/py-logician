@@ -120,8 +120,8 @@ class BaseDirectAllLevelLogger(BaseDirectStdAllLevelLogger, AllLevelLogger, ABC)
                  level_name_map: dict[int, str] = None):
         super().__init__(logger_impl)
         level_name_map = level_name_map if level_name_map else BaseDirectAllLevelLogger.DEFAULT_LEVEL_MAP
-        for l, n in level_name_map:
-            logging.addLevelName(l, n)
+        for l in level_name_map:
+            logging.addLevelName(l, level_name_map[l])
         self.level_name_map = level_name_map
 
     @property
