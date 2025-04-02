@@ -14,7 +14,7 @@ class LogLogProtocol(Protocol):
     Protocol supporting the log method.
     """
     @abstractmethod
-    def log(self, level: int, msg: str, *args, **kwargs) -> None:
+    def log(self, level: int, msg, *args, **kwargs) -> None:
         ...
 
 
@@ -23,7 +23,7 @@ class TraceLogProtocol(Protocol):
     Protocol supporting the trace method.
     """
     @abstractmethod
-    def trace(self, msg: str, *args, **kwargs) -> None:
+    def trace(self, msg, *args, **kwargs) -> None:
         ...
 
 
@@ -32,7 +32,7 @@ class DebugLogProtocol(Protocol):
     Protocol supporting the debug method.
     """
     @abstractmethod
-    def debug(self, msg: str, *args, **kwargs) -> None:
+    def debug(self, msg, *args, **kwargs) -> None:
         ...
 
 
@@ -41,7 +41,7 @@ class InfoLogProtocol(Protocol):
     Protocol supporting the info method.
     """
     @abstractmethod
-    def info(self, msg: str, *args, **kwargs) -> None:
+    def info(self, msg, *args, **kwargs) -> None:
         ...
 
 
@@ -68,7 +68,7 @@ class WarningLogProtocol(Protocol):
     Protocol supporting the warning method.
     """
     @abstractmethod
-    def warning(self, msg: str, *args, **kwargs) -> None:
+    def warning(self, msg, *args, **kwargs) -> None:
         ...
 
 
@@ -77,7 +77,7 @@ class ErrorLogProtocol(Protocol):
     Protocol supporting the error method.
     """
     @abstractmethod
-    def error(self, msg: str, *args, **kwargs) -> None:
+    def error(self, msg, *args, **kwargs) -> None:
         ...
 
 
@@ -95,7 +95,7 @@ class CriticalLogProtocol(Protocol):
     Protocol supporting the critical method.
     """
     @abstractmethod
-    def critical(self, msg: str, *args, **kwargs) -> None:
+    def critical(self, msg, *args, **kwargs) -> None:
         ...
 
 
