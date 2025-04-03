@@ -60,7 +60,7 @@ class AllLevelLoggerImplABC(ProtocolMinLevelLoggerImplBase, AllLevelLogger, Prot
     pass
 
 
-class BaseDelegatingLogger(Protocol):
+class DelegatingLogger(Protocol):
     """
     A logger which delegates its logging capabilities to another logger implementation to facilitate a bridge.
     """

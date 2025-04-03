@@ -21,7 +21,7 @@ from logging import Logger
 from typing import override, cast
 
 from vt.utils.logging.logging import AllLevelLogger
-from vt.utils.logging.logging.delegating import BaseDelegatingLogger
+from vt.utils.logging.logging.delegating import DelegatingLogger
 from vt.utils.logging.logging.std_log import StdLogProtocol, TRACE_LOG_LEVEL, TRACE_LOG_STR, \
     SUCCESS_LOG_LEVEL, SUCCESS_LOG_STR, NOTICE_LOG_LEVEL, NOTICE_LOG_STR, EXCEPTION_TRACEBACK_LOG_LEVEL, \
     EXCEPTION_TRACEBACK_LOG_STR, FATAL_LOG_LEVEL, FATAL_LOG_STR
@@ -29,7 +29,7 @@ from vt.utils.logging.logging.std_log.basic_logger_impl import StdProtocolAllLev
     BaseDirectStdAllLevelLoggerImpl, BaseDirectAllLevelLoggerImpl
 
 
-class BaseStdProtocolAllLevelLogger(AllLevelLogger, BaseDelegatingLogger, ABC):
+class BaseStdProtocolAllLevelLogger(AllLevelLogger, DelegatingLogger, ABC):
     def __init__(self, logger_impl: StdProtocolAllLevelLoggerImpl):
         self._logger_impl = logger_impl
         self._underlying_logger = self._logger_impl.underlying_logger
