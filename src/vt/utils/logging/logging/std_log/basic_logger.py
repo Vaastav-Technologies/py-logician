@@ -24,7 +24,7 @@ from vt.utils.logging.logging.delegating import DelegatingLogger
 from vt.utils.logging.logging.std_log import StdLogProtocol
 from vt.utils.logging.logging.std_log.base import DirectStdAllLevelLogger
 from vt.utils.logging.logging.std_log.basic_logger_impl import StdProtocolAllLevelLoggerImpl, \
-    BaseDirectStdAllLevelLoggerImpl, BaseDirectAllLevelLoggerImpl
+    BaseDirectStdAllLevelLoggerImpl
 
 
 class BaseStdProtocolAllLevelLogger(AllLevelLogger, DelegatingLogger, ABC):
@@ -115,10 +115,10 @@ class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, DirectStdAllLev
 
 class BaseDirectAllLevelLogger(BaseDirectStdAllLevelLogger, AllLevelLogger, ABC):
 
-    def __init__(self, logger_impl: BaseDirectAllLevelLoggerImpl,
+    def __init__(self, logger_impl: BaseDirectStdAllLevelLoggerImpl,
                  level_name_map: dict[int, str] | None = None):
         super().__init__(logger_impl, level_name_map)
 
     @property
-    def logger_impl(self) -> BaseDirectAllLevelLoggerImpl:
-        return cast(BaseDirectAllLevelLoggerImpl, self._logger_impl)
+    def logger_impl(self) -> BaseDirectStdAllLevelLoggerImpl:
+        return cast(BaseDirectStdAllLevelLoggerImpl, self._logger_impl)

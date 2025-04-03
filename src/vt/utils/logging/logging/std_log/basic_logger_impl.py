@@ -37,11 +37,7 @@ class BaseDirectStdAllLevelLoggerImpl(StdProtocolAllLevelLoggerImpl, Protocol):
         pass
 
 
-class BaseDirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl, Protocol):
-    pass
-
-
-class DirectAllLevelLoggerImpl(BaseDirectAllLevelLoggerImpl):
+class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
 
     def __init__(self, underlying_logger: Logger, stack_level=INDIRECTION_STACK_LEVEL):
         """

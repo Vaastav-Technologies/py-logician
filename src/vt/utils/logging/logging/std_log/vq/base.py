@@ -4,7 +4,7 @@
 
 from vt.utils.logging.logging import BaseDirectStdAllLevelLogger, BaseDirectAllLevelLogger
 from vt.utils.logging.logging.std_log.basic_logger_impl import BaseDirectStdAllLevelLoggerImpl, \
-    BaseDirectAllLevelLoggerImpl
+    BaseDirectStdAllLevelLoggerImpl
 from vt.utils.logging.logging.vq import VerboseQuietLogger
 from vt.utils.logging.logging.vq import ChangingFormatVQLogger
 
@@ -39,5 +39,5 @@ class VQDirectStdLevelLogger(VQDirectStdAllLogger):
 
 
 class VQDirectAllLevelLogger(VQDirectStdAllLogger, BaseDirectAllLevelLogger):
-    def __init__(self, logger_impl: BaseDirectAllLevelLoggerImpl):
+    def __init__(self, logger_impl: BaseDirectStdAllLevelLoggerImpl):
         super().__init__(logger_impl)
