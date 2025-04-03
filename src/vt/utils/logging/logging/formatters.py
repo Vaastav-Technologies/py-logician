@@ -22,7 +22,9 @@ class AllLevelSameFmt(LogLevelFmt, Protocol):
 
 
 class DiffLevelDiffFmt(LogLevelFmt, Protocol):
-    pass
+    @abstractmethod
+    def next_approx_level(self, missing_level: int | str) -> int | str:
+        pass
 
 
 class StreamFormatMapper(Protocol):

@@ -38,7 +38,11 @@ class StdLogAllLevelDiffFmt(DiffLevelDiffFmt):
 
     @override
     def fmt(self, level: int | str) -> str:
-        return self._fmt_dict[level]
+        final_level = level if level in self._fmt_dict else self.next_approx_level(level)
+        return self._fmt_dict[final_level]
+
+    def next_approx_level(self, missing_level: int | str) -> int | str:
+        pass
 
 
 class StdStreamFormatMapper(StreamFormatMapper):
