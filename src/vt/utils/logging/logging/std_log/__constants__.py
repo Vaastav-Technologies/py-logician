@@ -66,3 +66,8 @@ EXCEPTION_TRACEBACK_LOG_STR = "TRACEBACK"
 
 FATAL_LOG_LEVEL = logging.CRITICAL + 10
 FATAL_LOG_STR = 'FATAL'
+SHORTER_LOG_FMT = '%(levelname)s: %(message)s'
+SHORT_LOG_FMT = '%(name)s: %(levelname)s: %(message)s'
+DETAIL_LOG_FMT = '%(name)s: %(levelname)s: [%(filename)s - %(funcName)10s() ]: %(message)s'
+TIMED_DETAIL_LOG_FMT = '%(asctime)s: %(name)s: %(levelname)s: [%(filename)s:%(lineno)d - ' \
+                       '%(funcName)10s() ]: %(message)s'
