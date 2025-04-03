@@ -13,7 +13,7 @@ from typing import Protocol, TextIO
 
 class LogLevelFmt(Protocol):
     @abstractmethod
-    def fmt(self, level: int | str) -> str:
+    def fmt(self, level: int) -> str:
         pass
 
 
@@ -23,7 +23,7 @@ class AllLevelSameFmt(LogLevelFmt, Protocol):
 
 class DiffLevelDiffFmt(LogLevelFmt, Protocol):
     @abstractmethod
-    def next_approx_level(self, missing_level: int | str) -> int | str:
+    def next_approx_level(self, missing_level: int) -> int:
         pass
 
 

@@ -21,28 +21,29 @@ class StdLogAllLevelSameFmt(AllLevelSameFmt):
         self._fmt = fmt
 
     @override
-    def fmt(self, level: int | str) -> str:
+    def fmt(self, level: int) -> str:
         return self._fmt
 
 
 class StdLogAllLevelDiffFmt(DiffLevelDiffFmt):
-    DEFAULT_LOGGER_DICT: dict[int | str, str] = {
+    DEFAULT_LOGGER_DICT: dict[int, str] = {
         TRACE_LOG_LEVEL: TIMED_DETAIL_LOG_FMT,
         logging.DEBUG: DETAIL_LOG_FMT,
         logging.INFO: SHORT_LOG_FMT,
         logging.WARN: SHORTER_LOG_FMT
     }
 
-    def __init__(self, fmt_dict: dict[int | str, str] | None = None):
+    def __init__(self, fmt_dict: dict[int, str] | None = None):
         self._fmt_dict = fmt_dict if fmt_dict else StdLogAllLevelDiffFmt.DEFAULT_LOGGER_DICT
 
     @override
-    def fmt(self, level: int | str) -> str:
+    def fmt(self, level: int) -> str:
         final_level = level if level in self._fmt_dict else self.next_approx_level(level)
         return self._fmt_dict[final_level]
 
     def next_approx_level(self, missing_level: int | str) -> int | str:
         pass
+    def next_approx_level(self, missing_level: int) -> int:
 
 
 class StdStreamFormatMapper(StreamFormatMapper):
