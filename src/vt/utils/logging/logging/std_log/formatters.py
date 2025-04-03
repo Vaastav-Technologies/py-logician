@@ -16,6 +16,7 @@ from vt.utils.logging.logging.std_log import TIMED_DETAIL_LOG_FMT, TRACE_LOG_LEV
 
 class StdLogAllLevelSameFmt(AllLevelSameFmt):
     DEFAULT_LOGGER_FMT = TIMED_DETAIL_LOG_FMT
+    DEFAULT_LOGGER_FMT = SHORTER_LOG_FMT
 
     def __init__(self, fmt: str = DEFAULT_LOGGER_FMT):
         self._fmt = fmt
