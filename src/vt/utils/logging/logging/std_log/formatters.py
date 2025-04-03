@@ -15,10 +15,14 @@ from vt.utils.logging.logging.std_log import TIMED_DETAIL_LOG_FMT, TRACE_LOG_LEV
 
 
 class StdLogAllLevelSameFmt(AllLevelSameFmt):
-    DEFAULT_LOGGER_FMT = TIMED_DETAIL_LOG_FMT
     DEFAULT_LOGGER_FMT = SHORTER_LOG_FMT
 
     def __init__(self, fmt: str = DEFAULT_LOGGER_FMT):
+        """
+        Same std log format for all levels.
+
+        :param fmt: logging format constant for all std log levels.
+        """
         self._fmt = fmt
 
     @override
@@ -35,6 +39,27 @@ class StdLogAllLevelDiffFmt(DiffLevelDiffFmt):
     }
 
     def __init__(self, fmt_dict: dict[int, str] | None = None):
+        """
+        Specify how different log levels should impact the logging formats.
+
+        For e.g.::
+
+            - least verbose ERROR level.
+            ERROR: an error occurred.
+
+            - less verbose INFO level.
+            logger.name: INFO: some information
+
+            - verbose DEBUG level.
+            logger.name: DEBUG: [filename.py - func()]: some debug info
+
+            - most verbose TRACE level.
+            2025-04-03 20:59:39,418: TRACE: [filename.py:218 - func()]: some trace info
+
+        provides immediately-upper registered level if an unregistered level is queried.
+
+        :param fmt_dict: level -> format dictionary.
+        """
         self._fmt_dict = fmt_dict if fmt_dict else StdLogAllLevelDiffFmt.DEFAULT_LOGGER_DICT
 
     @override
@@ -43,6 +68,10 @@ class StdLogAllLevelDiffFmt(DiffLevelDiffFmt):
         return self._fmt_dict[final_level]
 
     def next_approx_level(self, missing_level: int) -> int:
+        """
+        :param missing_level: A level that was not registered in the logger.
+        :return: immediately-upper registered level if a ``missing_level`` is queried.
+        """
         max_level = max(self._fmt_dict)
         if missing_level >= max_level:
             return max_level
@@ -58,6 +87,11 @@ class StdStreamFormatMapper(StreamFormatMapper):
     DEFAULT_STREAM_FMT_DICT: dict[TextIO, LogLevelFmt] = {sys.stderr: StdLogAllLevelSameFmt()}
 
     def __init__(self, stream_fmt_map: dict[TextIO, LogLevelFmt] | None = None):
+        """
+        Maintains a map of the std-log-formatter for each stream.
+
+        :param stream_fmt_map:
+        """
         self._stream_fmt_map = stream_fmt_map if stream_fmt_map else StdStreamFormatMapper.DEFAULT_STREAM_FMT_DICT
 
     @override

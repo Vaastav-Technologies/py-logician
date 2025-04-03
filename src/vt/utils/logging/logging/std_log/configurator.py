@@ -6,7 +6,6 @@
 Logger interfaces for standard Logger configurators.
 """
 
-
 import logging
 import warnings
 from typing import override
@@ -21,7 +20,13 @@ from vt.utils.logging.warnings import suppress_warning_stacktrace
 
 class DirectStdLoggerConfigurator(LoggerConfigurator):
     DEFAULT_LOG_LEVEL: int = logging.WARNING
+
     def __init__(self, stream_fmt_mapper: StreamFormatMapper = StdStreamFormatMapper()):
+        """
+        Perform logger configuration using the python's std logger calls.
+
+        :param stream_fmt_mapper:
+        """
         self.stream_fmt_mapper = stream_fmt_mapper
 
     @override

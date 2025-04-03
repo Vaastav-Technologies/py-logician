@@ -14,6 +14,10 @@ from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, \
 
 
 class StdProtocolAllLevelLoggerImpl(AllLevelLoggerImplABC, Protocol):
+    """
+    Interface for all logging levels provided by the standard logging protocol.
+    """
+
     @override
     @property
     @abstractmethod
@@ -22,6 +26,10 @@ class StdProtocolAllLevelLoggerImpl(AllLevelLoggerImplABC, Protocol):
 
 
 class BaseDirectStdAllLevelLoggerImpl(StdProtocolAllLevelLoggerImpl, Protocol):
+    """
+    Interface for all logging levels provided by the python standard logging library.
+    """
+
     @override
     @property
     @abstractmethod

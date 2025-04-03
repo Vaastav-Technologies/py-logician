@@ -61,6 +61,9 @@ class StdLevelLogger(MinLogProtocol, FatalLogProtocol, ExceptionLogProtocol, Has
 
 
 class DirectStdAllLevelLogger(AllLevelLogger, Protocol):
+    """
+    All log levels as provided by the python std log.
+    """
     DEFAULT_LEVEL_MAP: dict[int, str] = {TRACE_LOG_LEVEL: TRACE_LOG_STR,
                                          SUCCESS_LOG_LEVEL: SUCCESS_LOG_STR,
                                          NOTICE_LOG_LEVEL: NOTICE_LOG_STR,
@@ -69,6 +72,11 @@ class DirectStdAllLevelLogger(AllLevelLogger, Protocol):
 
     @staticmethod
     def register_levels(level_name_map: dict[int, str] | None = None):
+        """
+        Register levels in the python std logger.
+
+        :param level_name_map: log level - name mapping.
+        """
         level_name_map = level_name_map if level_name_map else DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP
         for l in level_name_map:
             addLevelName(l, level_name_map[l])
