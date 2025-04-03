@@ -11,10 +11,10 @@ import logging
 from abc import abstractmethod
 from typing import Protocol
 
-from vt.utils.logging.logging import BaseDirectStdAllLevelLogger
+from vt.utils.logging.logging.std_log.base import DirectStdAllLevelLogger
 
 
 class LoggerConfigurator(Protocol):
     @abstractmethod
-    def configure(self, logger: logging.Logger, level: int | str = logging.WARNING) -> BaseDirectStdAllLevelLogger:
+    def configure(self, logger: logging.Logger, level: int | str = logging.WARNING) -> DirectStdAllLevelLogger:
         pass

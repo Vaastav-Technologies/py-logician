@@ -4,10 +4,15 @@
 """
 Logging interfaces for the standard logging library of python.
 """
-from typing import Protocol, Any, Mapping
+from abc import abstractmethod
+from logging import Logger, addLevelName
+from typing import Protocol, Any, Mapping, override
 
-from vt.utils.logging.logging import MinLogProtocol
+from vt.utils.logging.logging import MinLogProtocol, AllLevelLogger
 from vt.utils.logging.logging.base import FatalLogProtocol, ExceptionLogProtocol, HasUnderlyingLogger
+from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, TRACE_LOG_STR, SUCCESS_LOG_LEVEL, SUCCESS_LOG_STR, \
+    NOTICE_LOG_LEVEL, NOTICE_LOG_STR, EXCEPTION_TRACEBACK_LOG_LEVEL, EXCEPTION_TRACEBACK_LOG_STR, FATAL_LOG_LEVEL, \
+    FATAL_LOG_STR
 
 
 class StdLogProtocol(MinLogProtocol, Protocol):
@@ -53,3 +58,23 @@ class StdLevelLogger(MinLogProtocol, FatalLogProtocol, ExceptionLogProtocol, Has
         - exception
     """
     pass
+
+
+class DirectStdAllLevelLogger(AllLevelLogger, Protocol):
+    DEFAULT_LEVEL_MAP: dict[int, str] = {TRACE_LOG_LEVEL: TRACE_LOG_STR,
+                                         SUCCESS_LOG_LEVEL: SUCCESS_LOG_STR,
+                                         NOTICE_LOG_LEVEL: NOTICE_LOG_STR,
+                                         EXCEPTION_TRACEBACK_LOG_LEVEL: EXCEPTION_TRACEBACK_LOG_STR,
+                                         FATAL_LOG_LEVEL: FATAL_LOG_STR}
+
+    @staticmethod
+    def register_levels(level_name_map: dict[int, str] | None = None):
+        level_name_map = level_name_map if level_name_map else DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP
+        for l in level_name_map:
+            addLevelName(l, level_name_map[l])
+
+    @override
+    @property
+    @abstractmethod
+    def underlying_logger(self) -> Logger: # noqa
+        pass

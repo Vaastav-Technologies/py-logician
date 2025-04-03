@@ -15,16 +15,14 @@ Basic loggers only support operations::
     - critical
     - fatal
 """
-import logging
 from abc import ABC
 from logging import Logger
 from typing import override, cast
 
 from vt.utils.logging.logging import AllLevelLogger
 from vt.utils.logging.logging.delegating import DelegatingLogger
-from vt.utils.logging.logging.std_log import StdLogProtocol, TRACE_LOG_LEVEL, TRACE_LOG_STR, \
-    SUCCESS_LOG_LEVEL, SUCCESS_LOG_STR, NOTICE_LOG_LEVEL, NOTICE_LOG_STR, EXCEPTION_TRACEBACK_LOG_LEVEL, \
-    EXCEPTION_TRACEBACK_LOG_STR, FATAL_LOG_LEVEL, FATAL_LOG_STR
+from vt.utils.logging.logging.std_log import StdLogProtocol
+from vt.utils.logging.logging.std_log.base import DirectStdAllLevelLogger
 from vt.utils.logging.logging.std_log.basic_logger_impl import StdProtocolAllLevelLoggerImpl, \
     BaseDirectStdAllLevelLoggerImpl, BaseDirectAllLevelLoggerImpl
 
@@ -96,18 +94,7 @@ class StdProtocolAllLevelLogger(BaseStdProtocolAllLevelLogger, ABC):
         super().__init__(logger_impl)
 
 
-class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, ABC):
-    DEFAULT_LEVEL_MAP: dict[int, str] = {TRACE_LOG_LEVEL: TRACE_LOG_STR,
-                                         SUCCESS_LOG_LEVEL: SUCCESS_LOG_STR,
-                                         NOTICE_LOG_LEVEL: NOTICE_LOG_STR,
-                                         EXCEPTION_TRACEBACK_LOG_LEVEL: EXCEPTION_TRACEBACK_LOG_STR,
-                                         FATAL_LOG_LEVEL: FATAL_LOG_STR}
-
-    @staticmethod
-    def register_levels(level_name_map: dict[int, str] | None = None):
-        level_name_map = level_name_map if level_name_map else BaseDirectAllLevelLogger.DEFAULT_LEVEL_MAP
-        for l in level_name_map:
-            logging.addLevelName(l, level_name_map[l])
+class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, DirectStdAllLevelLogger, ABC):
 
     def __init__(self, logger_impl: BaseDirectStdAllLevelLoggerImpl,
                  level_name_map: dict[int, str] | None = None):
