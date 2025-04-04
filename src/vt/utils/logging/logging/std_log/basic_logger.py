@@ -33,14 +33,14 @@ class StdProtocolAllLevelLogger(AllLevelLogger, DelegatingLogger, Protocol):
     """
 
     @override
-    @abstractmethod
     @property
+    @abstractmethod
     def logger_impl(self) -> StdProtocolAllLevelLoggerImpl:
         ...
 
     @override
-    @abstractmethod
     @property
+    @abstractmethod
     def underlying_logger(self) -> StdLogProtocol:
         ...
 
