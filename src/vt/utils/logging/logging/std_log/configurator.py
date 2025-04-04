@@ -10,7 +10,7 @@ import logging
 import warnings
 from typing import override
 
-from vt.utils.logging.logging import BaseDirectStdAllLevelLogger, BaseDirectAllLevelLogger
+from vt.utils.logging.logging import BaseDirectStdAllLevelLogger, DirectAllLevelLogger
 from vt.utils.logging.logging.configurators import LoggerConfigurator
 from vt.utils.logging.logging.formatters import StreamFormatMapper
 from vt.utils.logging.logging.std_log.basic_logger_impl import DirectAllLevelLoggerImpl
@@ -32,7 +32,7 @@ class DirectStdLoggerConfigurator(LoggerConfigurator):
     @override
     def configure(self, logger: logging.Logger, level: int | str = DEFAULT_LOG_LEVEL) -> BaseDirectStdAllLevelLogger:
         stream_fmt_map = self.stream_fmt_mapper.stream_fmt_map
-        BaseDirectAllLevelLogger.register_levels()
+        DirectAllLevelLogger.register_levels()
         for stream in stream_fmt_map:
             hdlr = logging.StreamHandler(stream=stream) # noqa
             lvl_fmt_handlr = stream_fmt_map[stream]
@@ -50,4 +50,4 @@ class DirectStdLoggerConfigurator(LoggerConfigurator):
             hdlr.setFormatter(logging.Formatter(fmt=lvl_fmt_handlr.fmt(int_level)))
             logger.addHandler(hdlr)
             logger.setLevel(int_level)
-        return BaseDirectAllLevelLogger(DirectAllLevelLoggerImpl(logger))
+        return DirectAllLevelLogger(DirectAllLevelLoggerImpl(logger))

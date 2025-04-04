@@ -22,9 +22,9 @@ from logging import Logger
 
 from vt.utils.logging.logging.base import AllLevelLogger, MinLogProtocol
 from vt.utils.logging.logging.std_log import StdLogProtocol, StdLevelLogger, StdProtocolAllLevelLogger, \
-    BaseDirectStdAllLevelLogger, BaseDirectAllLevelLogger, DirectStdAllLevelLogger
+    BaseDirectStdAllLevelLogger, DirectAllLevelLogger, DirectStdAllLevelLogger
 from vt.utils.logging.logging.std_log.basic_logger_impl import DirectAllLevelLoggerImpl as _DALImpl
 
 
 def get_direct_all_level_logger(logger: Logger) -> DirectStdAllLevelLogger:
-    return BaseDirectAllLevelLogger(_DALImpl(logger))
+    return DirectAllLevelLogger(_DALImpl(logger))

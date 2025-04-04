@@ -148,7 +148,7 @@ class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, DirectStdAllLev
         return cast(Logger, self._underlying_logger)
 
 
-class BaseDirectAllLevelLogger(BaseDirectStdAllLevelLogger, AllLevelLogger, ABC):
+class DirectAllLevelLogger(BaseDirectStdAllLevelLogger, AllLevelLogger):
 
     def __init__(self, logger_impl: BaseDirectStdAllLevelLoggerImpl,
                  level_name_map: dict[int, str] | None = None):

@@ -7,15 +7,14 @@ import logging
 import pytest
 
 from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL
-from vt.utils.logging.logging.std_log.basic_logger import BaseDirectStdAllLevelLogger, \
-    BaseDirectAllLevelLogger
+from vt.utils.logging.logging.std_log.basic_logger import DirectAllLevelLogger
 from vt.utils.logging.logging.std_log.basic_logger_impl import DirectAllLevelLoggerImpl
 
 TIMED_DETAIL_LOG_FMT = '%(asctime)s: %(name)s: [%(levelname)s]: [%(filename)s:%(lineno)d - ' \
                        '%(funcName)10s() ]: %(message)s'
 
 
-@pytest.mark.parametrize("level_logger", [BaseDirectStdAllLevelLogger])
+@pytest.mark.parametrize("level_logger", [DirectAllLevelLogger])
 @pytest.mark.parametrize("logger_impl", [DirectAllLevelLoggerImpl])
 def test_initial_logging(level_logger, logger_impl):
     logging.basicConfig()
@@ -42,7 +41,7 @@ def test_logging_basic_types():
     sh = logging.StreamHandler()
     sh.setFormatter(logging.Formatter(fmt=TIMED_DETAIL_LOG_FMT))
     log = logging.getLogger(f"all-basic-types-logging")
-    logger = BaseDirectAllLevelLogger(DirectAllLevelLoggerImpl(log))
+    logger = DirectAllLevelLogger(DirectAllLevelLoggerImpl(log))
     logger.underlying_logger.addHandler(sh)
     logger.underlying_logger.setLevel(TRACE_LOG_LEVEL)
     d = {1: 2, 2: 3, None: 4}
@@ -67,7 +66,7 @@ def test_all_initial_logging():
     sh = logging.StreamHandler()
     sh.setFormatter(logging.Formatter(fmt=TIMED_DETAIL_LOG_FMT))
     log = logging.getLogger(f"all-init-logging")
-    logger = BaseDirectAllLevelLogger(DirectAllLevelLoggerImpl(log))
+    logger = DirectAllLevelLogger(DirectAllLevelLoggerImpl(log))
     logger.underlying_logger.addHandler(sh)
     logger.underlying_logger.setLevel(TRACE_LOG_LEVEL)
     logger.trace('trace message')
