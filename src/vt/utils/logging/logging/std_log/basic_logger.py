@@ -101,6 +101,8 @@ class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, DirectStdAllLev
         super().__init__(logger_impl)
         if level_name_map:
             BaseDirectStdAllLevelLogger.register_levels(level_name_map)
+        else:
+            BaseDirectStdAllLevelLogger.register_levels()
         self.level_name_map = level_name_map
 
     @property
