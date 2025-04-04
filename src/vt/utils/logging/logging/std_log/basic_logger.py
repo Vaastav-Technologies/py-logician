@@ -47,6 +47,13 @@ class StdProtocolAllLevelLogger(AllLevelLogger, DelegatingLogger, Protocol):
 
 class BaseStdProtocolAllLevelLogger(StdProtocolAllLevelLogger, ABC):
     def __init__(self, logger_impl: StdProtocolAllLevelLoggerImpl):
+        """
+        Implementation for a std protocol logger which provides all logging levels by the protocol implementation.
+
+        see ``StdProtocolAllLevelLoggerImpl``.
+
+        :param logger_impl: the logger implementations where all logging calls will be forwarded to.
+        """
         self._logger_impl = logger_impl
         self._underlying_logger = self._logger_impl.underlying_logger
         self.name = self._logger_impl.underlying_logger.name
@@ -111,6 +118,21 @@ class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, DirectStdAllLev
 
     def __init__(self, logger_impl: BaseDirectStdAllLevelLoggerImpl,
                  level_name_map: dict[int, str] | None = None):
+        """
+        Implementation for a std protocol logger which provides all logging levels by the protocol implementation.
+
+        see ``BaseDirectStdAllLevelLoggerImpl``.
+
+        This class also registers the log-level->log-level-name if one is supplied. But doesn't do any
+        level registration if log-level->log-level-name is empty or not supplied.
+
+        ``DirectStdAllLevelLogger.register_levels()`` can be called to initialise and register default levels prior
+        to creating this class's object.
+
+        :param logger_impl: the logger implementations where all logging calls will be forwarded to.
+        :param level_name_map: a log-level->log-level-name map. eg: ``30`` -> ``INFO``. This is useful for registering
+            the level->name map with the logger.
+        """
         super().__init__(logger_impl)
         if level_name_map:
             BaseDirectStdAllLevelLogger.register_levels(level_name_map)
@@ -130,6 +152,21 @@ class BaseDirectAllLevelLogger(BaseDirectStdAllLevelLogger, AllLevelLogger, ABC)
 
     def __init__(self, logger_impl: BaseDirectStdAllLevelLoggerImpl,
                  level_name_map: dict[int, str] | None = None):
+        """
+        Std protocol logger which provides all logging levels by the protocol implementation.
+
+        see ``BaseDirectStdAllLevelLoggerImpl``.
+
+        This class also registers the log-level->log-level-name if one is supplied. But doesn't do any
+        level registration if log-level->log-level-name is empty or not supplied.
+
+        ``DirectStdAllLevelLogger.register_levels()`` can be called to initialise and register default levels prior
+        to creating this class's object.
+
+        :param logger_impl: the logger implementations where all logging calls will be forwarded to.
+        :param level_name_map: a log-level->log-level-name map. eg: ``30`` -> ``INFO``. This is useful for registering
+            the level->name map with the logger.
+        """
         super().__init__(logger_impl, level_name_map)
 
     @property
