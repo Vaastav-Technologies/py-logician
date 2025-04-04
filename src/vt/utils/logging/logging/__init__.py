@@ -4,7 +4,7 @@
 """
 Logging related library.
 
-This library is built to let other logging projects extent it and implement their own versions of various log levels.
+This library is built to let other logging projects extend it and implement their own versions of various log levels.
 Only log levels are of essence in this library as most of the logging concerns log levels and not the actual logger
 setup.
 
