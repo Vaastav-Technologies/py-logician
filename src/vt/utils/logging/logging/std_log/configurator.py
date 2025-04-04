@@ -19,7 +19,7 @@ from vt.utils.logging.warnings import suppress_warning_stacktrace
 
 
 class DirectStdLoggerConfigurator(LoggerConfigurator):
-    DEFAULT_LOG_LEVEL: int = logging.WARNING
+    WARNING_LOG_LEVEL: int = logging.WARNING
 
     def __init__(self, stream_fmt_mapper: StreamFormatMapper = StdStreamFormatMapper()):
         """
@@ -30,7 +30,7 @@ class DirectStdLoggerConfigurator(LoggerConfigurator):
         self.stream_fmt_mapper = stream_fmt_mapper
 
     @override
-    def configure(self, logger: logging.Logger, level: int | str = DEFAULT_LOG_LEVEL) -> BaseDirectStdAllLevelLogger:
+    def configure(self, logger: logging.Logger, level: int | str = WARNING_LOG_LEVEL) -> BaseDirectStdAllLevelLogger:
         stream_fmt_map = self.stream_fmt_mapper.stream_fmt_map
         DirectAllLevelLogger.register_levels()
         for stream in stream_fmt_map:
@@ -45,8 +45,8 @@ class DirectStdLoggerConfigurator(LoggerConfigurator):
                     warnings.warn(f"{logger.name}: Undefined log level '{level}'. "
                                   f"Choose from {levels_to_choose_from}.")
                     warnings.warn(f"{logger.name}: Setting log level to default: "
-                                  f"'{logging.getLevelName(DirectStdLoggerConfigurator.DEFAULT_LOG_LEVEL)}'.")
-                int_level = DirectStdLoggerConfigurator.DEFAULT_LOG_LEVEL
+                                  f"'{logging.getLevelName(DirectStdLoggerConfigurator.WARNING_LOG_LEVEL)}'.")
+                int_level = DirectStdLoggerConfigurator.WARNING_LOG_LEVEL
             hdlr.setFormatter(logging.Formatter(fmt=lvl_fmt_handlr.fmt(int_level)))
             logger.addHandler(hdlr)
             logger.setLevel(int_level)

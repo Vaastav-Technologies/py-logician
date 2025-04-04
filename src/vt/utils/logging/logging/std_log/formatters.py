@@ -15,9 +15,8 @@ from vt.utils.logging.logging.std_log import TIMED_DETAIL_LOG_FMT, TRACE_LOG_LEV
 
 
 class StdLogAllLevelSameFmt(AllLevelSameFmt):
-    DEFAULT_LOGGER_FMT = SHORTER_LOG_FMT
 
-    def __init__(self, fmt: str = DEFAULT_LOGGER_FMT):
+    def __init__(self, fmt: str = SHORTER_LOG_FMT):
         """
         Same std log format for all levels.
 
@@ -37,6 +36,9 @@ class StdLogAllLevelDiffFmt(DiffLevelDiffFmt):
         logging.INFO: SHORT_LOG_FMT,
         logging.WARN: SHORTER_LOG_FMT
     }
+    """
+    Different log formats for different log levels.
+    """
 
     def __init__(self, fmt_dict: dict[int, str] | None = None):
         """
@@ -58,7 +60,8 @@ class StdLogAllLevelDiffFmt(DiffLevelDiffFmt):
 
         provides immediately-upper registered level if an unregistered level is queried.
 
-        :param fmt_dict: level -> format dictionary.
+        :param fmt_dict: level -> format dictionary. Defaults to
+            ``StdLogAllLevelDiffFmt.DEFAULT_LOGGER_DICT`` when ``None`` or an empty dict is provided.
         """
         self._fmt_dict = fmt_dict if fmt_dict else StdLogAllLevelDiffFmt.DEFAULT_LOGGER_DICT
 
@@ -82,17 +85,20 @@ class StdLogAllLevelDiffFmt(DiffLevelDiffFmt):
         return max_level
 
 
-
 class StdStreamFormatMapper(StreamFormatMapper):
-    DEFAULT_STREAM_FMT_DICT: dict[TextIO, LogLevelFmt] = {sys.stderr: StdLogAllLevelSameFmt()}
+    STDERR_ALL_LVL_SAME_FMT: dict[TextIO, LogLevelFmt] = {sys.stderr: StdLogAllLevelSameFmt()}
+    """
+    Maps ``sys.stderr`` to same logging format for all levels.
+    """
 
     def __init__(self, stream_fmt_map: dict[TextIO, LogLevelFmt] | None = None):
         """
         Maintains a map of the std-log-formatter for each stream.
 
-        :param stream_fmt_map:
+        :param stream_fmt_map: stream -> ``LogLevelFmt`` map. Defaults to
+            ``StdStreamFormatMapper.STDERR_ALL_LVL_SAME_FMT`` when ``None`` or an empty dict is provided.
         """
-        self._stream_fmt_map = stream_fmt_map if stream_fmt_map else StdStreamFormatMapper.DEFAULT_STREAM_FMT_DICT
+        self._stream_fmt_map = stream_fmt_map if stream_fmt_map else StdStreamFormatMapper.STDERR_ALL_LVL_SAME_FMT
 
     @override
     @property
