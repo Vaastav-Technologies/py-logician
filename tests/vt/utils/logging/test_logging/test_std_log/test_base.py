@@ -16,7 +16,7 @@ def test_registers_supplied_unknown_levels():
     Registers levels which were previously unknown to the logger.
     """
     levels = {
-        5: 'FIVE-LVL',
+        7: 'SEVEN-LVL',
         25: 'TWENTY-FIVE-LVL'
     }
     DirectStdAllLevelLogger.register_levels(levels)
