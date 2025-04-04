@@ -25,7 +25,7 @@ class DirectStdLoggerConfigurator(LoggerConfigurator):
         """
         Perform logger configuration using the python's std logger calls.
 
-        :param stream_fmt_mapper:
+        :param stream_fmt_mapper: an output-stream -> log format mapper.
         """
         self.stream_fmt_mapper = stream_fmt_mapper
 
