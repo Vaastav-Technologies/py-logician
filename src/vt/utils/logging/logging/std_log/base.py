@@ -75,6 +75,9 @@ class DirectStdAllLevelLogger(AllLevelLogger, Protocol):
         """
         Register levels in the python std logger.
 
+        Defaults to registering ``DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP`` if ``level_name_map`` is empty
+        or ``None``.
+
         :param level_name_map: log level - name mapping.
         """
         level_name_map = level_name_map if level_name_map else DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP
