@@ -7,15 +7,15 @@ import logging
 import pytest
 
 from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL
-from vt.utils.logging.logging.std_log.basic_logger_impl import DirectAllLevelLoggerImpl
-from vt.utils.logging.logging.std_log.basic_logger import StdProtocolAllLevelLogger, BaseDirectStdAllLevelLogger, \
+from vt.utils.logging.logging.std_log.basic_logger import BaseDirectStdAllLevelLogger, \
     BaseDirectAllLevelLogger
+from vt.utils.logging.logging.std_log.basic_logger_impl import DirectAllLevelLoggerImpl
 
 TIMED_DETAIL_LOG_FMT = '%(asctime)s: %(name)s: [%(levelname)s]: [%(filename)s:%(lineno)d - ' \
                        '%(funcName)10s() ]: %(message)s'
 
 
-@pytest.mark.parametrize("level_logger", [StdProtocolAllLevelLogger, BaseDirectStdAllLevelLogger])
+@pytest.mark.parametrize("level_logger", [BaseDirectStdAllLevelLogger])
 @pytest.mark.parametrize("logger_impl", [DirectAllLevelLoggerImpl])
 def test_initial_logging(level_logger, logger_impl):
     logging.basicConfig()

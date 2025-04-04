@@ -15,9 +15,9 @@ Basic loggers only support operations::
     - critical
     - fatal
 """
-from abc import ABC
+from abc import ABC, abstractmethod
 from logging import Logger
-from typing import override, cast
+from typing import override, cast, Protocol
 
 from vt.utils.logging.logging import AllLevelLogger
 from vt.utils.logging.logging.delegating import DelegatingLogger
@@ -27,7 +27,25 @@ from vt.utils.logging.logging.std_log.basic_logger_impl import StdProtocolAllLev
     BaseDirectStdAllLevelLoggerImpl
 
 
-class BaseStdProtocolAllLevelLogger(AllLevelLogger, DelegatingLogger, ABC):
+class StdProtocolAllLevelLogger(AllLevelLogger, DelegatingLogger, Protocol):
+    """
+    Interface for a std protocol logger which provides all logging levels by the protocol implementation.
+    """
+
+    @override
+    @abstractmethod
+    @property
+    def logger_impl(self) -> StdProtocolAllLevelLoggerImpl:
+        ...
+
+    @override
+    @abstractmethod
+    @property
+    def underlying_logger(self) -> StdLogProtocol:
+        ...
+
+
+class BaseStdProtocolAllLevelLogger(StdProtocolAllLevelLogger, ABC):
     def __init__(self, logger_impl: StdProtocolAllLevelLoggerImpl):
         self._logger_impl = logger_impl
         self._underlying_logger = self._logger_impl.underlying_logger
@@ -87,11 +105,6 @@ class BaseStdProtocolAllLevelLogger(AllLevelLogger, DelegatingLogger, ABC):
     @override
     def log(self, level: int, msg: str, *args, **kwargs) -> None:
         self.logger_impl.log(level, msg, *args, **kwargs)
-
-
-class StdProtocolAllLevelLogger(BaseStdProtocolAllLevelLogger, ABC):
-    def __init__(self, logger_impl: StdProtocolAllLevelLoggerImpl):
-        super().__init__(logger_impl)
 
 
 class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, DirectStdAllLevelLogger, ABC):
