@@ -123,6 +123,7 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
         self.underlying_logger.log(level, msg, *args, stacklevel=self.stack_level, **kwargs)
 
 
+# TODO: move TempSetLevelName to utils.
 class TempSetLevelName:
     def __init__(self, level: int, level_name: str | None, reverting_lvl_name: str, no_warn: bool = False):
         """
