@@ -79,7 +79,7 @@ class DirectStdAllLevelLogger(AllLevelLogger, Protocol):
         20 -> INFO
         23 -> SUCCESS
         26 -> NOTICE
-        28 -> CMD-CALL
+        28 -> COMMAND
         30 -> WARNING
         40 -> ERROR
         50 -> CRITICAL

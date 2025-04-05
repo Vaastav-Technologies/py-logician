@@ -34,7 +34,7 @@ class StdProtocolAllLevelLoggerImpl(AllLevelLoggerImplABC, Protocol):
 
         :param msg: The captured output.
         :param cmd_name: Which command name to register the command level to. If ``None`` then the default level-name
-            ``CMD-CALL`` is picked-up.
+            ``COMMAND`` is picked-up.
         """
         ...
 

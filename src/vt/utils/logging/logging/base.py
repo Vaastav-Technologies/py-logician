@@ -178,7 +178,7 @@ class AllLogProtocol(TraceLogProtocol, _MinLogProtocol, SuccessLogProtocol, Noti
         - TRACE
         - SUCCESS
         - NOTICE
-        - CMD-CALL
+        - COMMAND
         - FATAL
         - EXCEPTION
     """
@@ -219,7 +219,7 @@ class AllLevelLogger(AllLogProtocol, HasUnderlyingLogger, Protocol):
         - TRACE
         - SUCCESS
         - NOTICE
-        - CMD-CALL
+        - COMMAND
         - FATAL
         - EXCEPTION
 

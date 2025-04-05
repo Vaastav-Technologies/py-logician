@@ -96,7 +96,7 @@ class BaseStdProtocolAllLevelLogger(StdProtocolAllLevelLogger, ABC):
 
         :param msg: The captured output.
         :param cmd_name: Which command name to register the command level to. If ``None`` then the default level-name
-            ``CMD-CALL`` is picked-up. But as this is a ``DelegatingLogger`` hence this behavior can be altered in the
+            ``COMMAND`` is picked-up. But as this is a ``DelegatingLogger`` hence this behavior can be altered in the
             delegatee class.
         """
         self.logger_impl.cmd(msg, cmd_name, *args, **kwargs)
@@ -144,7 +144,7 @@ class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, DirectStdAllLev
         :param logger_impl: the logger implementations where all logging calls will be forwarded to.
         :param level_name_map: a log-level->log-level-name map. eg: ``30`` -> ``INFO``. This is useful for registering
             the level->name map with the logger.
-        :param cmd_name: level name for the command-log-level. ``None`` specifies that the default ``CMD-CALL`` will
+        :param cmd_name: level name for the command-log-level. ``None`` specifies that the default ``COMMAND`` will
             be shown on log.cmd() call. But as this is a ``DelegatingLogger`` hence this behavior can be altered in the
             delegatee class.
         """
@@ -171,7 +171,7 @@ class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, DirectStdAllLev
         :param msg: The captured output.
         :param cmd_name: Which command name to register the command logging level to. If ``None`` then the ctor-supplied
             level-name ``self.cmd_name`` is picked-up. If ``self.cmd_name`` is also ``None`` then default
-            ``CMD-CALL`` is picked-up. But as this is a ``DelegatingLogger`` hence this behavior can be altered in the
+            ``COMMAND`` is picked-up. But as this is a ``DelegatingLogger`` hence this behavior can be altered in the
             delegatee class.
         """
         final_cmd_name = cmd_name or self.cmd_name
@@ -196,7 +196,7 @@ class DirectAllLevelLogger(BaseDirectStdAllLevelLogger, AllLevelLogger):
         :param logger_impl: the logger implementations where all logging calls will be forwarded to.
         :param level_name_map: a log-level->log-level-name map. eg: ``30`` -> ``INFO``. This is useful for registering
             the level->name map with the logger.
-        :param cmd_name: level name for the command-log-level. ``None`` specifies that the default ``CMD-CALL`` will
+        :param cmd_name: level name for the command-log-level. ``None`` specifies that the default ``COMMAND`` will
             be shown on log.cmd() call. But as this is a ``DelegatingLogger`` hence this behavior can be altered in the
             delegatee class.
         """
