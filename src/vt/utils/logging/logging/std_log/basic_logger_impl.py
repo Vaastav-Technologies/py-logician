@@ -59,6 +59,8 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
         calls to the underlying logger. Created for implementation inheritance.
 
         :param underlying_logger: logger (python standard logger) that actually performs the logging.
+        :param stack_level: stack to go up to get the file/line/func information from the framing stack.
+            Check ``DEFAULT_STACK_LEVEL`` for more details.
         """
         self._underlying_logger = underlying_logger
         self.stack_level = stack_level
