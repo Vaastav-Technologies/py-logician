@@ -4,7 +4,9 @@
 """
 Classes w.r.t implementation inheritance are defined here.
 """
+import contextlib
 import logging
+import warnings
 from abc import abstractmethod
 from logging import Logger
 from typing import override, cast, Protocol
@@ -13,6 +15,7 @@ from vt.utils.logging.logging.delegating import AllLevelLoggerImplABC
 from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, \
     NOTICE_LOG_LEVEL, SUCCESS_LOG_LEVEL, StdLogProtocol, INDIRECTION_STACK_LEVEL, FATAL_LOG_LEVEL, CMD_LOG_LEVEL, \
     CMD_LOG_STR
+from vt.utils.logging.warnings import suppress_warning_stacktrace
 
 
 class StdProtocolAllLevelLoggerImpl(AllLevelLoggerImplABC, Protocol):
@@ -93,13 +96,8 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
     @override
     def cmd(self, msg, cmd_name: str | None = None, *args, **kwargs) -> None:
         if self.underlying_logger.isEnabledFor(CMD_LOG_LEVEL):
-            try:
-                if cmd_name:
-                    logging.addLevelName(CMD_LOG_LEVEL, cmd_name)
+            with set_cmd_level_name(cmd_name):
                 self.underlying_logger.log(CMD_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
-            finally:
-                if cmd_name:
-                    logging.addLevelName(CMD_LOG_LEVEL, CMD_LOG_STR)
 
     @override
     def warning(self, msg, *args, **kwargs) -> None:
@@ -124,3 +122,17 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
     @override
     def log(self, level: int, msg: str, *args, **kwargs) -> None:
         self.underlying_logger.log(level, msg, *args, stacklevel=self.stack_level, **kwargs)
+
+
+@contextlib.contextmanager
+def set_cmd_level_name(cmd_name: str | None, reverting_lvl_name: str = CMD_LOG_STR):
+    try:
+        if cmd_name is not None:
+            if cmd_name.strip() == '':
+                with suppress_warning_stacktrace():
+                    warnings.warn("Command level name supplied is empty.")
+            logging.addLevelName(CMD_LOG_LEVEL, cmd_name)
+        yield
+    finally:
+        if cmd_name:
+            logging.addLevelName(CMD_LOG_LEVEL, reverting_lvl_name)
