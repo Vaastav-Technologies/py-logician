@@ -26,7 +26,7 @@ Illustration for ``stacklevel=1``
     
 Prints ::
 
-    log_capturing_class.py | INFO | undelrying_logger.info | info msg
+    log_capturing_class.py | INFO | underlying_logger.info | info msg
 
 
 Illustration for ``stacklevel=2``
@@ -36,7 +36,7 @@ Illustration for ``stacklevel=2``
     
 Prints ::
 
-    log_caller_class.py | INFO | callling_meth | info msg
+    log_caller_class.py | INFO | calling_meth | info msg
 
 """
 
