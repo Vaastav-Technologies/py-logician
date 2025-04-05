@@ -18,7 +18,7 @@ from vt.utils.logging.logging.std_log.formatters import StdStreamFormatMapper
 from vt.utils.logging.warnings import suppress_warning_stacktrace
 
 
-class DirectStdLoggerConfigurator(LoggerConfigurator):
+class StdLoggerConfigurator(LoggerConfigurator):
     WARNING_LOG_LEVEL: int = logging.WARNING
 
     def __init__(self, stream_fmt_mapper: StreamFormatMapper = StdStreamFormatMapper(),
@@ -49,8 +49,8 @@ class DirectStdLoggerConfigurator(LoggerConfigurator):
                     warnings.warn(f"{logger.name}: Undefined log level '{level}'. "
                                   f"Choose from {levels_to_choose_from}.")
                     warnings.warn(f"{logger.name}: Setting log level to default: "
-                                  f"'{logging.getLevelName(DirectStdLoggerConfigurator.WARNING_LOG_LEVEL)}'.")
-                int_level = DirectStdLoggerConfigurator.WARNING_LOG_LEVEL
+                                  f"'{logging.getLevelName(StdLoggerConfigurator.WARNING_LOG_LEVEL)}'.")
+                int_level = StdLoggerConfigurator.WARNING_LOG_LEVEL
             hdlr.setFormatter(logging.Formatter(fmt=lvl_fmt_handlr.fmt(int_level)))
             logger.addHandler(hdlr)
             logger.setLevel(int_level)
