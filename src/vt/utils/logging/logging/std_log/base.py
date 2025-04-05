@@ -103,8 +103,8 @@ class DirectStdAllLevelLogger(AllLevelLogger, Protocol):
         """
         if level_name_map:
             DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP.update(level_name_map)
-        for l in DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP:
-            addLevelName(l, DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP[l])
+        for level in DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP:
+            addLevelName(level, DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP[level])
         return {l: n for n, l in sorted(getLevelNamesMapping().items(), key=lambda name_level: name_level[1])}
 
     @override
