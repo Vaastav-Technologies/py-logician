@@ -92,13 +92,14 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
 
     @override
     def cmd(self, msg, cmd_name: str | None = None, *args, **kwargs) -> None:
-        try:
-            if cmd_name:
-                logging.addLevelName(CMD_LOG_LEVEL, cmd_name)
-            self.underlying_logger.log(CMD_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
-        finally:
-            if cmd_name:
-                logging.addLevelName(CMD_LOG_LEVEL, CMD_LOG_STR)
+        if self.underlying_logger.isEnabledFor(CMD_LOG_LEVEL):
+            try:
+                if cmd_name:
+                    logging.addLevelName(CMD_LOG_LEVEL, cmd_name)
+                self.underlying_logger.log(CMD_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
+            finally:
+                if cmd_name:
+                    logging.addLevelName(CMD_LOG_LEVEL, CMD_LOG_STR)
 
     @override
     def warning(self, msg, *args, **kwargs) -> None:
