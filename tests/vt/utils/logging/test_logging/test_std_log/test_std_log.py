@@ -7,8 +7,8 @@ import logging
 import pytest
 
 from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL
-from vt.utils.logging.logging.std_log.basic_logger import DirectAllLevelLogger
-from vt.utils.logging.logging.std_log.basic_logger_impl import DirectAllLevelLoggerImpl
+from vt.utils.logging.logging.std_log.all_levels import DirectAllLevelLogger
+from vt.utils.logging.logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl
 
 TIMED_DETAIL_LOG_FMT = '%(asctime)s: %(name)s: [%(levelname)s]: [%(filename)s:%(lineno)d - ' \
                        '%(funcName)10s() ]: %(message)s'

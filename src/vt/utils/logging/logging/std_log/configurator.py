@@ -13,7 +13,7 @@ from typing import override
 from vt.utils.logging.logging import DirectAllLevelLogger
 from vt.utils.logging.logging.configurators import LoggerConfigurator
 from vt.utils.logging.logging.formatters import StreamFormatMapper
-from vt.utils.logging.logging.std_log.basic_logger_impl import DirectAllLevelLoggerImpl
+from vt.utils.logging.logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl
 from vt.utils.logging.logging.std_log.formatters import StdStreamFormatMapper
 from vt.utils.logging.warnings import suppress_warning_stacktrace
 

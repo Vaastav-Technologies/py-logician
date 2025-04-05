@@ -14,7 +14,7 @@ from vt.utils.logging.logging import AllLevelLogger
 from vt.utils.logging.logging.delegating import DelegatingLogger
 from vt.utils.logging.logging.std_log import StdLogProtocol
 from vt.utils.logging.logging.std_log.base import DirectStdAllLevelLogger
-from vt.utils.logging.logging.std_log.basic_logger_impl import StdProtocolAllLevelLoggerImpl, \
+from vt.utils.logging.logging.std_log.all_levels_impl import StdProtocolAllLevelLoggerImpl, \
     BaseDirectStdAllLevelLoggerImpl
 
 
