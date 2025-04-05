@@ -22,16 +22,18 @@ class StdLoggerConfigurator(LoggerConfigurator):
     WARNING_LOG_LEVEL: int = logging.WARNING
 
     def __init__(self, stream_fmt_mapper: StreamFormatMapper = StdStreamFormatMapper(),
-                 level_name_map: dict[int, str] | None = None):
+                 level_name_map: dict[int, str] | None = None, no_warn: bool = False):
         """
         Perform logger configuration using the python's std logger calls.
 
         :param stream_fmt_mapper: an output-stream -> log format mapper.
         :param level_name_map: log level - name mapping. This mapping updates the std python logging library's
             registered log levels . Check ``DirectAllLevelLogger.register_levels()`` for more info.
+        :param no_warn: do not warn if a supplied level is not registered with the logging library.
         """
         self.stream_fmt_mapper = stream_fmt_mapper
         self.level_name_map = level_name_map
+        self.no_warn = no_warn
 
     @override
     def configure(self, logger: logging.Logger, level: int | str = WARNING_LOG_LEVEL) -> DirectAllLevelLogger:
@@ -43,13 +45,14 @@ class StdLoggerConfigurator(LoggerConfigurator):
             try:
                 int_level = level if isinstance(level, int) else logging.getLevelNamesMapping()[level]
             except KeyError:
-                levels_to_choose_from: list[str] = [logging.getLevelName(level) for level in
-                                                    sorted(logging.getLevelNamesMapping().values())]
-                with suppress_warning_stacktrace():
-                    warnings.warn(f"{logger.name}: Undefined log level '{level}'. "
-                                  f"Choose from {levels_to_choose_from}.")
-                    warnings.warn(f"{logger.name}: Setting log level to default: "
-                                  f"'{logging.getLevelName(StdLoggerConfigurator.WARNING_LOG_LEVEL)}'.")
+                if not self.no_warn:
+                    levels_to_choose_from: dict[str, None] = {logging.getLevelName(level): None for level in
+                                                    sorted(logging.getLevelNamesMapping().values())}
+                    with suppress_warning_stacktrace():
+                        warnings.warn(f"{logger.name}: Undefined log level '{level}'. "
+                                      f"Choose from {levels_to_choose_from.keys()}.")
+                        warnings.warn(f"{logger.name}: Setting log level to default: "
+                                      f"'{logging.getLevelName(StdLoggerConfigurator.WARNING_LOG_LEVEL)}'.")
                 int_level = StdLoggerConfigurator.WARNING_LOG_LEVEL
             hdlr.setFormatter(logging.Formatter(fmt=lvl_fmt_handlr.fmt(int_level)))
             logger.addHandler(hdlr)
