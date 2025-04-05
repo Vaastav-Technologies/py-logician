@@ -63,6 +63,22 @@ class NoticeLogProtocol(Protocol):
         pass
 
 
+class CommandLogProtocol(Protocol):
+    """
+    Protocol supporting the command logging. This can be used to log a command's stderr into the logger itself.
+    """
+    @abstractmethod
+    def cmd(self, msg, cmd_name: str | None = None, *args, **kwargs) -> None:
+        """
+        Log a commands' captured output (maybe stderr or stdout)
+
+        :param msg: The captured output.
+        :param cmd_name: Which command name to register the command level to. If ``None`` then the default level-name
+            is picked-up.
+        """
+        ...
+
+
 class WarningLogProtocol(Protocol):
     """
     Protocol supporting the warning method.
@@ -146,8 +162,8 @@ class MinLogProtocol(_MinLogProtocol, Protocol):
     pass
 
 
-class AllLogProtocol(TraceLogProtocol, _MinLogProtocol, SuccessLogProtocol, NoticeLogProtocol, FatalLogProtocol,
-                     ExceptionLogProtocol, Protocol):
+class AllLogProtocol(TraceLogProtocol, _MinLogProtocol, SuccessLogProtocol, NoticeLogProtocol, CommandLogProtocol,
+                     FatalLogProtocol, ExceptionLogProtocol, Protocol):
     """
     Logger protocol which supports all the common Logging levels, i.e.::
 
@@ -162,6 +178,7 @@ class AllLogProtocol(TraceLogProtocol, _MinLogProtocol, SuccessLogProtocol, Noti
         - TRACE
         - SUCCESS
         - NOTICE
+        - CMD-CALL
         - FATAL
         - EXCEPTION
     """
@@ -202,6 +219,7 @@ class AllLevelLogger(AllLogProtocol, HasUnderlyingLogger, Protocol):
         - TRACE
         - SUCCESS
         - NOTICE
+        - CMD-CALL
         - FATAL
         - EXCEPTION
 

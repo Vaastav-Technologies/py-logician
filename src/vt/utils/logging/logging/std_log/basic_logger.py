@@ -90,6 +90,18 @@ class BaseStdProtocolAllLevelLogger(StdProtocolAllLevelLogger, ABC):
         self.logger_impl.success(msg, *args, **kwargs)
 
     @override
+    def cmd(self, msg, cmd_name: str | None = None, *args, **kwargs) -> None:
+        """
+        Log a commands' captured output (maybe stderr or stdout)
+
+        :param msg: The captured output.
+        :param cmd_name: Which command name to register the command level to. If ``None`` then the default level-name
+            ``CMD-CALL`` is picked-up. But as this is a ``DelegatingLogger`` hence this behavior can be altered in the
+            delegatee class.
+        """
+        self.logger_impl.cmd(msg, cmd_name, *args, **kwargs)
+
+    @override
     def warning(self, msg, *args, **kwargs) -> None:
         self.logger_impl.warning(msg, *args, **kwargs)
 
@@ -117,7 +129,7 @@ class BaseStdProtocolAllLevelLogger(StdProtocolAllLevelLogger, ABC):
 class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, DirectStdAllLevelLogger, ABC):
 
     def __init__(self, logger_impl: BaseDirectStdAllLevelLoggerImpl,
-                 level_name_map: dict[int, str] | None = None):
+                 level_name_map: dict[int, str] | None = None, cmd_name: str | None = None):
         """
         Implementation for a std protocol logger which provides all logging levels by the protocol implementation.
 
@@ -132,11 +144,15 @@ class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, DirectStdAllLev
         :param logger_impl: the logger implementations where all logging calls will be forwarded to.
         :param level_name_map: a log-level->log-level-name map. eg: ``30`` -> ``INFO``. This is useful for registering
             the level->name map with the logger.
+        :param cmd_name: level name for the command-log-level. ``None`` specifies that the default ``CMD-CALL`` will
+            be shown on log.cmd() call. But as this is a ``DelegatingLogger`` hence this behavior can be altered in the
+            delegatee class.
         """
         super().__init__(logger_impl)
         if level_name_map:
             BaseDirectStdAllLevelLogger.register_levels(level_name_map)
         self.level_name_map = level_name_map
+        self.cmd_name = cmd_name
 
     @property
     def logger_impl(self) -> BaseDirectStdAllLevelLoggerImpl:
@@ -147,11 +163,25 @@ class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, DirectStdAllLev
     def underlying_logger(self) -> Logger: # noqa
         return cast(Logger, self._underlying_logger)
 
+    @override
+    def cmd(self, msg, cmd_name: str | None = None, *args, **kwargs) -> None:
+        """
+        Log a commands' captured output (maybe stderr or stdout)
+
+        :param msg: The captured output.
+        :param cmd_name: Which command name to register the command logging level to. If ``None`` then the ctor-supplied
+            level-name ``self.cmd_name`` is picked-up. If ``self.cmd_name`` is also ``None`` then default
+            ``CMD-CALL`` is picked-up. But as this is a ``DelegatingLogger`` hence this behavior can be altered in the
+            delegatee class.
+        """
+        final_cmd_name = cmd_name or self.cmd_name
+        self.logger_impl.cmd(msg, final_cmd_name, *args, **kwargs)
+
 
 class DirectAllLevelLogger(BaseDirectStdAllLevelLogger, AllLevelLogger):
 
     def __init__(self, logger_impl: BaseDirectStdAllLevelLoggerImpl,
-                 level_name_map: dict[int, str] | None = None):
+                 level_name_map: dict[int, str] | None = None, cmd_name: str | None = None):
         """
         Std protocol logger which provides all logging levels by the protocol implementation.
 
@@ -166,8 +196,11 @@ class DirectAllLevelLogger(BaseDirectStdAllLevelLogger, AllLevelLogger):
         :param logger_impl: the logger implementations where all logging calls will be forwarded to.
         :param level_name_map: a log-level->log-level-name map. eg: ``30`` -> ``INFO``. This is useful for registering
             the level->name map with the logger.
+        :param cmd_name: level name for the command-log-level. ``None`` specifies that the default ``CMD-CALL`` will
+            be shown on log.cmd() call. But as this is a ``DelegatingLogger`` hence this behavior can be altered in the
+            delegatee class.
         """
-        super().__init__(logger_impl, level_name_map)
+        super().__init__(logger_impl, level_name_map, cmd_name)
 
     @property
     def logger_impl(self) -> BaseDirectStdAllLevelLoggerImpl:
