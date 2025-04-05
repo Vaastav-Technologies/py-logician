@@ -50,7 +50,7 @@ class StdLoggerConfigurator(LoggerConfigurator):
                                                     sorted(logging.getLevelNamesMapping().values())}
                     with suppress_warning_stacktrace():
                         warnings.warn(f"{logger.name}: Undefined log level '{level}'. "
-                                      f"Choose from {levels_to_choose_from.keys()}.")
+                                      f"Choose from {list(levels_to_choose_from.keys())}.")
                         warnings.warn(f"{logger.name}: Setting log level to default: "
                                       f"'{logging.getLevelName(StdLoggerConfigurator.WARNING_LOG_LEVEL)}'.")
                 int_level = StdLoggerConfigurator.WARNING_LOG_LEVEL
