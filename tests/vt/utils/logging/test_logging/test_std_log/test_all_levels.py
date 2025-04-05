@@ -80,7 +80,6 @@ def test_ctx_mgr_called_when_cmd_lvl_enabled(cmd_lvl_name):
     logger.info('initialised info')
     method = set_cmd_level_name
     with patch(f"{method.__module__}.{method.__qualname__}") as mocked_fn:
-        cmd_lvl_name = "CMD"
         logger.cmd("Command logged", cmd_lvl_name)
         mocked_fn.assert_called_once_with(cmd_lvl_name)
 
