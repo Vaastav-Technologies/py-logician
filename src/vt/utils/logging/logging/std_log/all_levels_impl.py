@@ -96,7 +96,7 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
     @override
     def cmd(self, msg, cmd_name: str | None = None, *args, **kwargs) -> None:
         if self.underlying_logger.isEnabledFor(CMD_LOG_LEVEL):
-            with set_cmd_level_name(cmd_name):
+            with temp_set_level_name(CMD_LOG_LEVEL, cmd_name, CMD_LOG_STR):
                 self.underlying_logger.log(CMD_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
 
     @override
@@ -125,23 +125,24 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
 
 
 @contextlib.contextmanager
-def set_cmd_level_name(cmd_name: str | None, reverting_lvl_name: str = CMD_LOG_STR, no_warn: bool = False):
+def temp_set_level_name(level: int, level_name: str | None, reverting_lvl_name: str, no_warn: bool = False):
     """
-    Set the command level name temporarily and then revert it back to the ``reverting_lvl_name``.
+    Set the log level name temporarily and then revert it back to the ``reverting_lvl_name``.
 
-    :param cmd_name: Command level name.
-    :param reverting_lvl_name: The command level name to revert to when operation finishes.
-    :param no_warn: A warning is shown if the supplied ``cmd_name`` is strip-empty. This warning can be suppressed
+    :param level: The log level to set name to.
+    :param level_name: Level name to set the level to.
+    :param reverting_lvl_name: The log level name to revert to when operation finishes.
+    :param no_warn: A warning is shown if the supplied ``level_name`` is strip-empty. This warning can be suppressed
         by setting ``no_warn=True``.
     """
     try:
-        if cmd_name is not None:
-            if cmd_name.strip() == '':
+        if level_name is not None:
+            if level_name.strip() == '':
                 if not no_warn:
                     with suppress_warning_stacktrace():
-                        warnings.warn("Command level name supplied is empty.")
-            logging.addLevelName(CMD_LOG_LEVEL, cmd_name)
+                        warnings.warn(f"Supplied log level name for log level {level} is empty.")
+            logging.addLevelName(CMD_LOG_LEVEL, level_name)
         yield
     finally:
-        if cmd_name:
+        if level_name:
             logging.addLevelName(CMD_LOG_LEVEL, reverting_lvl_name)

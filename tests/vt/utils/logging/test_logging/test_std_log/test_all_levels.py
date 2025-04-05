@@ -9,8 +9,9 @@ from unittest.mock import patch
 
 import pytest
 
-from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, TIMED_DETAIL_LOG_FMT, DEFAULT_STACK_LEVEL
-from vt.utils.logging.logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl, set_cmd_level_name
+from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, TIMED_DETAIL_LOG_FMT, DEFAULT_STACK_LEVEL, CMD_LOG_LEVEL, \
+    CMD_LOG_STR
+from vt.utils.logging.logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl, temp_set_level_name
 
 
 def test_ensure_correct_logging_lines():
@@ -54,7 +55,7 @@ class TestSuppliedCmdName:
         log.info('an info')
         logger = DirectAllLevelLoggerImpl(log, DEFAULT_STACK_LEVEL)
         logger.info('initialised info')
-        with pytest.warns(match="Command level name supplied is empty."):
+        with pytest.warns(match="Supplied log level name for log level [\d]+ is empty."):
             logger.cmd('initialised cmd', cmd_name)
 
     def test_warns_when_no_cmd_name_passed(self):
@@ -78,10 +79,10 @@ def test_ctx_mgr_called_when_cmd_lvl_enabled(cmd_lvl_name):
     log.info('an info')
     logger = DirectAllLevelLoggerImpl(log, DEFAULT_STACK_LEVEL)
     logger.info('initialised info')
-    method = set_cmd_level_name
+    method = temp_set_level_name
     with patch(f"{method.__module__}.{method.__qualname__}") as mocked_fn:
         logger.cmd("Command logged", cmd_lvl_name)
-        mocked_fn.assert_called_once_with(cmd_lvl_name)
+        mocked_fn.assert_called_once_with(CMD_LOG_LEVEL, cmd_lvl_name, CMD_LOG_STR)
 
 
 @pytest.mark.parametrize('cmd_lvl_name', ["CMD", None])
@@ -93,7 +94,7 @@ def test_ctx_mgr_not_called_when_cmd_lvl_disabled(cmd_lvl_name):
     log.info('an info')
     logger = DirectAllLevelLoggerImpl(log, DEFAULT_STACK_LEVEL)
     logger.info('initialised info')
-    method = set_cmd_level_name
+    method = temp_set_level_name
     with patch(f"{method.__module__}.{method.__qualname__}") as mocked_fn:
         cmd_lvl_name = "CMD"
         logger.cmd("Command logged", cmd_lvl_name)
