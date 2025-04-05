@@ -95,7 +95,7 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
     @override
     def cmd(self, msg, cmd_name: str | None = None, *args, **kwargs) -> None:
         if self.underlying_logger.isEnabledFor(CMD_LOG_LEVEL):
-            with TempSetLevelName(CMD_LOG_LEVEL, cmd_name, CMD_LOG_STR):
+            with TempSetCmdLvlName(cmd_name):
                 self.underlying_logger.log(CMD_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
 
     @override
@@ -165,3 +165,19 @@ class TempSetLevelName:
             logging.addLevelName(self.level, self.reverting_lvl_name)
         else:
             logging.addLevelName(self.level, self.original_level_name)
+
+
+class TempSetCmdLvlName(TempSetLevelName):
+    def __init__(self, cmd_name: str | None, no_warn: bool = False):
+        """
+        Set the command log level name temporarily and then revert it back to the ``CMD_LOG_STR``.
+
+        :param cmd_name: Command log Level name to set the level to.
+        :param no_warn: A warning is shown if the supplied ``level_name`` is strip-empty. This warning can be suppressed
+            by setting ``no_warn=True``.
+        """
+        super().__init__(CMD_LOG_LEVEL, cmd_name, CMD_LOG_STR, no_warn)
+
+    @override
+    def _warn_user(self):
+        warnings.warn(f"Supplied log level name for command log level {self.level} is empty.")
