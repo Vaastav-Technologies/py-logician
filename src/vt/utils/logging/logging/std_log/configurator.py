@@ -15,6 +15,7 @@ from vt.utils.logging.logging.configurators import LoggerConfigurator
 from vt.utils.logging.logging.formatters import StreamFormatMapper
 from vt.utils.logging.logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl
 from vt.utils.logging.logging.std_log.formatters import StdStreamFormatMapper
+from vt.utils.logging.logging.std_log.utils import level_name_mapping
 from vt.utils.logging.warnings import suppress_warning_stacktrace
 
 
@@ -46,11 +47,10 @@ class StdLoggerConfigurator(LoggerConfigurator):
                 int_level = level if isinstance(level, int) else logging.getLevelNamesMapping()[level]
             except KeyError:
                 if not self.no_warn:
-                    levels_to_choose_from: dict[str, None] = {logging.getLevelName(level): None for level in
-                                                    sorted(logging.getLevelNamesMapping().values())}
+                    levels_to_choose_from: dict[int, str] = level_name_mapping()
                     with suppress_warning_stacktrace():
                         warnings.warn(f"{logger.name}: Undefined log level '{level}'. "
-                                      f"Choose from {list(levels_to_choose_from.keys())}.")
+                                      f"Choose from {list(levels_to_choose_from.values())}.")
                         warnings.warn(f"{logger.name}: Setting log level to default: "
                                       f"'{logging.getLevelName(StdLoggerConfigurator.WARNING_LOG_LEVEL)}'.")
                 int_level = StdLoggerConfigurator.WARNING_LOG_LEVEL

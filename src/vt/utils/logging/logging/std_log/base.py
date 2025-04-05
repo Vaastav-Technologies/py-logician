@@ -4,8 +4,8 @@
 """
 Logging interfaces for the standard logging library of python.
 """
+import logging
 from abc import abstractmethod
-from logging import Logger, addLevelName, getLevelNamesMapping
 from typing import Protocol, Any, Mapping, override
 
 from vt.utils.logging.logging import MinLogProtocol, AllLevelLogger
@@ -13,6 +13,7 @@ from vt.utils.logging.logging.base import FatalLogProtocol, ExceptionLogProtocol
 from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, TRACE_LOG_STR, SUCCESS_LOG_LEVEL, SUCCESS_LOG_STR, \
     NOTICE_LOG_LEVEL, NOTICE_LOG_STR, EXCEPTION_TRACEBACK_LOG_LEVEL, EXCEPTION_TRACEBACK_LOG_STR, FATAL_LOG_LEVEL, \
     FATAL_LOG_STR, CMD_LOG_LEVEL, CMD_LOG_STR
+from vt.utils.logging.logging.std_log.utils import level_name_mapping
 
 
 class StdLogProtocol(MinLogProtocol, Protocol):
@@ -102,13 +103,19 @@ class DirectStdAllLevelLogger(AllLevelLogger, Protocol):
         :return: An ascending sorted level -> name map of all the registered log levels.
         """
         if level_name_map:
-            DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP.update(level_name_map)
-        for level in DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP:
-            addLevelName(level, DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP[level])
-        return {l: n for n, l in sorted(getLevelNamesMapping().items(), key=lambda name_level: name_level[1])}
+            level_name_map.update(DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP)
+            DirectStdAllLevelLogger.__register_all_levels(level_name_map)
+        else:
+            DirectStdAllLevelLogger.__register_all_levels(DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP)
+        return level_name_mapping()
+
+    @staticmethod
+    def __register_all_levels(level_name_map: dict[int, str]):
+        for level in level_name_map:
+            logging.addLevelName(level, level_name_map[level])
 
     @override
     @property
     @abstractmethod
-    def underlying_logger(self) -> Logger: # noqa
+    def underlying_logger(self) -> logging.Logger: # noqa
         pass
