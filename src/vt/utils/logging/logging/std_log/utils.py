@@ -13,5 +13,3 @@ def level_name_mapping() -> dict[int, str]:
     """
     return {level: logging.getLevelName(level) for level in
             sorted(logging.getLevelNamesMapping().values())}
-
-
