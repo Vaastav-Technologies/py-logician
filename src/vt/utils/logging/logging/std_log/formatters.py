@@ -70,6 +70,7 @@ class StdLogAllLevelDiffFmt(DiffLevelDiffFmt):
         final_level = level if level in self._fmt_dict else self.next_approx_level(level)
         return self._fmt_dict[final_level]
 
+    @override
     def next_approx_level(self, missing_level: int) -> int:
         """
         :param missing_level: A level that was not registered in the logger.

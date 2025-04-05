@@ -51,6 +51,7 @@ class BaseStdProtocolAllLevelLogger(StdProtocolAllLevelLogger, ABC):
         self.level = self._logger_impl.underlying_logger.level
         self.disabled = self._logger_impl.underlying_logger.disabled
 
+    @override
     @property
     def logger_impl(self) -> StdProtocolAllLevelLoggerImpl:
         return self._logger_impl
@@ -145,6 +146,7 @@ class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, DirectStdAllLev
         self.level_name_map = level_name_map
         self.cmd_name = cmd_name
 
+    @override
     @property
     def logger_impl(self) -> BaseDirectStdAllLevelLoggerImpl:
         return cast(BaseDirectStdAllLevelLoggerImpl, self._logger_impl)
@@ -193,6 +195,7 @@ class DirectAllLevelLogger(BaseDirectStdAllLevelLogger, AllLevelLogger):
         """
         super().__init__(logger_impl, level_name_map, cmd_name)
 
+    @override
     @property
     def logger_impl(self) -> BaseDirectStdAllLevelLoggerImpl:
         return cast(BaseDirectStdAllLevelLoggerImpl, self._logger_impl)
