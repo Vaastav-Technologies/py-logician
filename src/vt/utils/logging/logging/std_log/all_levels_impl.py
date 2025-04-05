@@ -96,7 +96,7 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
     @override
     def cmd(self, msg, cmd_name: str | None = None, *args, **kwargs) -> None:
         if self.underlying_logger.isEnabledFor(CMD_LOG_LEVEL):
-            with temp_set_level_name(CMD_LOG_LEVEL, cmd_name, CMD_LOG_STR):
+            with TempSetLevelName(CMD_LOG_LEVEL, cmd_name, CMD_LOG_STR):
                 self.underlying_logger.log(CMD_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
 
     @override
@@ -124,25 +124,59 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
         self.underlying_logger.log(level, msg, *args, stacklevel=self.stack_level, **kwargs)
 
 
+class TempSetLevelName:
+    def __init__(self, level: int, level_name: str | None, reverting_lvl_name: str, no_warn: bool = False):
+        """
+        Set the log level name temporarily and then revert it back to the ``reverting_lvl_name``.
+
+        :param level: The log level to set name to.
+        :param level_name: Level name to set the level to.
+        :param reverting_lvl_name: The log level name to revert to when operation finishes.
+        :param no_warn: A warning is shown if the supplied ``level_name`` is strip-empty. This warning can be suppressed
+            by setting ``no_warn=True``.
+        """
+        self.level = level
+        self.level_name = level_name
+        self.reverting_lvl_name = reverting_lvl_name
+        self.no_warn = no_warn
+        self.original_level_name = logging.getLevelName(level)
+
+    def __enter__(self):
+        if self.level_name is not None:
+            if self.level_name.strip() == '':
+                self.warn_user()
+            else:
+                logging.addLevelName(self.level, self.level_name)
+
+    def warn_user(self):
+        """
+        A warning is shown if the supplied ``level_name`` is strip-empty. This warning can be suppressed
+            by setting ``no_warn=True`` in ctor.
+        """
+        if not self.no_warn:
+            with suppress_warning_stacktrace():
+                self._warn_user()
+
+    def _warn_user(self):
+        warnings.warn(f"Supplied log level name for log level {self.level} is empty.")
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.level_name:
+            logging.addLevelName(self.level, self.reverting_lvl_name)
+        else:
+            logging.addLevelName(self.level, self.original_level_name)
+
+
 @contextlib.contextmanager
 def temp_set_level_name(level: int, level_name: str | None, reverting_lvl_name: str, no_warn: bool = False):
-    """
-    Set the log level name temporarily and then revert it back to the ``reverting_lvl_name``.
-
-    :param level: The log level to set name to.
-    :param level_name: Level name to set the level to.
-    :param reverting_lvl_name: The log level name to revert to when operation finishes.
-    :param no_warn: A warning is shown if the supplied ``level_name`` is strip-empty. This warning can be suppressed
-        by setting ``no_warn=True``.
-    """
     try:
         if level_name is not None:
             if level_name.strip() == '':
                 if not no_warn:
                     with suppress_warning_stacktrace():
                         warnings.warn(f"Supplied log level name for log level {level} is empty.")
-            logging.addLevelName(CMD_LOG_LEVEL, level_name)
+            logging.addLevelName(level, level_name)
         yield
     finally:
         if level_name:
-            logging.addLevelName(CMD_LOG_LEVEL, reverting_lvl_name)
+            logging.addLevelName(level, reverting_lvl_name)
