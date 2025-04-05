@@ -21,18 +21,22 @@ from vt.utils.logging.warnings import suppress_warning_stacktrace
 class DirectStdLoggerConfigurator(LoggerConfigurator):
     WARNING_LOG_LEVEL: int = logging.WARNING
 
-    def __init__(self, stream_fmt_mapper: StreamFormatMapper = StdStreamFormatMapper()):
+    def __init__(self, stream_fmt_mapper: StreamFormatMapper = StdStreamFormatMapper(),
+                 level_name_map: dict[int, str] | None = None):
         """
         Perform logger configuration using the python's std logger calls.
 
         :param stream_fmt_mapper: an output-stream -> log format mapper.
+        :param level_name_map: log level - name mapping. This mapping updates the std python logging library's
+            registered log levels . Check ``DirectAllLevelLogger.register_levels()`` for more info.
         """
         self.stream_fmt_mapper = stream_fmt_mapper
+        self.level_name_map = level_name_map
 
     @override
     def configure(self, logger: logging.Logger, level: int | str = WARNING_LOG_LEVEL) -> DirectAllLevelLogger:
         stream_fmt_map = self.stream_fmt_mapper.stream_fmt_map
-        DirectAllLevelLogger.register_levels()
+        DirectAllLevelLogger.register_levels(self.level_name_map)
         for stream in stream_fmt_map:
             hdlr = logging.StreamHandler(stream=stream) # noqa
             lvl_fmt_handlr = stream_fmt_map[stream]
