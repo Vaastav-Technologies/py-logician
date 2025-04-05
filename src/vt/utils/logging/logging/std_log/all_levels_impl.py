@@ -125,12 +125,21 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
 
 
 @contextlib.contextmanager
-def set_cmd_level_name(cmd_name: str | None, reverting_lvl_name: str = CMD_LOG_STR):
+def set_cmd_level_name(cmd_name: str | None, reverting_lvl_name: str = CMD_LOG_STR, no_warn: bool = False):
+    """
+    Set the command level name temporarily and then revert it back to the ``reverting_lvl_name``.
+
+    :param cmd_name: Command level name.
+    :param reverting_lvl_name: The command level name to revert to when operation finishes.
+    :param no_warn: A warning is shown if the supplied ``cmd_name`` is strip-empty. This warning can be suppressed
+        by setting ``no_warn=True``.
+    """
     try:
         if cmd_name is not None:
             if cmd_name.strip() == '':
-                with suppress_warning_stacktrace():
-                    warnings.warn("Command level name supplied is empty.")
+                if not no_warn:
+                    with suppress_warning_stacktrace():
+                        warnings.warn("Command level name supplied is empty.")
             logging.addLevelName(CMD_LOG_LEVEL, cmd_name)
         yield
     finally:
