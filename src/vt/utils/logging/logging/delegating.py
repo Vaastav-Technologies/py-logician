@@ -54,6 +54,7 @@ class AllLevelLoggerImplABC(ProtocolMinLevelLoggerImplBase, AllLevelLogger, Prot
         - TRACE
         - SUCCESS
         - NOTICE
+        - COMMAND
         - FATAL
         - EXCEPTION
     """

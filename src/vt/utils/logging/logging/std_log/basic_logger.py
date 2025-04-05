@@ -2,18 +2,9 @@
 # coding=utf-8
 
 """
-Basic logging interface implementation by the standard logging library of python.
+All logging interface implementation by the standard logging library of python.
 
-Basic loggers only support operations::
-
-    - log
-    - debug
-    - info
-    - warning
-    - error
-    - exception
-    - critical
-    - fatal
+All level of logging are supported by these loggers using delegation and indirection
 """
 from abc import ABC, abstractmethod
 from logging import Logger
