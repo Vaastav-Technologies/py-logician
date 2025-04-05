@@ -37,7 +37,8 @@ class StdLoggerConfigurator(LoggerConfigurator):
         self.no_warn = no_warn
 
     @override
-    def configure(self, logger: logging.Logger, level: int | str = WARNING_LOG_LEVEL) -> DirectAllLevelLogger:
+    def configure(self, logger: logging.Logger, level: int | str = WARNING_LOG_LEVEL,
+                  cmd_name: str | None = None) -> DirectAllLevelLogger:
         stream_fmt_map = self.stream_fmt_mapper.stream_fmt_map
         DirectAllLevelLogger.register_levels(self.level_name_map)
         for stream in stream_fmt_map:
@@ -57,4 +58,4 @@ class StdLoggerConfigurator(LoggerConfigurator):
             hdlr.setFormatter(logging.Formatter(fmt=lvl_fmt_handlr.fmt(int_level)))
             logger.addHandler(hdlr)
             logger.setLevel(int_level)
-        return DirectAllLevelLogger(DirectAllLevelLoggerImpl(logger))
+        return DirectAllLevelLogger(DirectAllLevelLoggerImpl(logger), cmd_name=cmd_name)

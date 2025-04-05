@@ -20,12 +20,15 @@ class LoggerConfigurator(Protocol):
     """
 
     @abstractmethod
-    def configure(self, logger: logging.Logger, level: int | str = logging.WARNING) -> DirectStdAllLevelLogger:
+    def configure(self, logger: logging.Logger, level: int | str = logging.WARNING,
+                  cmd_name: str | None = None) -> DirectStdAllLevelLogger:
         """
         Configure the std python logger for various formatting quick-hands.
 
         :param logger: std python logger
         :param level: logging level.
+        :param cmd_name: The command name to register the command logging level to. If `None`` then the default
+            ``COMMAND`` is picked-up and that will be shown on the ``log.cmd()`` call.
         :return: A configured All level logging std python logger.
         """
         pass
