@@ -11,8 +11,7 @@ import pytest
 
 from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, TIMED_DETAIL_LOG_FMT, DEFAULT_STACK_LEVEL, CMD_LOG_LEVEL, \
     CMD_LOG_STR
-from vt.utils.logging.logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl, temp_set_level_name, \
-    TempSetLevelName
+from vt.utils.logging.logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl, TempSetLevelName
 
 
 def test_ensure_correct_logging_lines():

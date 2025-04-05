@@ -4,7 +4,6 @@
 """
 Classes w.r.t implementation inheritance are defined here.
 """
-import contextlib
 import logging
 import warnings
 from abc import abstractmethod
@@ -165,18 +164,3 @@ class TempSetLevelName:
             logging.addLevelName(self.level, self.reverting_lvl_name)
         else:
             logging.addLevelName(self.level, self.original_level_name)
-
-
-@contextlib.contextmanager
-def temp_set_level_name(level: int, level_name: str | None, reverting_lvl_name: str, no_warn: bool = False):
-    try:
-        if level_name is not None:
-            if level_name.strip() == '':
-                if not no_warn:
-                    with suppress_warning_stacktrace():
-                        warnings.warn(f"Supplied log level name for log level {level} is empty.")
-            logging.addLevelName(level, level_name)
-        yield
-    finally:
-        if level_name:
-            logging.addLevelName(level, reverting_lvl_name)
