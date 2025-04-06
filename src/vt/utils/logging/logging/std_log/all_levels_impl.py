@@ -7,7 +7,7 @@ Classes w.r.t implementation inheritance are defined here.
 import warnings
 from abc import abstractmethod
 from logging import Logger
-from typing import override, cast, Protocol
+from typing import override, Protocol
 
 from vt.utils.logging.logging.delegating import AllLevelLoggerImplABC
 from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, \
@@ -69,7 +69,7 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
     @override
     @property
     def underlying_logger(self) -> Logger: # noqa
-        return cast(Logger, self._underlying_logger)
+        return self._underlying_logger
 
     @override
     def trace(self, msg, *args, **kwargs) -> None:
