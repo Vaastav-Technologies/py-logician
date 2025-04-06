@@ -86,6 +86,12 @@ class StdLogAllLevelDiffFmt(DiffLevelDiffFmt):
         return max_level
 
 
+STDERR_ALL_LVL_SAME_FMT: dict[TextIO, LogLevelFmt] = {sys.stderr: StdLogAllLevelSameFmt()}
+"""
+Maps ``sys.stderr`` to same logging format for all levels.
+"""
+
+
 class StdStreamFormatMapper(StreamFormatMapper):
     STDERR_ALL_LVL_SAME_FMT: dict[TextIO, LogLevelFmt] = {sys.stderr: StdLogAllLevelSameFmt()}
     """
