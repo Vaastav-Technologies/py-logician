@@ -82,21 +82,21 @@ class StdLoggerConfigurator(LoggerConfigurator):
         level = self.level
         cmd_name = self.cmd_name
         DirectAllLevelLogger.register_levels(self.level_name_map)
+        try:
+            int_level = level if isinstance(level, int) else logging.getLevelNamesMapping()[level]
+        except KeyError:
+            if not self.no_warn:
+                levels_to_choose_from: dict[int, str] = level_name_mapping()
+                with suppress_warning_stacktrace():
+                    warnings.warn(f"{logger.name}: Undefined log level '{level}'. "
+                                  f"Choose from {list(levels_to_choose_from.values())}.")
+                    warnings.warn(f"{logger.name}: Setting log level to default: "
+                                  f"'{logging.getLevelName(StdLoggerConfigurator.WARNING_LOG_LEVEL)}'.")
+            int_level = StdLoggerConfigurator.WARNING_LOG_LEVEL
+        logger.setLevel(int_level)
         for stream in stream_fmt_map:
             hdlr = logging.StreamHandler(stream=stream) # noqa
             lvl_fmt_handlr = stream_fmt_map[stream]
-            try:
-                int_level = level if isinstance(level, int) else logging.getLevelNamesMapping()[level]
-            except KeyError:
-                if not self.no_warn:
-                    levels_to_choose_from: dict[int, str] = level_name_mapping()
-                    with suppress_warning_stacktrace():
-                        warnings.warn(f"{logger.name}: Undefined log level '{level}'. "
-                                      f"Choose from {list(levels_to_choose_from.values())}.")
-                        warnings.warn(f"{logger.name}: Setting log level to default: "
-                                      f"'{logging.getLevelName(StdLoggerConfigurator.WARNING_LOG_LEVEL)}'.")
-                int_level = StdLoggerConfigurator.WARNING_LOG_LEVEL
             hdlr.setFormatter(logging.Formatter(fmt=lvl_fmt_handlr.fmt(int_level)))
             logger.addHandler(hdlr)
-            logger.setLevel(int_level)
         return DirectAllLevelLogger(DirectAllLevelLoggerImpl(logger), cmd_name=cmd_name)
