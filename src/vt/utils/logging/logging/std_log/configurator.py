@@ -7,6 +7,7 @@ Logger interfaces for standard Logger configurators.
 """
 
 import logging
+import sys
 import warnings
 from typing import override
 
@@ -22,24 +23,31 @@ from vt.utils.logging.warnings import suppress_warning_stacktrace
 class StdLoggerConfigurator(LoggerConfigurator):
     WARNING_LOG_LEVEL: int = logging.WARNING
 
-    def __init__(self, stream_fmt_mapper: StreamFormatMapper = StdStreamFormatMapper(),
+    def __init__(self, *, level: int | str = WARNING_LOG_LEVEL, cmd_name: str | None = None,
+                 stream_fmt_mapper: StreamFormatMapper = StdStreamFormatMapper(),
                  level_name_map: dict[int, str] | None = None, no_warn: bool = False):
         """
         Perform logger configuration using the python's std logger calls.
 
+        :param level: active logging level.
+        :param cmd_name: The command name to register the command logging level to. If `None`` then the default
+            ``COMMAND`` is picked-up and that will be shown on the ``log.cmd()`` call.
         :param stream_fmt_mapper: an output-stream -> log format mapper.
         :param level_name_map: log level - name mapping. This mapping updates the std python logging library's
             registered log levels . Check ``DirectAllLevelLogger.register_levels()`` for more info.
         :param no_warn: do not warn if a supplied level is not registered with the logging library.
         """
+        self.level = level
+        self.cmd_name = cmd_name
         self.stream_fmt_mapper = stream_fmt_mapper
         self.level_name_map = level_name_map
         self.no_warn = no_warn
 
     @override
-    def configure(self, logger: logging.Logger, level: int | str = WARNING_LOG_LEVEL,
-                  cmd_name: str | None = None) -> DirectAllLevelLogger:
+    def configure(self, logger: logging.Logger) -> DirectAllLevelLogger:
         stream_fmt_map = self.stream_fmt_mapper.stream_fmt_map
+        level = self.level
+        cmd_name = self.cmd_name
         DirectAllLevelLogger.register_levels(self.level_name_map)
         for stream in stream_fmt_map:
             hdlr = logging.StreamHandler(stream=stream) # noqa
