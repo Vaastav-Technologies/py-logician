@@ -8,7 +8,7 @@ Logger interfaces for Logger formatters.
 
 
 from abc import abstractmethod
-from typing import Protocol, TextIO
+from typing import Protocol
 
 
 class LogLevelFmt(Protocol):
@@ -81,27 +81,5 @@ class DiffLevelDiffFmt(LogLevelFmt, Protocol):
         """
         :param missing_level: A level that was not registered in the logger.
         :return: next approx level if a ``missing_level`` is queried which wasn't already registered in the logger.
-        """
-        pass
-
-
-class StreamFormatMapper(Protocol):
-    """
-    Maintains a map of the log-formatter for each stream.
-    """
-
-    @property
-    @abstractmethod
-    def stream_fmt_map(self) -> dict[TextIO, LogLevelFmt]:
-        """
-        :return: The stream -> ``LogLevelFmt`` mapping.
-        """
-        ...
-
-    @abstractmethod
-    def fmt_handler(self, stream: TextIO) -> LogLevelFmt:
-        """
-        :param stream: stream for which the ``LogLevelFmt`` is to be queried.
-        :return: ``LogLevelFmt`` for the queried ``stream``.
         """
         pass

@@ -9,7 +9,7 @@ import logging
 import sys
 from typing import TextIO, override
 
-from vt.utils.logging.logging.formatters import AllLevelSameFmt, DiffLevelDiffFmt, StreamFormatMapper, LogLevelFmt
+from vt.utils.logging.logging.formatters import AllLevelSameFmt, DiffLevelDiffFmt, LogLevelFmt
 from vt.utils.logging.logging.std_log import TIMED_DETAIL_LOG_FMT, TRACE_LOG_LEVEL, DETAIL_LOG_FMT, SHORT_LOG_FMT, \
     SHORTER_LOG_FMT
 
@@ -90,28 +90,3 @@ STDERR_ALL_LVL_SAME_FMT: dict[TextIO, LogLevelFmt] = {sys.stderr: StdLogAllLevel
 """
 Maps ``sys.stderr`` to same logging format for all levels.
 """
-
-
-class StdStreamFormatMapper(StreamFormatMapper):
-    STDERR_ALL_LVL_SAME_FMT: dict[TextIO, LogLevelFmt] = {sys.stderr: StdLogAllLevelSameFmt()}
-    """
-    Maps ``sys.stderr`` to same logging format for all levels.
-    """
-
-    def __init__(self, stream_fmt_map: dict[TextIO, LogLevelFmt] | None = None):
-        """
-        Maintains a map of the std-log-formatter for each stream.
-
-        :param stream_fmt_map: stream -> ``LogLevelFmt`` map. Defaults to
-            ``StdStreamFormatMapper.STDERR_ALL_LVL_SAME_FMT`` when ``None`` or an empty dict is provided.
-        """
-        self._stream_fmt_map = stream_fmt_map if stream_fmt_map else StdStreamFormatMapper.STDERR_ALL_LVL_SAME_FMT
-
-    @override
-    @property
-    def stream_fmt_map(self) -> dict[TextIO, LogLevelFmt]:
-        return self._stream_fmt_map
-
-    @override
-    def fmt_handler(self, stream: TextIO) -> LogLevelFmt:
-        return self.stream_fmt_map[stream]
