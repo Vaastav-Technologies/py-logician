@@ -80,7 +80,6 @@ class StdLoggerConfigurator(LoggerConfigurator):
     def configure(self, logger: logging.Logger) -> DirectAllLevelLogger:
         stream_fmt_map = self.stream_fmt_mapper
         level = self.level
-        cmd_name = self.cmd_name
         DirectAllLevelLogger.register_levels(self.level_name_map)
         try:
             int_level = level if isinstance(level, int) else logging.getLevelNamesMapping()[level]
@@ -99,4 +98,4 @@ class StdLoggerConfigurator(LoggerConfigurator):
             lvl_fmt_handlr = stream_fmt_map[stream]
             hdlr.setFormatter(logging.Formatter(fmt=lvl_fmt_handlr.fmt(int_level)))
             logger.addHandler(hdlr)
-        return DirectAllLevelLogger(DirectAllLevelLoggerImpl(logger), cmd_name=cmd_name)
+        return DirectAllLevelLogger(DirectAllLevelLoggerImpl(logger), cmd_name=self.cmd_name)
