@@ -5,6 +5,7 @@
 Tests std log configurators.
 """
 import logging
+import os
 import sys
 import warnings
 from collections import namedtuple
@@ -49,6 +50,8 @@ class TestStdLoggerConfigurator:
                 assert cfg.stream_fmt_mapper == STDERR_ALL_LVL_SAME_FMT
 
             @pytest.mark.parametrize('stream_list', [[sys.stderr], [sys.stderr, sys.stdout], [sys.stdout, TextIO()]])
+            @pytest.mark.parametrize('stream_list', [[sys.stderr], [sys.stderr, sys.stdout], [sys.stdout,
+                                                                                              open(os.devnull)]])
             def test_supplied_stream_is_stored(self, stream_list):
                 cfg = StdLoggerConfigurator(stream_list=stream_list)
                 assert all(stream in cfg.stream_fmt_mapper for stream in stream_list)
