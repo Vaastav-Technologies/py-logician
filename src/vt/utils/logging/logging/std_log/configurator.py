@@ -21,21 +21,21 @@ from vt.utils.logging.warnings import suppress_warning_stacktrace
 
 
 class StdLoggerConfigurator(LoggerConfigurator):
-    WARNING_LOG_LEVEL: int = logging.WARNING
+    DEFAULT_LOG_LEVEL_WARNING: int = logging.WARNING
 
     @overload
-    def __init__(self, *, level: int | str = WARNING_LOG_LEVEL, cmd_name: str | None = None,
+    def __init__(self, *, level: int | str = DEFAULT_LOG_LEVEL_WARNING, cmd_name: str | None = None,
                  diff_fmt_per_level: bool | None = None, stream_list: list[TextIO] | None = None,
                  level_name_map: dict[int, str] | None = None, no_warn: bool = False):
         ...
 
     @overload
-    def __init__(self, *, level: int | str = WARNING_LOG_LEVEL, cmd_name: str | None = None,
+    def __init__(self, *, level: int | str = DEFAULT_LOG_LEVEL_WARNING, cmd_name: str | None = None,
                  stream_fmt_mapper: dict[TextIO, LogLevelFmt] | None = None,
                  level_name_map: dict[int, str] | None = None, no_warn: bool = False):
         ...
 
-    def __init__(self, *, level: int | str = WARNING_LOG_LEVEL, cmd_name: str | None = None,
+    def __init__(self, *, level: int | str = DEFAULT_LOG_LEVEL_WARNING, cmd_name: str | None = None,
                  stream_fmt_mapper: dict[TextIO, LogLevelFmt] | None = None,
                  diff_fmt_per_level: bool | None = None, stream_list: list[TextIO] | None = None,
                  level_name_map: dict[int, str] | None = None, no_warn: bool = False):
@@ -94,8 +94,8 @@ class StdLoggerConfigurator(LoggerConfigurator):
                     warnings.warn(f"{logger.name}: Undefined log level '{level}'. "
                                   f"Choose from {list(levels_to_choose_from.values())}.")
                     warnings.warn(f"{logger.name}: Setting log level to default: "
-                                  f"'{logging.getLevelName(StdLoggerConfigurator.WARNING_LOG_LEVEL)}'.")
-            int_level = StdLoggerConfigurator.WARNING_LOG_LEVEL
+                                  f"'{logging.getLevelName(StdLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING)}'.")
+            int_level = StdLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING
         logger.setLevel(int_level)
         if not stream_fmt_map:  # empty map
             for handler in logger.handlers:
