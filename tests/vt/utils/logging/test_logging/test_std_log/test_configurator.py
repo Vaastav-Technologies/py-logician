@@ -128,7 +128,7 @@ class TestStdLoggerConfigurator:
                 log = logging.getLogger(logger_name)
                 with pytest.warns() as warn_recs:
                     logger = cfg.configure(log)
-                levels_to_choose_from: dict[int, str] = level_name_mapping()
+                levels_to_choose_from = level_name_mapping()
                 assert len(warn_recs) == 2 # 2 warnings raised
                 assert all(w.category == UserWarning for w in warn_recs)
                 assert warn_recs[0].message.args[0] == f"{logger.name}: Undefined log level '{level}'. "\
