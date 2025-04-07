@@ -49,7 +49,9 @@ class TestStdLoggerConfigurator:
                 cfg = StdLoggerConfigurator()
                 assert cfg.stream_fmt_mapper == STDERR_ALL_LVL_SAME_FMT
 
-            @pytest.mark.parametrize('stream_list', [[sys.stderr], [sys.stderr, sys.stdout], [sys.stdout, TextIO()]])
+            # TODO: find a better way to have /dev/null. Previously this was done using TextIO() but since TextIO is
+            #   an ABC hence, cannot be instantiated as that is not okay with mypy also. Just using open(os.devnull)
+            #   works but does not look satisfactory.
             @pytest.mark.parametrize('stream_list', [[sys.stderr], [sys.stderr, sys.stdout], [sys.stdout,
                                                                                               open(os.devnull)]])
             def test_supplied_stream_is_stored(self, stream_list):
