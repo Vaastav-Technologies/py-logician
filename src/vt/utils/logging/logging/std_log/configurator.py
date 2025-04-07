@@ -80,12 +80,11 @@ class StdLoggerConfigurator(LoggerConfigurator):
     def configure(self, logger: logging.Logger) -> DirectAllLevelLogger:
         stream_fmt_map = self.stream_fmt_mapper
         level = self.level
-        DirectAllLevelLogger.register_levels(self.level_name_map)
+        levels_to_choose_from: dict[int, str] = DirectAllLevelLogger.register_levels(self.level_name_map)
         try:
             int_level = level if isinstance(level, int) else logging.getLevelNamesMapping()[level]
         except KeyError:
             if not self.no_warn:
-                levels_to_choose_from: dict[int, str] = level_name_mapping()
                 with suppress_warning_stacktrace():
                     warnings.warn(f"{logger.name}: Undefined log level '{level}'. "
                                   f"Choose from {list(levels_to_choose_from.values())}.")
