@@ -82,9 +82,7 @@ class TestStdLoggerConfigurator:
         class TestStreamFormatMapper:
             def test_defaults_to_std_stream_fmt(self):
                 cfg = StdLoggerConfigurator()
-                assert cfg.stream_fmt_mapper is not None
-                assert cfg.stream_fmt_mapper
-                assert isinstance(cfg.stream_fmt_mapper, dict)
+                assert cfg.stream_fmt_mapper == STDERR_ALL_LVL_SAME_FMT
 
             def test_supplied_is_stored(self):
                 map_dict = {sys.stderr: StdLogAllLevelSameFmt(), sys.stdout: StdLogAllLevelDiffFmt()}
