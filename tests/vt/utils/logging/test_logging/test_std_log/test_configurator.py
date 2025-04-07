@@ -108,8 +108,7 @@ class TestStdLoggerConfigurator:
             assert logger.level == int_level
 
         class TestWarnings:
-            @pytest.fixture(params=[(level, level_name_map) for level in BOGUS_LEVELS for level_name_map in LEVEL_NAME_MAPS],
-                            scope="function")
+            @pytest.fixture(params=[(level, level_name_map) for level in BOGUS_LEVELS for level_name_map in LEVEL_NAME_MAPS])
             def lvl_fixture(self, request):
                 level, level_name_map = request.param
                 LvlPackage = namedtuple("LvlPackage", "level, level_name_map")
