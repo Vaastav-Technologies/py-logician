@@ -4,11 +4,16 @@
 """
 Logging interfaces for the standard logging library of python.
 """
-from abc import ABC
-from typing import Protocol, Any, Mapping
+import logging
+from abc import abstractmethod
+from typing import Protocol, Any, Mapping, override
 
-from vt.utils.logging.logging import MinLogProtocol
-from vt.utils.logging.logging.base import _MinLevelLogger, FatalLevelLogger, ExceptionLevelLogger
+from vt.utils.logging.logging import MinLogProtocol, AllLevelLogger
+from vt.utils.logging.logging.base import FatalLogProtocol, ExceptionLogProtocol, HasUnderlyingLogger
+from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, TRACE_LOG_STR, SUCCESS_LOG_LEVEL, SUCCESS_LOG_STR, \
+    NOTICE_LOG_LEVEL, NOTICE_LOG_STR, EXCEPTION_TRACEBACK_LOG_LEVEL, EXCEPTION_TRACEBACK_LOG_STR, FATAL_LOG_LEVEL, \
+    FATAL_LOG_STR, CMD_LOG_LEVEL, CMD_LOG_STR
+from vt.utils.logging.logging.std_log.utils import level_name_mapping
 
 
 class StdLogProtocol(MinLogProtocol, Protocol):
@@ -41,7 +46,7 @@ class StdLogProtocol(MinLogProtocol, Protocol):
         ...
 
 
-class StdLevelLogger(_MinLevelLogger, FatalLevelLogger, ExceptionLevelLogger, ABC):
+class StdLevelLogger(MinLogProtocol, FatalLogProtocol, ExceptionLogProtocol, HasUnderlyingLogger, Protocol):
     """
     Logger that implements python standard logging methods::
 
@@ -54,3 +59,63 @@ class StdLevelLogger(_MinLevelLogger, FatalLevelLogger, ExceptionLevelLogger, AB
         - exception
     """
     pass
+
+
+class DirectStdAllLevelLogger(AllLevelLogger, Protocol):
+    """
+    All logging levels as provided by the python std logging.
+    """
+    DEFAULT_LEVEL_MAP: dict[int, str] = {TRACE_LOG_LEVEL: TRACE_LOG_STR,
+                                         SUCCESS_LOG_LEVEL: SUCCESS_LOG_STR,
+                                         NOTICE_LOG_LEVEL: NOTICE_LOG_STR,
+                                         CMD_LOG_LEVEL: CMD_LOG_STR,
+                                         EXCEPTION_TRACEBACK_LOG_LEVEL: EXCEPTION_TRACEBACK_LOG_STR,
+                                         FATAL_LOG_LEVEL: FATAL_LOG_STR}
+    """
+    All log levels in accordance with the python std log. Ordered in such a fashion::
+    
+        3 -> TRACEBACK
+        5 -> TRACE
+        10 -> DEBUG
+        20 -> INFO
+        23 -> SUCCESS
+        26 -> NOTICE
+        28 -> COMMAND
+        30 -> WARNING
+        40 -> ERROR
+        50 -> CRITICAL
+        60 -> FATAL
+    """
+
+    @staticmethod
+    def register_levels(level_name_map: dict[int, str] | None = None) -> dict[int, str]:
+        """
+        Register levels in the python std logger.
+
+        Note::
+
+            The level changes are global in python std library hence, multiple calls to
+            ``DirectStdAllLevelLogger.register_levels()`` may result in the latest call to win.
+
+        :param level_name_map: log level - name mapping. This mapping updates the
+            ``DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP`` and then all the updated
+            ``DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP`` log levels are registered.
+        :return: An ascending sorted level -> name map of all the registered log levels.
+        """
+        if level_name_map:
+            level_name_map.update(DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP)
+            DirectStdAllLevelLogger.__register_all_levels(level_name_map)
+        else:
+            DirectStdAllLevelLogger.__register_all_levels(DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP)
+        return level_name_mapping()
+
+    @staticmethod
+    def __register_all_levels(level_name_map: dict[int, str]):
+        for level in level_name_map:
+            logging.addLevelName(level, level_name_map[level])
+
+    @override
+    @property
+    @abstractmethod
+    def underlying_logger(self) -> logging.Logger: # noqa
+        pass

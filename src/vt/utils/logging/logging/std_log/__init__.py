@@ -6,4 +6,6 @@ Logging implemented by python standard logging.
 """
 
 from vt.utils.logging.logging.std_log.__constants__ import *
-from vt.utils.logging.logging.std_log.base import StdLevelLogger, StdLogProtocol
+from vt.utils.logging.logging.std_log.base import StdLevelLogger, StdLogProtocol, DirectStdAllLevelLogger
+from vt.utils.logging.logging.std_log.all_levels import StdProtocolAllLevelLogger, BaseDirectStdAllLevelLogger, \
+    DirectAllLevelLogger

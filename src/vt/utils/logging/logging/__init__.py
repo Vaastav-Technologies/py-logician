@@ -4,7 +4,7 @@
 """
 Logging related library.
 
-This library is built to let other logging projects extent it and implement their own versions of various log levels.
+This library is built to let other logging projects extend it and implement their own versions of various log levels.
 Only log levels are of essence in this library as most of the logging concerns log levels and not the actual logger
 setup.
 
@@ -16,4 +16,15 @@ at the time of vt.utils.logging.logger creation and hence client can configure t
 supplying the logger class to perform delegation onto by this library.
 """
 
-from .base import MinLevelLogger, AllLevelLogger, MinLogProtocol
+
+from logging import Logger
+
+
+from vt.utils.logging.logging.base import AllLevelLogger, MinLogProtocol
+from vt.utils.logging.logging.std_log import StdLogProtocol, StdLevelLogger, StdProtocolAllLevelLogger, \
+    BaseDirectStdAllLevelLogger, DirectAllLevelLogger, DirectStdAllLevelLogger
+from vt.utils.logging.logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl as _DALImpl
+
+
+def get_direct_all_level_logger(logger: Logger) -> DirectStdAllLevelLogger:
+    return DirectAllLevelLogger(_DALImpl(logger))
