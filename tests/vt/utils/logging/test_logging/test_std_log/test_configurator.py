@@ -6,6 +6,7 @@ Tests std log configurators.
 """
 import logging
 import sys
+import warnings
 from collections import namedtuple
 from typing import TextIO
 from unittest.mock import patch
@@ -19,6 +20,13 @@ from vt.utils.logging.logging.std_log.formatters import StdLogAllLevelSameFmt, \
 from vt.utils.logging.logging.std_log.formatters import STDERR_ALL_LVL_SAME_FMT
 from vt.utils.logging.logging.std_log.utils import level_name_mapping
 
+BOGUS_LEVELS = ['BOGUS', 'bogus', 'non -lev']
+LEVEL_NAME_MAPS = [
+    None,
+    {logging.DEBUG: 'YO-LEVEL'},
+    {logging.INFO: 'ANO-INFO', logging.ERROR: 'ANO-ERROR'},
+    {28: 'ANO-CMD', 80: '80-LVL', 90: 'NINETY-LVL'}
+]
 
 class TestStdLoggerConfigurator:
     class TestArgs:
@@ -102,11 +110,16 @@ class TestStdLoggerConfigurator:
             assert logger.level == int_level
 
         class TestWarnings:
-            @pytest.mark.parametrize('level', ['BOGUS', 'bogus', 'non -lev'])
-            @pytest.mark.parametrize('level_name_map', [None, {logging.DEBUG: 'YO-LEVEL'},
-                                                        {logging.INFO: 'ANO-INFO', logging.ERROR: 'ANO-ERROR'},
-                                                        {28: 'ANO-CMD', 80: '80-LVL', 90: 'NINETY-LVL'}])
-            def test_warns_on_incorrectly_given_levels(self, level, level_name_map, request):
+            @pytest.fixture(params=[(level, level_name_map) for level in BOGUS_LEVELS for level_name_map in LEVEL_NAME_MAPS],
+                            scope="function")
+            def lvl_fixture(self, request):
+                level, level_name_map = request.param
+                LvlPackage = namedtuple("LvlPackage", "level, level_name_map")
+                return LvlPackage(level, level_name_map)
+
+            def test_warns_on_incorrectly_given_levels(self, lvl_fixture, request):
+                level = lvl_fixture.level
+                level_name_map = lvl_fixture.level_name_map
                 cfg = StdLoggerConfigurator(level=level, level_name_map=level_name_map)
                 logger_name = request.node.name
                 log = logging.getLogger(logger_name)
@@ -120,3 +133,13 @@ class TestStdLoggerConfigurator:
                 assert warn_recs[1].message.args[0] == f"{logger.name}: Setting log level to default: "\
                                                        f"'{logging.getLevelName(StdLoggerConfigurator.WARNING_LOG_LEVEL)}'."
                 assert logger.underlying_logger.level == StdLoggerConfigurator.WARNING_LOG_LEVEL
+
+            def test_no_warn_on_incorrectly_given_levels_when_no_warn(self, lvl_fixture, request):
+                level = lvl_fixture.level
+                level_name_map = lvl_fixture.level_name_map
+                cfg = StdLoggerConfigurator(level=level, level_name_map=level_name_map, no_warn=True)
+                logger_name = request.node.name
+                log = logging.getLogger(logger_name)
+                with warnings.catch_warnings():
+                    warnings.simplefilter("error")
+                    cfg.configure(log)
