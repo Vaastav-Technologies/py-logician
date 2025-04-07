@@ -142,4 +142,19 @@ class TestStdLoggerConfigurator:
                 log = logging.getLogger(logger_name)
                 with warnings.catch_warnings():
                     warnings.simplefilter("error")
-                    cfg.configure(log)
+                    logger = cfg.configure(log)
+                assert logger.underlying_logger.level == StdLoggerConfigurator.WARNING_LOG_LEVEL
+
+            @pytest.mark.parametrize('no_warn', [True, False])
+            def test_sets_default_level_on_when_bogus_level_provided(self, lvl_fixture, request, no_warn):
+                level = lvl_fixture.level
+                level_name_map = lvl_fixture.level_name_map
+                cfg = StdLoggerConfigurator(level=level, level_name_map=level_name_map, no_warn=no_warn)
+                logger_name = request.node.name
+                log = logging.getLogger(logger_name)
+                if no_warn:
+                    logger = cfg.configure(log)
+                else:
+                    with pytest.warns():
+                        logger = cfg.configure(log)
+                assert logger.underlying_logger.level == StdLoggerConfigurator.WARNING_LOG_LEVEL
