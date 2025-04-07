@@ -112,16 +112,55 @@ class StdLoggerConfigurator(LoggerConfigurator):
 
 class VQLoggerConfigurator(LoggerConfigurator):
     V_LITERAL = Literal['v', 'vv', 'vvv']
+    """
+    Verbosity literal. Progressively denotes more and more verbosity.
+    """
     Q_LITERAL = Literal['q', 'qq', 'qqq']
-    VQ_LEVEL_MAP: dict[V_LITERAL|Q_LITERAL, int] = dict(v=logging.INFO, vv=logging.DEBUG, vvv=TRACE_LOG_LEVEL,
+    """
+    Quietness literal. Progressively denotes more and more quietness.
+    """
+    VQ_DICT_LITERAL = dict[V_LITERAL|Q_LITERAL, int]
+    """
+    Literal denoting how should a {``verbosity-quietness -> logging-level``} dict should be structured.
+    """
+    VQ_LEVEL_MAP: VQ_DICT_LITERAL = dict(v=logging.INFO, vv=logging.DEBUG, vvv=TRACE_LOG_LEVEL,
                         q=logging.ERROR, qq=logging.CRITICAL, qqq=FATAL_LOG_LEVEL)
+    """
+    Default {``verbosity-quietness -> logging-level``} mapping.
+    """
 
     def __init__(self, configurator: LoggerConfigurator, *,
                  verbosity: V_LITERAL | None = None,
                  quietness: Q_LITERAL | None = None,
-                 vq_level_map: dict[str, int] | None = None):
+                 vq_level_map: VQ_DICT_LITERAL | None = None):
+        """
+        A logger configurator that can decorate another logger configurator to accept and infer logging level based on
+        ``verbosity`` and ``quietness`` values.
+
+        Examples
+        ========
+
+        ``verbosity`` and ``quietness`` cannot be supplied together
+        -----------------------------------------------------------
+
+        >>> VQLoggerConfigurator(StdLoggerConfigurator(), verbosity='v', quietness='qq')
+        Traceback (most recent call last):
+        ValueError: 'verbosity' and 'quietness' cannot be given together.
+
+        Default ``VQLoggerConfigurator.VQ_LEVEL_MAP`` is used as ``vq_level_map`` when ``vq_level_map`` is ``None``
+        -----------------------------------------------------------------------------------------------------------
+
+        >>> vq_log = VQLoggerConfigurator(StdLoggerConfigurator())
+        >>> assert vq_log.vq_level_map == VQLoggerConfigurator.VQ_LEVEL_MAP
+
+        :param configurator: The logger configurator to decorate.
+        :param verbosity: verbosity level. Cannot be given with ``quietness``.
+        :param quietness: quietness level. Cannot be given with ``verbosity``.
+        :param vq_level_map: A user defined {``verbosity-quietness -> logging-level``} mapping can be supplied. Assumes
+            ``VQLoggerConfigurator.VQ_LEVEL_MAP`` when omitted or ``None`` is supplied.
+        """
         if verbosity and quietness:
-            raise ValueError("verbosity and quietness cannot be given together.")
+            raise ValueError("'verbosity' and 'quietness' cannot be given together.")
         self.configurator = configurator
         self.vq_level_map = vq_level_map if vq_level_map else VQLoggerConfigurator.VQ_LEVEL_MAP
         self.verbosity = verbosity
@@ -129,4 +168,12 @@ class VQLoggerConfigurator(LoggerConfigurator):
 
     @override
     def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
-        return self.configurator.configure(logger)
+        if self.verbosity:
+            int_level = self.vq_level_map[self.verbosity]
+        elif self.quietness:
+            int_level = self.vq_level_map[self.quietness]
+        else:
+            int_level = logging.WARNING
+        ret_logger = self.configurator.configure(logger)
+        ret_logger.underlying_logger.setLevel(int_level)
+        return ret_logger
