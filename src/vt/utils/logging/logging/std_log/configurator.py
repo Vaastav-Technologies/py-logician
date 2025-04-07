@@ -17,7 +17,6 @@ from vt.utils.logging.logging.formatters import LogLevelFmt
 from vt.utils.logging.logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl
 from vt.utils.logging.logging.std_log.formatters import StdLogAllLevelDiffFmt, \
     StdLogAllLevelSameFmt
-from vt.utils.logging.logging.std_log.utils import level_name_mapping
 from vt.utils.logging.warnings import suppress_warning_stacktrace
 
 
