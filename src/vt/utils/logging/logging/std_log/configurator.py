@@ -46,11 +46,13 @@ class StdLoggerConfigurator(LoggerConfigurator):
             ``COMMAND`` is picked-up and that will be shown on the ``log.cmd()`` call.
         :param stream_fmt_mapper: an output-stream -> log format mapper. ``STDERR_ALL_LVL_SAME_FMT`` by default if
             ``None`` is supplied. Cannot be used with ``diff_fmt_per_level``
-            and ``stream_list``.
+            and ``stream_list``. Note that ``{}`` denoting an empty stream_fmt_mapper is accepted and specifies
+            that logging on any stream will not be done.
         :param diff_fmt_per_level: Use different log format per logging level. Cannot be provided with
             ``stream_fmt_mapper``.
         :param stream_list: list of streams to apply level formatting logic to. Cannot be provided with
-            ``stream_fmt_mapper``.
+            ``stream_fmt_mapper``.Note that ``[]`` denoting an empty stream_list is accepted and specifies
+            that logging on any stream will not be done.
         :param level_name_map: log level - name mapping. This mapping updates the std python logging library's
             registered log levels . Check ``DirectAllLevelLogger.register_levels()`` for more info.
         :param no_warn: do not warn if a supplied level is not registered with the logging library.
