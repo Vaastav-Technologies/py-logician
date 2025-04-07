@@ -78,9 +78,7 @@ class TestStdLoggerConfigurator:
                            for all_lvl_same_fmt in cfg.stream_fmt_mapper.values())
 
     class TestConfigureMethod:
-        @pytest.mark.parametrize('level_name_map', [None, {logging.DEBUG: 'YO-LEVEL'},
-                                                    {logging.INFO: 'ANO-INFO', logging.ERROR: 'ANO-ERROR'},
-                                                    {28: 'ANO-CMD', 80: '80-LVL', 90: 'NINETY-LVL'}])
+        @pytest.mark.parametrize('level_name_map', LEVEL_NAME_MAPS)
         def test_supplied_levels_are_registered(self, level_name_map, request):
             """
             All the levels are registered in the logger.
