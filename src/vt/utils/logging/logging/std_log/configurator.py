@@ -8,11 +8,12 @@ Logger interfaces for standard Logger configurators.
 
 import logging
 import warnings
-from typing import override, TextIO, overload
+from typing import override, TextIO, overload, Literal
 
-from vt.utils.logging.logging import DirectAllLevelLogger
+from vt.utils.logging.logging import DirectAllLevelLogger, DirectStdAllLevelLogger
 from vt.utils.logging.logging.configurators import LoggerConfigurator
 from vt.utils.logging.logging.formatters import LogLevelFmt
+from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL
 from vt.utils.logging.logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl
 from vt.utils.logging.logging.std_log.formatters import StdLogAllLevelDiffFmt, \
     StdLogAllLevelSameFmt, STDERR_ALL_LVL_SAME_FMT, STDERR_ALL_LVL_DIFF_FMT
@@ -107,3 +108,25 @@ class StdLoggerConfigurator(LoggerConfigurator):
                 hdlr.setFormatter(logging.Formatter(fmt=lvl_fmt_handlr.fmt(int_level)))
                 logger.addHandler(hdlr)
         return DirectAllLevelLogger(DirectAllLevelLoggerImpl(logger), cmd_name=self.cmd_name)
+
+
+class VQLoggerConfigurator(LoggerConfigurator):
+    V_LITERAL = Literal['v', 'vv', 'vvv']
+    Q_LITERAL = Literal['q', 'qq', 'qqq']
+    VQ_LEVEL_MAP: dict[V_LITERAL|Q_LITERAL, int] = dict(v=logging.INFO, vv=logging.DEBUG, vvv=TRACE_LOG_LEVEL,
+                        q=logging.ERROR, qq=logging.CRITICAL, qqq=FATAL_LOG_LEVEL)
+
+    def __init__(self, configurator: LoggerConfigurator, *,
+                 verbosity: V_LITERAL | None = None,
+                 quietness: Q_LITERAL | None = None,
+                 vq_level_map: dict[str, int] | None = None):
+        if verbosity and quietness:
+            raise ValueError("verbosity and quietness cannot be given together.")
+        self.configurator = configurator
+        self.vq_level_map = vq_level_map if vq_level_map else VQLoggerConfigurator.VQ_LEVEL_MAP
+        self.verbosity = verbosity
+        self.quietness = quietness
+
+    @override
+    def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
+        return self.configurator.configure(logger)
