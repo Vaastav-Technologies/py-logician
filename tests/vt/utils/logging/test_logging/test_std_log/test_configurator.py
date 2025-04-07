@@ -127,6 +127,20 @@ class TestStdLoggerConfigurator:
             assert len(logger.underlying_logger.handlers) == 1
             assert all(isinstance(handler, logging.NullHandler) for handler in logger.underlying_logger.handlers)
 
+        @pytest.mark.parametrize('cfg, num', [(StdLoggerConfigurator(stream_list=[sys.stderr, sys.stdout, sys.stdin]), 3),
+                                              (StdLoggerConfigurator(stream_list=[sys.stderr, sys.stdout, sys.stdin,
+                                                                                  sys.stderr]),
+                                               3),
+                                              (StdLoggerConfigurator(stream_fmt_mapper={}), 1),
+                                              (StdLoggerConfigurator(stream_fmt_mapper={sys.stderr: StdLogAllLevelSameFmt()}), 1),
+                                              (StdLoggerConfigurator(stream_fmt_mapper={sys.stderr: StdLogAllLevelSameFmt(),
+                                                                                        sys.stdout: StdLogAllLevelDiffFmt()}), 2)])
+        def test_handlers_added_as_given(self, cfg, request, num):
+            logger_name = request.node.name
+            log = logging.getLogger(logger_name)
+            logger = cfg.configure(log)
+            assert len(logger.underlying_logger.handlers) == num
+
         @pytest.mark.parametrize('level', [logging.DEBUG, 'INFO', 'COMMAND', logging.ERROR, logging.FATAL, 'TRACEBACK'])
         def test_registers_correctly_given_levels(self, level):
             cfg = StdLoggerConfigurator(level=level)
