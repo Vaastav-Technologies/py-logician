@@ -118,6 +118,15 @@ class TestStdLoggerConfigurator:
                 cfg.configure(logging.getLogger(logger_name))
                 mocked_fn.assert_called_once_with(level_name_map)
 
+        @pytest.mark.parametrize('cfg', [StdLoggerConfigurator(stream_list=[]),
+                                         StdLoggerConfigurator(stream_fmt_mapper={})])
+        def test_empty_stream_format_mapper_only_keeps_null_handler(self, cfg, request):
+            logger_name = request.node.name
+            log = logging.getLogger(logger_name)
+            logger = cfg.configure(log)
+            assert len(logger.underlying_logger.handlers) == 1
+            assert all(isinstance(handler, logging.NullHandler) for handler in logger.underlying_logger.handlers)
+
         @pytest.mark.parametrize('level', [logging.DEBUG, 'INFO', 'COMMAND', logging.ERROR, logging.FATAL, 'TRACEBACK'])
         def test_registers_correctly_given_levels(self, level):
             cfg = StdLoggerConfigurator(level=level)

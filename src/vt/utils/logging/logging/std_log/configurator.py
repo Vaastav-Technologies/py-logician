@@ -96,9 +96,14 @@ class StdLoggerConfigurator(LoggerConfigurator):
                                   f"'{logging.getLevelName(StdLoggerConfigurator.WARNING_LOG_LEVEL)}'.")
             int_level = StdLoggerConfigurator.WARNING_LOG_LEVEL
         logger.setLevel(int_level)
-        for stream in stream_fmt_map:
-            hdlr = logging.StreamHandler(stream=stream) # noqa
-            lvl_fmt_handlr = stream_fmt_map[stream]
-            hdlr.setFormatter(logging.Formatter(fmt=lvl_fmt_handlr.fmt(int_level)))
-            logger.addHandler(hdlr)
+        if not stream_fmt_map:  # empty map
+            for handler in logger.handlers:
+                logger.removeHandler(handler)
+            logger.addHandler(logging.NullHandler())
+        else:
+            for stream in stream_fmt_map:
+                hdlr = logging.StreamHandler(stream=stream) # noqa
+                lvl_fmt_handlr = stream_fmt_map[stream]
+                hdlr.setFormatter(logging.Formatter(fmt=lvl_fmt_handlr.fmt(int_level)))
+                logger.addHandler(hdlr)
         return DirectAllLevelLogger(DirectAllLevelLoggerImpl(logger), cmd_name=self.cmd_name)
