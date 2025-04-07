@@ -46,18 +46,18 @@ class TestStdLoggerConfigurator:
         class TestStreamList:
             def test_default_produces_stream_formatter_list(self):
                 cfg = StdLoggerConfigurator()
-                assert sys.stderr in cfg.stream_list
+                assert cfg.stream_fmt_mapper == STDERR_ALL_LVL_SAME_FMT
 
             @pytest.mark.parametrize('stream_list', [[sys.stderr], [sys.stderr, sys.stdout], [sys.stdout, TextIO()]])
             def test_supplied_stream_is_stored(self, stream_list):
                 cfg = StdLoggerConfigurator(stream_list=stream_list)
-                assert all(stream in cfg.stream_list for stream in stream_list)
+                assert all(stream in cfg.stream_fmt_mapper for stream in stream_list)
 
             def test_stream_list_from_stream_formatter_mapper_keys(self):
                 stream_fmt_mapper={sys.stderr: StdLogAllLevelSameFmt(), sys.stdout: StdLogAllLevelDiffFmt()}
                 cfg = StdLoggerConfigurator(stream_fmt_mapper=stream_fmt_mapper)
-                assert all(stream in cfg.stream_list for stream in stream_fmt_mapper.keys() )
-                assert TextIO not in cfg.stream_list
+                assert all(stream in cfg.stream_fmt_mapper for stream in stream_fmt_mapper.keys() )
+                assert TextIO not in cfg.stream_fmt_mapper
 
         class TestStreamFormatMapper:
             def test_defaults_to_std_stream_fmt(self):

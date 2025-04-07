@@ -90,3 +90,8 @@ STDERR_ALL_LVL_SAME_FMT: dict[TextIO, LogLevelFmt] = {sys.stderr: StdLogAllLevel
 """
 Maps ``sys.stderr`` to same logging format for all levels.
 """
+
+STDERR_ALL_LVL_DIFF_FMT: dict[TextIO, LogLevelFmt] = {sys.stderr: StdLogAllLevelDiffFmt()}
+"""
+Maps ``sys.stderr`` to different logging format for all levels.
+"""

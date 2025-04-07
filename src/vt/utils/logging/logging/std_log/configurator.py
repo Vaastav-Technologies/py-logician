@@ -7,7 +7,6 @@ Logger interfaces for standard Logger configurators.
 """
 
 import logging
-import sys
 import warnings
 from typing import override, TextIO, overload
 
@@ -16,7 +15,7 @@ from vt.utils.logging.logging.configurators import LoggerConfigurator
 from vt.utils.logging.logging.formatters import LogLevelFmt
 from vt.utils.logging.logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl
 from vt.utils.logging.logging.std_log.formatters import StdLogAllLevelDiffFmt, \
-    StdLogAllLevelSameFmt
+    StdLogAllLevelSameFmt, STDERR_ALL_LVL_SAME_FMT, STDERR_ALL_LVL_DIFF_FMT
 from vt.utils.logging.warnings import suppress_warning_stacktrace
 
 
@@ -45,7 +44,8 @@ class StdLoggerConfigurator(LoggerConfigurator):
         :param level: active logging level.
         :param cmd_name: The command name to register the command logging level to. If `None`` then the default
             ``COMMAND`` is picked-up and that will be shown on the ``log.cmd()`` call.
-        :param stream_fmt_mapper: an output-stream -> log format mapper. Cannot be used with ``diff_fmt_per_level``
+        :param stream_fmt_mapper: an output-stream -> log format mapper. ``STDERR_ALL_LVL_SAME_FMT`` by default if
+            ``None`` is supplied. Cannot be used with ``diff_fmt_per_level``
             and ``stream_list``.
         :param diff_fmt_per_level: Use different log format per logging level. Cannot be provided with
             ``stream_fmt_mapper``.
@@ -64,16 +64,19 @@ class StdLoggerConfigurator(LoggerConfigurator):
         self.cmd_name = cmd_name
         self.level_name_map = level_name_map
         self.no_warn = no_warn
-        if stream_fmt_mapper:
-            self.stream_list = list(stream_fmt_mapper.keys())
+        if stream_fmt_mapper is not None: # accepts empty stream_fmt_mapper
             self.stream_fmt_mapper = stream_fmt_mapper
         else:
-            self.stream_fmt_mapper = dict()
-            self.stream_list = stream_list if stream_list else [sys.stderr]
-            if diff_fmt_per_level:
-                self.stream_fmt_mapper = {_stream: StdLogAllLevelDiffFmt() for _stream in self.stream_list}
+            if stream_list is not None: # accepts empty stream_list
+                if diff_fmt_per_level:
+                    self.stream_fmt_mapper = {stream: StdLogAllLevelDiffFmt() for stream in stream_list}
+                else:
+                    self.stream_fmt_mapper = {stream: StdLogAllLevelSameFmt() for stream in stream_list}
             else:
-                self.stream_fmt_mapper = {_stream: StdLogAllLevelSameFmt() for _stream in self.stream_list}
+                if diff_fmt_per_level:
+                    self.stream_fmt_mapper = STDERR_ALL_LVL_DIFF_FMT
+                else:
+                    self.stream_fmt_mapper = STDERR_ALL_LVL_SAME_FMT
 
     @override
     def configure(self, logger: logging.Logger) -> DirectAllLevelLogger:
