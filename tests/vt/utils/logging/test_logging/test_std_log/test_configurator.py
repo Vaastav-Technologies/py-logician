@@ -6,6 +6,7 @@ Tests std log configurators.
 """
 import logging
 import sys
+from collections import namedtuple
 from typing import TextIO
 from unittest.mock import patch
 
@@ -100,21 +101,22 @@ class TestStdLoggerConfigurator:
             assert logger.underlying_logger.level == int_level
             assert logger.level == int_level
 
-        @pytest.mark.parametrize('level', ['BOGUS', 'bogus', 'non -lev'])
-        @pytest.mark.parametrize('level_name_map', [None, {logging.DEBUG: 'YO-LEVEL'},
-                                                    {logging.INFO: 'ANO-INFO', logging.ERROR: 'ANO-ERROR'},
-                                                    {28: 'ANO-CMD', 80: '80-LVL', 90: 'NINETY-LVL'}])
-        def test_warns_on_incorrectly_given_levels(self, level, level_name_map, request):
-            cfg = StdLoggerConfigurator(level=level)
-            logger_name = request.node.name
-            log = logging.getLogger(logger_name)
-            with pytest.warns() as warn_recs:
-                logger = cfg.configure(log)
-            levels_to_choose_from: dict[int, str] = level_name_mapping()
-            assert len(warn_recs) == 2 # 2 warnings raised
-            assert all(w.category == UserWarning for w in warn_recs)
-            assert warn_recs[0].message.args[0] == f"{logger.name}: Undefined log level '{level}'. "\
-                                            f"Choose from {list(levels_to_choose_from.values())}."
-            assert warn_recs[1].message.args[0] == f"{logger.name}: Setting log level to default: "\
-                                                   f"'{logging.getLevelName(StdLoggerConfigurator.WARNING_LOG_LEVEL)}'."
-            assert logger.underlying_logger.level == StdLoggerConfigurator.WARNING_LOG_LEVEL
+        class TestWarnings:
+            @pytest.mark.parametrize('level', ['BOGUS', 'bogus', 'non -lev'])
+            @pytest.mark.parametrize('level_name_map', [None, {logging.DEBUG: 'YO-LEVEL'},
+                                                        {logging.INFO: 'ANO-INFO', logging.ERROR: 'ANO-ERROR'},
+                                                        {28: 'ANO-CMD', 80: '80-LVL', 90: 'NINETY-LVL'}])
+            def test_warns_on_incorrectly_given_levels(self, level, level_name_map, request):
+                cfg = StdLoggerConfigurator(level=level, level_name_map=level_name_map)
+                logger_name = request.node.name
+                log = logging.getLogger(logger_name)
+                with pytest.warns() as warn_recs:
+                    logger = cfg.configure(log)
+                levels_to_choose_from: dict[int, str] = level_name_mapping()
+                assert len(warn_recs) == 2 # 2 warnings raised
+                assert all(w.category == UserWarning for w in warn_recs)
+                assert warn_recs[0].message.args[0] == f"{logger.name}: Undefined log level '{level}'. "\
+                                                f"Choose from {list(levels_to_choose_from.values())}."
+                assert warn_recs[1].message.args[0] == f"{logger.name}: Setting log level to default: "\
+                                                       f"'{logging.getLevelName(StdLoggerConfigurator.WARNING_LOG_LEVEL)}'."
+                assert logger.underlying_logger.level == StdLoggerConfigurator.WARNING_LOG_LEVEL
