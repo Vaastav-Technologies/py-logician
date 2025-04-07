@@ -17,7 +17,7 @@ import pytest
 from vt.utils.logging.logging import DirectAllLevelLogger
 from vt.utils.logging.logging.std_log.configurator import StdLoggerConfigurator
 from vt.utils.logging.logging.std_log.formatters import StdLogAllLevelSameFmt, \
-    StdLogAllLevelDiffFmt
+    StdLogAllLevelDiffFmt, STDERR_ALL_LVL_DIFF_FMT
 from vt.utils.logging.logging.std_log.formatters import STDERR_ALL_LVL_SAME_FMT
 from vt.utils.logging.logging.std_log.utils import level_name_mapping
 
@@ -49,6 +49,16 @@ class TestStdLoggerConfigurator:
                 cfg = StdLoggerConfigurator()
                 assert cfg.stream_fmt_mapper == STDERR_ALL_LVL_SAME_FMT
 
+            def test_none_stream_list_defaults_stream_formatter_list(self):
+                cfg = StdLoggerConfigurator(stream_list=None)
+                assert cfg.stream_fmt_mapper == STDERR_ALL_LVL_SAME_FMT
+
+            @pytest.mark.parametrize('diff, lvl_fmt', [(True, STDERR_ALL_LVL_DIFF_FMT),
+                                                       (False, STDERR_ALL_LVL_SAME_FMT)])
+            def test_none_stream_list_defaults_stream_formatter_list(self, diff, lvl_fmt):
+                cfg = StdLoggerConfigurator(stream_list=None, diff_fmt_per_level=diff)
+                assert cfg.stream_fmt_mapper == lvl_fmt
+
             # TODO: find a better way to have /dev/null. Previously this was done using TextIO() but since TextIO is
             #   an ABC hence, cannot be instantiated as that is not okay with mypy also. Just using open(os.devnull)
             #   works but does not look satisfactory.
@@ -63,6 +73,11 @@ class TestStdLoggerConfigurator:
                 cfg = StdLoggerConfigurator(stream_fmt_mapper=stream_fmt_mapper)
                 assert all(stream in cfg.stream_fmt_mapper for stream in stream_fmt_mapper.keys() )
                 assert TextIO not in cfg.stream_fmt_mapper
+
+            def test_empty_stream_list_results_in_empty_stream_fmt_mapper(self):
+                cfg = StdLoggerConfigurator(stream_list=[])
+                assert cfg.stream_fmt_mapper is not None
+                assert len(cfg.stream_fmt_mapper) == 0
 
         class TestStreamFormatMapper:
             def test_defaults_to_std_stream_fmt(self):
@@ -81,6 +96,11 @@ class TestStdLoggerConfigurator:
                 cfg = StdLoggerConfigurator(diff_fmt_per_level=diff)
                 assert all(isinstance(all_lvl_same_fmt, lvl)
                            for all_lvl_same_fmt in cfg.stream_fmt_mapper.values())
+
+            def test_empty_fmt_mapper_is_accepted(self):
+                cfg = StdLoggerConfigurator(stream_fmt_mapper={})
+                assert cfg.stream_fmt_mapper is not None
+                assert len(cfg.stream_fmt_mapper) == 0
 
     class TestConfigureMethod:
         @pytest.mark.parametrize('level_name_map', LEVEL_NAME_MAPS)
