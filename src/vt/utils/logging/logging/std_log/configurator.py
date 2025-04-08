@@ -11,7 +11,8 @@ import warnings
 from typing import override, TextIO, overload, Literal
 
 from vt.utils.logging.logging import DirectAllLevelLogger, DirectStdAllLevelLogger
-from vt.utils.logging.logging.configurators import LoggerConfigurator
+from vt.utils.logging.logging.configurators import LoggerConfigurator, VQConfigurator, VQ_DICT_LITERAL, V_LITERAL, \
+    Q_LITERAL
 from vt.utils.logging.logging.formatters import LogLevelFmt
 from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL
 from vt.utils.logging.logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl
@@ -111,19 +112,7 @@ class StdLoggerConfigurator(LoggerConfigurator):
 
 
 class VQLoggerConfigurator(LoggerConfigurator):
-    V_LITERAL = Literal['v', 'vv', 'vvv']
-    """
-    Verbosity literal. Progressively denotes more and more verbosity.
-    """
-    Q_LITERAL = Literal['q', 'qq', 'qqq']
-    """
-    Quietness literal. Progressively denotes more and more quietness.
-    """
-    VQ_DICT_LITERAL = dict[V_LITERAL|Q_LITERAL, int]
-    """
-    Literal denoting how should a {``verbosity-quietness -> logging-level``} dict should be structured.
-    """
-    VQ_LEVEL_MAP: VQ_DICT_LITERAL = dict(v=logging.INFO, vv=logging.DEBUG, vvv=TRACE_LOG_LEVEL,
+    VQ_LEVEL_MAP: VQ_DICT_LITERAL[int] = dict(v=logging.INFO, vv=logging.DEBUG, vvv=TRACE_LOG_LEVEL,
                         q=logging.ERROR, qq=logging.CRITICAL, qqq=FATAL_LOG_LEVEL)
     """
     Default {``verbosity-quietness -> logging-level``} mapping.
@@ -132,7 +121,7 @@ class VQLoggerConfigurator(LoggerConfigurator):
     def __init__(self, configurator: LoggerConfigurator, *,
                  verbosity: V_LITERAL | None = None,
                  quietness: Q_LITERAL | None = None,
-                 vq_level_map: VQ_DICT_LITERAL | None = None):
+                 vq_level_map: VQ_DICT_LITERAL[int] | None = None):
         """
         A logger configurator that can decorate another logger configurator to accept and infer logging level based on
         ``verbosity`` and ``quietness`` values.
