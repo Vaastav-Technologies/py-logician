@@ -89,6 +89,37 @@ class VQSepConfigurator[T](VQConfigurator[T], Protocol):
         ...
 
 
+class VQCommConfigurator[T](VQConfigurator[T], Protocol):
+    """
+    Configurator which takes verbosity and quietness commonly (in a single argument) for configuration.
+    """
+
+    @abstractmethod
+    def validate(self, ver_qui: V_LITERAL | Q_LITERAL | None) -> bool:
+        """
+        Validate whether the supplied verbosity or quietness are valid.
+
+        :param ver_qui: verbosity or quietness.
+        :return: ``True`` if inputs are valid, ``False`` otherwise.
+        :raise ValueError: if values for ``ver_qui`` are invalid and subclass decides to raise the error.
+        """
+        ...
+
+    @abstractmethod
+    def get_effective_level(self, ver_qui: V_LITERAL | Q_LITERAL | None, default_level: T) -> T:
+        """
+        Get the effective level for supplied verbosity or quietness.
+
+        :param ver_qui: verbosity or quietness.
+        :param default_level: returned if both verbosity or quietness are ``None`` or not supplied.
+        :return: computed level for verbosity and quietness or ``default_level`` if verbosity or quietness
+            are ``None``.
+        :raise KeyError: if the verbosity or quietness is not found in the ``vq_level_map`` and the subclass decides
+            to raise error for this.
+        """
+        ...
+
+
 class DefaultOrError[T](Protocol):
 
     def handle_key_error(self, key_error: KeyError, emphasis: str, default_level: T,
