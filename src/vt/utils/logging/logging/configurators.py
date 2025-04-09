@@ -10,7 +10,7 @@ from abc import abstractmethod
 from typing import Protocol, Literal, override, get_args, Any
 
 from vt.utils.logging.logging.std_log.base import DirectStdAllLevelLogger
-from vt.utils.logging.warnings import vt_warn
+from vt.utils.logging.warnings import vt_warn, Warner
 
 
 class LoggerConfigurator(Protocol):
@@ -49,6 +49,7 @@ class VQConfigurator[T](Protocol):
     """
     Configurator for verbosity and quietness configurations.
     """
+
     @property
     @abstractmethod
     def vq_level_map(self) -> VQ_DICT_LITERAL[T]:
@@ -62,6 +63,7 @@ class VQSepConfigurator[T](VQConfigurator[T], Protocol):
     """
     Configurator which takes verbosity and quietness separately (as separate arguments) for configuration.
     """
+
     @abstractmethod
     def validate(self, verbosity: V_LITERAL | None, quietness: Q_LITERAL | None) -> bool:
         """
@@ -87,8 +89,142 @@ class VQSepConfigurator[T](VQConfigurator[T], Protocol):
         ...
 
 
+class DefaultOrError[T](Protocol):
+
+    def handle_key_error(self, key_error: KeyError, emphasis: str, default_level: T,
+                         choices: tuple[Any, ...]) -> T:
+        """
+        Subclasses will decide how to treat the ``KeyError`` from ``level_or_default()``.
+
+        :param key_error: The ``KeyError`` raised from ``level_or_default()``.
+        :param emphasis: strings '`verbosity`' or '`quietness`'.
+        :param default_level: logging level to be returned if ``ver_qui`` is ``None``.
+        :param choices: What are the choices for `verbosity` or `quietness`.
+        :return: ``default_level``.
+        :raise KeyError: if verbosity and quietness are absent in ``vq_level_map`` and ``self.handle_key_error()``
+            decides to re raise the error.
+        """
+        errmsg = f"Unexpected {emphasis} value. Choose from {choices}."
+        if self.raise_error:
+            raise KeyError(f"{key_error}: {errmsg}")
+        return default_level
+
+    @property
+    @abstractmethod
+    def raise_error(self) -> bool:
+        ...
+
+
+class RaiseError[T](DefaultOrError[T]):
+
+    def __init__(self, raise_error: bool = True):
+        self._raise_error = raise_error
+
+    @property
+    @abstractmethod
+    def raise_error(self) -> bool:
+        return self._raise_error
+
+
+class WarningWithDefault[T](DefaultOrError[T], Warner, Protocol):
+
+    @override
+    def handle_key_error(self, key_error: KeyError, emphasis: str, default_level: T,
+                         choices: tuple[Any, ...]) -> T:
+        """
+        Subclasses will decide how to treat the ``KeyError`` from ``level_or_default()``.
+
+        :param key_error: The ``KeyError`` raised from ``level_or_default()``.
+        :param emphasis: strings '`verbosity`' or '`quietness`'.
+        :param default_level: logging level to be returned if ``ver_qui`` is ``None``.
+        :param choices: What are the choices for `verbosity` or `quietness`.
+        :return: ``default_level``.
+        :raise KeyError: if verbosity and quietness are absent in ``vq_level_map`` and ``self.handle_key_error()``
+            decides to re raise the error.
+        """
+        errmsg = f"Unexpected {emphasis} value. Choose from {choices}."
+        if self.warn_only:
+            vt_warn(f"{key_error}: {errmsg}")
+        else:
+            raise KeyError(f"{key_error}: {errmsg}")
+        return default_level
+
+
+class SimpleWarningWithDefault[T](WarningWithDefault[T]):
+
+    def __init__(self, warn_only: bool = True):
+        self._warn_only = warn_only
+
+    @override
+    @property
+    def warn_only(self) -> bool:
+        return self._warn_only
+
+    @override
+    @property
+    def raise_error(self) -> bool:
+        return not self.warn_only
+
+
+class VQLevelOrDefault[T](VQConfigurator[T], Protocol):
+    """
+    Implementation interface to facilitate getting a logging level from VQConfigurator.
+    """
+
+    def level_or_default(self, ver_qui: V_LITERAL | Q_LITERAL | None, emphasis: Literal['verbosity', 'quietness'],
+                         default_level: T, choices: tuple[Any, ...]) -> T:
+        """
+        :param ver_qui: verbosity or quietness.
+        :param emphasis: strings '`verbosity`' or '`quietness`'.
+        :param default_level: logging level to be returned if ``ver_qui`` is ``None``.
+        :param choices: What are the choices for `verbosity` or `quietness`.
+        :return: calculated logging level from ``ver_qui`` or ``default_level`` if ``ver_qui`` is ``None``.
+        :raise KeyError: if verbosity and quietness are absent in ``vq_level_map`` and ``self.handle_key_error()``
+            decides to re raise the error.
+        """
+        if ver_qui:
+            try:
+                return self.vq_level_map[ver_qui]
+            except KeyError as e:
+                return self.key_error_handler.handle_key_error(e, emphasis, default_level, choices)
+        else:
+            return default_level
+
+    @property
+    @abstractmethod
+    def key_error_handler(self) -> DefaultOrError[T]:
+        ...
+
+
+class SimpleWarningVQLevelOrDefault[T](VQLevelOrDefault[T], Warner):
+
+    def __init__(self, vq_level_map: VQ_DICT_LITERAL[T], warn_only: bool,
+                 key_error_handler: WarningWithDefault[T] | None = None):
+        self._vq_level_map = vq_level_map
+        self._warn_only = warn_only
+        if key_error_handler:
+            self._key_error_handler = key_error_handler
+        else:
+            self._key_error_handler = SimpleWarningWithDefault[T](warn_only=warn_only)
+
+    @override
+    @property
+    def vq_level_map(self) -> VQ_DICT_LITERAL[T]:
+        return self._vq_level_map
+
+    @override
+    @property
+    def warn_only(self) -> bool:
+        return self._warn_only
+
+    @property
+    def key_error_handler(self) -> WarningWithDefault[T]:
+        return self._key_error_handler
+
+
 class VQSepExclusive[T](VQSepConfigurator[T]):
-    def __init__(self, vq_level_map: VQ_DICT_LITERAL[T], warn_only: bool = False):
+    def __init__(self, vq_level_map: VQ_DICT_LITERAL[T], warn_only: bool = False,
+                 level_or_default_handler: VQLevelOrDefault[T] | None = None):
         """
         Treats verbosity and quietness as separate and exclusive, i.e. both cannot be given together.
 
@@ -102,6 +238,10 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
         """
         self._vq_level_map = vq_level_map
         self.warn_only = warn_only
+        if level_or_default_handler:
+            self.level_or_default_handler = level_or_default_handler
+        else:
+            self.level_or_default_handler = SimpleWarningVQLevelOrDefault(vq_level_map, warn_only)
 
     @override
     @property
@@ -206,7 +346,7 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
             >>> with warnings.catch_warnings():
             ...     with contextlib.redirect_stderr(sys.stdout):
             ...         VQSepExclusive[int]({'v': 20}, True).get_effective_level('vv', None, 10)
-            UserWarning: Unexpected verbosity value: vv. Choose from ('v', 'vv', 'vvv').
+            UserWarning: 'vv': Unexpected verbosity value. Choose from ('v', 'vv', 'vvv').
             10
 
             Raise KeyError if queried verbosity is not registered and warn_only is False or not provided:
@@ -214,7 +354,7 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
             >>> VQSepExclusive[int]({'v': 20}).get_effective_level('vv', None, 10)
             Traceback (most recent call last):
             ...
-            KeyError: "'vv': Unexpected verbosity value: vv. Choose from ('v', 'vv', 'vvv')."
+            KeyError: "'vv': Unexpected verbosity value. Choose from ('v', 'vv', 'vvv')."
 
         :param verbosity: verbosity.
         :param quietness: quietness.
@@ -230,24 +370,13 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
             level = default_level
         else:
             if verbosity:
-                level = self.level_or_default(verbosity, 'verbosity', default_level, get_args(V_LITERAL))
+                level = self.level_or_default_handler.level_or_default(verbosity,
+                                                                       'verbosity', default_level,
+                                                                       get_args(V_LITERAL))
             elif quietness:
-                level = self.level_or_default(quietness, 'quietness', default_level, get_args(Q_LITERAL))
+                level = self.level_or_default_handler.level_or_default(quietness,
+                                                                       'quietness', default_level,
+                                                                       get_args(Q_LITERAL))
             else:
                 level = default_level
         return level
-
-    def level_or_default(self, ver_qui: V_LITERAL | Q_LITERAL | None, emphasis_str: str, default_level: T,
-                         choices: tuple[Any, ...]) -> T:
-        if ver_qui:
-            try:
-                return self.vq_level_map[ver_qui]
-            except KeyError as e:
-                errmsg = f"Unexpected {emphasis_str} value: {ver_qui}. Choose from {choices}."
-                if self.warn_only:
-                    vt_warn(errmsg)
-                    return self.vq_level_map.get(ver_qui, default_level)
-                else:
-                    raise KeyError(f"{e}: {errmsg}")
-        else:
-            return default_level
