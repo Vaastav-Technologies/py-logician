@@ -115,6 +115,10 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
 
         Examples::
 
+        >>> import sys
+        >>> import contextlib
+        >>> import warnings
+
         Raise error if ``warn_only`` is ``False`` or not provided::
 
         >>> VQSepExclusive({}).validate('v', 'q')
@@ -124,9 +128,6 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
 
         Only warn if ``warn_only`` is provided ``True``::
 
-        >>> import sys
-        >>> import contextlib
-        >>> import warnings
         >>> with warnings.catch_warnings():
         ...     with contextlib.redirect_stderr(sys.stdout):
         ...         VQSepExclusive({}, True).validate('v', 'q')
@@ -172,25 +173,48 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
 
         Examples::
 
-        Both verbosity and quietness provided together::
-
-        Not provided ``warn_only`` or is ``False``::
-
-        >>> VQSepExclusive({}).get_effective_level('v', 'q', 10)
-        Traceback (most recent call last):
-        ...
-        ValueError: 'verbosity' and 'quietness' cannot be given together.
-
-        Only warn if ``warn_only`` is provided ``True``::
-
         >>> import sys
         >>> import contextlib
         >>> import warnings
-        >>> with warnings.catch_warnings():
-        ...     with contextlib.redirect_stderr(sys.stdout):
-        ...         VQSepExclusive[int]({'v': 20}, True).get_effective_level('v', 'q', 10)
-        UserWarning: 'verbosity' and 'quietness' cannot be given together.
-        10
+
+        Both verbosity and quietness provided together::
+
+            warn_only is not provided or is False:
+
+            >>> VQSepExclusive({}).get_effective_level('v', 'q', 10)
+            Traceback (most recent call last):
+            ...
+            ValueError: 'verbosity' and 'quietness' cannot be given together.
+
+            Only warn if warn_only is provided True and return the default_value:
+
+            >>> with warnings.catch_warnings():
+            ...     with contextlib.redirect_stderr(sys.stdout):
+            ...         VQSepExclusive[int]({'v': 20}, True).get_effective_level('v', 'q', 10)
+            UserWarning: 'verbosity' and 'quietness' cannot be given together.
+            10
+
+        Level inquiry::
+
+            Get queried verbosity:
+
+            >>> VQSepExclusive[int]({'v': 20}).get_effective_level('v', None, 10)
+            20
+
+            Return default_level if queried verbosity is not registered and warn_only is True:
+
+            >>> with warnings.catch_warnings():
+            ...     with contextlib.redirect_stderr(sys.stdout):
+            ...         VQSepExclusive[int]({'v': 20}, True).get_effective_level('vv', None, 10)
+            UserWarning: Unexpected verbosity value: vv. Choose from ('v', 'vv', 'vvv').
+            10
+
+            Raise KeyError if queried verbosity is not registered and warn_only is False or not provided:
+
+            >>> VQSepExclusive[int]({'v': 20}).get_effective_level('vv', None, 10)
+            Traceback (most recent call last):
+            ...
+            KeyError: "'vv': Unexpected verbosity value: vv. Choose from ('v', 'vv', 'vvv')."
 
         :param verbosity: verbosity.
         :param quietness: quietness.
@@ -218,11 +242,12 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
         if ver_qui:
             try:
                 return self.vq_level_map[ver_qui]
-            except KeyError:
+            except KeyError as e:
+                errmsg = f"Unexpected {emphasis_str} value: {ver_qui}. Choose from {choices}."
                 if self.warn_only:
-                    vt_warn(f"Unexpected {emphasis_str} value: {ver_qui}. Choose from {choices}.")
+                    vt_warn(errmsg)
                     return self.vq_level_map.get(ver_qui, default_level)
                 else:
-                    raise
+                    raise KeyError(f"{e}: {errmsg}")
         else:
             return default_level
