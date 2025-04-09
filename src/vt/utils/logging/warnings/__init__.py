@@ -8,8 +8,9 @@ Python warnings related helpers.
 
 
 import warnings
+from abc import abstractmethod
 from contextlib import contextmanager
-from typing import Type
+from typing import Type, Protocol
 
 
 @contextmanager
@@ -65,3 +66,18 @@ def vt_warn(*args, fmt = "{category}: {message}\n", suppress_stacktrace = True, 
             warnings.warn(*args, stacklevel=stack_level, **kwargs)
     else:
         warnings.warn(*args, stacklevel=stack_level, **kwargs)
+
+
+class Warner(Protocol):
+    """
+    Interface denoting that a class method can potentially warn instead of directly raising an Error.
+    """
+
+    @property
+    @abstractmethod
+    def warn_only(self) -> bool:
+        """
+        :return: ``True`` if a warning is to be issued instead of raising an error on an exceptional/erroneous
+            circumstance. ``False`` otherwise.
+        """
+        ...
