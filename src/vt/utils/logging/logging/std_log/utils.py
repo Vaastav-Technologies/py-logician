@@ -5,9 +5,8 @@
 Important utilities for std python logging library.
 """
 import logging
-import warnings
 
-from vt.utils.logging.warnings import suppress_warning_stacktrace
+from vt.utils.logging.warnings import vt_warn
 
 
 def level_name_mapping() -> dict[int, str]:
@@ -48,11 +47,10 @@ class TempSetLevelName:
             by setting ``no_warn=True`` in ctor.
         """
         if not self.no_warn:
-            with suppress_warning_stacktrace():
-                self._warn_user()
+            self._warn_user()
 
     def _warn_user(self):
-        warnings.warn(f"Supplied log level name for log level {self.level} is empty.")
+        vt_warn(f"Supplied log level name for log level {self.level} is empty.")
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.level_name:

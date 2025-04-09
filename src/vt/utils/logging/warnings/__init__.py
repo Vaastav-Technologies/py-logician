@@ -40,3 +40,28 @@ def suppress_warning_stacktrace(fmt: str = "{category}: {message}\n"):
         yield fmt
     finally:
         warnings.formatwarning = original_format
+
+
+def vt_warn(*args, fmt = "{category}: {message}\n", suppress_stacktrace = True, stack_level = 2, **kwargs):
+    """
+    Warning function to warn without showcasing warning stack-trace. Uses ``suppress_warning_stacktrace`` internally.
+
+    Required warning message print format can be supplied in the ``fmt`` param,  following are supported::
+
+        - category - The warning category, e.g. UserWarning.
+        - message - The warning message
+        - filename - The name of the file to be printed with the warning.
+        - lineno - lineno of the warning generator file to be printed with the warning.
+        - line - The warning line.
+
+    :param args: arguments to the ``warnings.warn()`` function.
+    :param fmt: Warning print format can be altered by the client code.
+    :param suppress_stacktrace: Whether to suppress the stack trace of warnings.
+    :param stack_level: The ``stacklevel`` argument to be passed to ``warnings.warn()``.
+    :param kwargs: keyword-args to be passed to ``warnings.warn()``.
+    """
+    if suppress_stacktrace:
+        with suppress_warning_stacktrace(fmt):
+            warnings.warn(*args, stacklevel=stack_level, **kwargs)
+    else:
+        warnings.warn(*args, stacklevel=stack_level, **kwargs)

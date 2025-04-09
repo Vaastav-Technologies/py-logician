@@ -18,7 +18,7 @@ from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL
 from vt.utils.logging.logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl
 from vt.utils.logging.logging.std_log.formatters import StdLogAllLevelDiffFmt, \
     StdLogAllLevelSameFmt, STDERR_ALL_LVL_SAME_FMT, STDERR_ALL_LVL_DIFF_FMT
-from vt.utils.logging.warnings import suppress_warning_stacktrace
+from vt.utils.logging.warnings import vt_warn
 
 
 class StdLoggerConfigurator(LoggerConfigurator):
@@ -91,11 +91,10 @@ class StdLoggerConfigurator(LoggerConfigurator):
             int_level = level if isinstance(level, int) else logging.getLevelNamesMapping()[level]
         except KeyError:
             if not self.no_warn:
-                with suppress_warning_stacktrace():
-                    warnings.warn(f"{logger.name}: Undefined log level '{level}'. "
-                                  f"Choose from {list(levels_to_choose_from.values())}.")
-                    warnings.warn(f"{logger.name}: Setting log level to default: "
-                                  f"'{logging.getLevelName(StdLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING)}'.")
+                vt_warn(f"{logger.name}: Undefined log level '{level}'. "
+                              f"Choose from {list(levels_to_choose_from.values())}.")
+                vt_warn(f"{logger.name}: Setting log level to default: "
+                              f"'{logging.getLevelName(StdLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING)}'.")
             int_level = StdLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING
         logger.setLevel(int_level)
         if not stream_fmt_map:  # empty map

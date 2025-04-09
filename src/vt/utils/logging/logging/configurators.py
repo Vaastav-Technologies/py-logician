@@ -11,6 +11,7 @@ from abc import abstractmethod
 from typing import Protocol, Literal
 
 from vt.utils.logging.logging.std_log.base import DirectStdAllLevelLogger
+from vt.utils.logging.warnings import vt_warn
 
 
 class LoggerConfigurator(Protocol):
