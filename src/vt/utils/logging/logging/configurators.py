@@ -289,7 +289,7 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
         >>> VQSepExclusive({}).validate(None, None)
         True
 
-        :raise ValueError: If ``self.warn_only`` is ``False`` - if both verbosity and quietness are given.
+        :raise ValueError: if both verbosity and quietness are given and If ``self.warn_only`` is ``False``.
         :return: If ``self.warn_only`` is ``True`` - ``True`` if inputs are valid, ``False`` otherwise.
         """
         if verbosity and quietness:
