@@ -213,6 +213,10 @@ class WarningWithDefault[T](DefaultOrError[T], Warner, Protocol):
             raise KeyError(f"{key_error}: {errmsg}")
         return default_level
 
+    @override
+    def raise_error(self) -> bool:
+        return not self.warn_only
+
 
 class SimpleWarningWithDefault[T](WarningWithDefault[T]):
 
@@ -223,11 +227,6 @@ class SimpleWarningWithDefault[T](WarningWithDefault[T]):
     @property
     def warn_only(self) -> bool:
         return self._warn_only
-
-    @override
-    @property
-    def raise_error(self) -> bool:
-        return not self.warn_only
 
 
 class VQLevelOrDefault[T](VQConfigurator[T], Protocol):
