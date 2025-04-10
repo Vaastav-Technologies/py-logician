@@ -120,10 +120,43 @@ class VQCommConfigurator[T](VQConfigurator[T], Protocol):
         ...
 
 
+def form_errmsg_for_choices(emphasis: str | None = None, choices: list[Any] | None = None) -> str:
+    """
+    Create a sensible error message when a value is provided unexpectedly.
+
+    Examples::
+
+    >>> form_errmsg_for_choices()
+    'Unexpected value.'
+
+    >>> form_errmsg_for_choices('verbosity')
+    'Unexpected verbosity value.'
+
+    >>> form_errmsg_for_choices(choices=['v', 'vv', 'vvv'])
+    "Unexpected value. Choose from ['v', 'vv', 'vvv']."
+
+    >>> form_errmsg_for_choices('quietness', ['q', 'qq', 'qqq'])
+    "Unexpected quietness value. Choose from ['q', 'qq', 'qqq']."
+
+    :param emphasis: the string which is emphasised in the returned error message. The emphasising of string is not
+        done if this value is ``None`` or not provided.
+    :param choices: all the acceptable choices. Choices are not included in the error message if this value is ``None``
+        or not supplied.
+    :return: The formed errmsg string.
+    """
+    if emphasis:
+        errmsg = f"Unexpected {emphasis} value."
+    else:
+        errmsg = "Unexpected value."
+    if choices:
+        errmsg = f"{errmsg} Choose from {choices}."
+    return errmsg
+
+
 class DefaultOrError[T](Protocol):
 
-    def handle_key_error(self, key_error: KeyError, emphasis: str, default_level: T,
-                         choices: list[Any]) -> T:
+    def handle_key_error(self, key_error: KeyError, default_level: T, emphasis: str = None,
+                         choices: list[Any] = None) -> T:
         """
         Subclasses will decide how to treat the ``KeyError`` from ``level_or_default()``.
 
@@ -135,7 +168,7 @@ class DefaultOrError[T](Protocol):
         :raise KeyError: if verbosity and quietness are absent in ``vq_level_map`` and ``self.handle_key_error()``
             decides to re raise the error.
         """
-        errmsg = f"Unexpected {emphasis} value. Choose from {choices}."
+        errmsg = form_errmsg_for_choices(emphasis, choices)
         if self.raise_error:
             raise KeyError(f"{key_error}: {errmsg}")
         return default_level
@@ -160,8 +193,8 @@ class RaiseError[T](DefaultOrError[T]):
 class WarningWithDefault[T](DefaultOrError[T], Warner, Protocol):
 
     @override
-    def handle_key_error(self, key_error: KeyError, emphasis: str, default_level: T,
-                         choices: list[Any]) -> T:
+    def handle_key_error(self, key_error: KeyError, default_level: T, emphasis: str = None,
+                         choices: list[Any] = None) -> T:
         """
         Subclasses will decide how to treat the ``KeyError`` from ``level_or_default()``.
 
@@ -173,7 +206,7 @@ class WarningWithDefault[T](DefaultOrError[T], Warner, Protocol):
         :raise KeyError: if verbosity and quietness are absent in ``vq_level_map`` and ``self.handle_key_error()``
             decides to re raise the error.
         """
-        errmsg = f"Unexpected {emphasis} value. Choose from {choices}."
+        errmsg = form_errmsg_for_choices(emphasis, choices)
         if self.warn_only:
             vt_warn(f"{key_error}: {errmsg}")
         else:
@@ -218,7 +251,7 @@ class VQLevelOrDefault[T](VQConfigurator[T], Protocol):
             try:
                 return self.vq_level_map[ver_qui]
             except KeyError as e:
-                return self.key_error_handler.handle_key_error(e, emphasis, default_level, choices)
+                return self.key_error_handler.handle_key_error(e, default_level, emphasis, choices)
         else:
             return default_level
 
