@@ -123,7 +123,7 @@ class VQCommConfigurator[T](VQConfigurator[T], Protocol):
 class DefaultOrError[T](Protocol):
 
     def handle_key_error(self, key_error: KeyError, emphasis: str, default_level: T,
-                         choices: tuple[Any, ...]) -> T:
+                         choices: list[Any]) -> T:
         """
         Subclasses will decide how to treat the ``KeyError`` from ``level_or_default()``.
 
@@ -161,7 +161,7 @@ class WarningWithDefault[T](DefaultOrError[T], Warner, Protocol):
 
     @override
     def handle_key_error(self, key_error: KeyError, emphasis: str, default_level: T,
-                         choices: tuple[Any, ...]) -> T:
+                         choices: list[Any]) -> T:
         """
         Subclasses will decide how to treat the ``KeyError`` from ``level_or_default()``.
 
@@ -202,8 +202,9 @@ class VQLevelOrDefault[T](VQConfigurator[T], Protocol):
     Implementation interface to facilitate getting a logging level from VQConfigurator.
     """
 
-    def level_or_default(self, ver_qui: V_LITERAL | Q_LITERAL | None, emphasis: Literal['verbosity', 'quietness'],
-                         default_level: T, choices: tuple[Any, ...]) -> T:
+    def level_or_default(self, ver_qui: V_LITERAL | Q_LITERAL | None,
+                         emphasis: Literal['verbosity', 'quietness', 'verbosity or quietness'],
+                         default_level: T, choices: list[Any]) -> T:
         """
         :param ver_qui: verbosity or quietness.
         :param emphasis: strings '`verbosity`' or '`quietness`'.
@@ -403,11 +404,11 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
             if verbosity:
                 level = self.level_or_default_handler.level_or_default(verbosity,
                                                                        'verbosity', default_level,
-                                                                       get_args(V_LITERAL))
+                                                                       list(self.vq_level_map.keys()))
             elif quietness:
                 level = self.level_or_default_handler.level_or_default(quietness,
                                                                        'quietness', default_level,
-                                                                       get_args(Q_LITERAL))
+                                                                       list(self.vq_level_map.keys()))
             else:
                 level = default_level
         return level
