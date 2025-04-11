@@ -67,6 +67,8 @@ class VQCommon[T](VQCommConfigurator[T]):
 
         :param vq_level_map: A dictionary containing verbosity|quietness -> logging.level mapping.
         :param warn_only: Only warn on potential errors instead of raising an Error.
+        :param level_or_default_handler: Level computer. Defaults to ``SimpleWarningVQLevelOrDefault`` if ``None`` or
+            not supplied.
         """
         self._vq_level_map = vq_level_map
         self.warn_only = warn_only
