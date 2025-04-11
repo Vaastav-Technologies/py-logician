@@ -9,7 +9,6 @@ import logging
 from abc import abstractmethod
 from typing import Protocol
 
-from vt.utils.logging.logging.configurators.vq import V_LITERAL, Q_LITERAL, VQ_DICT_LITERAL
 from vt.utils.logging.logging.std_log.base import DirectStdAllLevelLogger
 
 
