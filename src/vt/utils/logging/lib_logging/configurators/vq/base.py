@@ -40,7 +40,7 @@ class VQLevelOrDefault[T](VQConfigurator[T], Protocol):
         :param ver_qui: verbosity or quietness.
         :param emphasis: strings '`verbosity`' or '`quietness`'.
         :param default_level: logging level to be returned if ``ver_qui`` is ``None``.
-        :param choices: What are the choices for `verbosity` or `quietness`.
+        :param choices: What are the choices for `verbosity` or `quietness` or 'verbosity or quietness'.
         :return: calculated logging level from ``ver_qui`` or ``default_level`` if ``ver_qui`` is ``None``.
         :raise KeyError: if verbosity and quietness are absent in ``vq_level_map`` and ``self.handle_key_error()``
             decides to re raise the error.
