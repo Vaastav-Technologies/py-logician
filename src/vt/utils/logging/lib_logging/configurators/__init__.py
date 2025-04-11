@@ -9,7 +9,7 @@ import logging
 from abc import abstractmethod
 from typing import Protocol
 
-from vt.utils.logging.logging.std_log.base import DirectStdAllLevelLogger
+from vt.utils.logging.lib_logging.std_log.base import DirectStdAllLevelLogger
 
 
 class LoggerConfigurator(Protocol):

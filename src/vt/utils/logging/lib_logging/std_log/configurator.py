@@ -9,13 +9,13 @@ Logger interfaces for standard Logger configurators.
 import logging
 from typing import override, TextIO, overload
 
-from vt.utils.logging.logging import DirectAllLevelLogger, DirectStdAllLevelLogger
-from vt.utils.logging.logging.configurators import LoggerConfigurator
-from vt.utils.logging.logging.configurators.vq import V_LITERAL, Q_LITERAL, VQ_DICT_LITERAL
-from vt.utils.logging.logging.formatters import LogLevelFmt
-from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL
-from vt.utils.logging.logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl
-from vt.utils.logging.logging.std_log.formatters import StdLogAllLevelDiffFmt, \
+from vt.utils.logging.lib_logging import DirectAllLevelLogger, DirectStdAllLevelLogger
+from vt.utils.logging.lib_logging.configurators import LoggerConfigurator
+from vt.utils.logging.lib_logging.configurators.vq import V_LITERAL, Q_LITERAL, VQ_DICT_LITERAL
+from vt.utils.logging.lib_logging.formatters import LogLevelFmt
+from vt.utils.logging.lib_logging.std_log import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL
+from vt.utils.logging.lib_logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl
+from vt.utils.logging.lib_logging.std_log.formatters import StdLogAllLevelDiffFmt, \
     StdLogAllLevelSameFmt, STDERR_ALL_LVL_SAME_FMT, STDERR_ALL_LVL_DIFF_FMT
 from vt.utils.errors.warnings import vt_warn
 

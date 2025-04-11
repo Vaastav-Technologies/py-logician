@@ -8,8 +8,8 @@ Loggers which are designed to delegate responsibility of logging to certain logg
 from abc import abstractmethod
 from typing import Protocol
 
-from vt.utils.logging.logging import MinLogProtocol, AllLevelLogger
-from vt.utils.logging.logging.base import _MinLogProtocol
+from vt.utils.logging.lib_logging import MinLogProtocol, AllLevelLogger
+from vt.utils.logging.lib_logging.base import _MinLogProtocol
 
 
 class ProtocolMinLevelLoggerImplBase(_MinLogProtocol, Protocol):

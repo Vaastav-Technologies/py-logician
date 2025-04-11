@@ -8,8 +8,8 @@ Tests for base interface logic.
 import pytest
 import logging
 
-from vt.utils.logging.logging import DirectStdAllLevelLogger
-from vt.utils.logging.logging.std_log.utils import level_name_mapping
+from vt.utils.logging.lib_logging import DirectStdAllLevelLogger
+from vt.utils.logging.lib_logging.std_log.utils import level_name_mapping
 
 
 def test_registers_supplied_unknown_levels():

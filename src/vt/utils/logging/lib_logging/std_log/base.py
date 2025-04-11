@@ -8,12 +8,12 @@ import logging
 from abc import abstractmethod
 from typing import Protocol, Any, Mapping, override
 
-from vt.utils.logging.logging import MinLogProtocol, AllLevelLogger
-from vt.utils.logging.logging.base import FatalLogProtocol, ExceptionLogProtocol, HasUnderlyingLogger
-from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, TRACE_LOG_STR, SUCCESS_LOG_LEVEL, SUCCESS_LOG_STR, \
+from vt.utils.logging.lib_logging import MinLogProtocol, AllLevelLogger
+from vt.utils.logging.lib_logging.base import FatalLogProtocol, ExceptionLogProtocol, HasUnderlyingLogger
+from vt.utils.logging.lib_logging.std_log import TRACE_LOG_LEVEL, TRACE_LOG_STR, SUCCESS_LOG_LEVEL, SUCCESS_LOG_STR, \
     NOTICE_LOG_LEVEL, NOTICE_LOG_STR, EXCEPTION_TRACEBACK_LOG_LEVEL, EXCEPTION_TRACEBACK_LOG_STR, FATAL_LOG_LEVEL, \
     FATAL_LOG_STR, CMD_LOG_LEVEL, CMD_LOG_STR
-from vt.utils.logging.logging.std_log.utils import level_name_mapping
+from vt.utils.logging.lib_logging.std_log.utils import level_name_mapping
 
 
 class StdLogProtocol(MinLogProtocol, Protocol):

@@ -16,9 +16,9 @@ from typing import Protocol, override
 
 from vt.utils.errors.warnings import vt_warn
 
-from vt.utils.logging.logging.configurators.vq import VQConfigurator, V_LITERAL, Q_LITERAL, VQ_DICT_LITERAL, \
+from vt.utils.logging.lib_logging.configurators.vq import VQConfigurator, V_LITERAL, Q_LITERAL, VQ_DICT_LITERAL, \
     VQLevelOrDefault
-from vt.utils.logging.logging.configurators.vq.base import SimpleWarningVQLevelOrDefault
+from vt.utils.logging.lib_logging.configurators.vq.base import SimpleWarningVQLevelOrDefault
 
 
 class VQSepConfigurator[T](VQConfigurator[T], Protocol):

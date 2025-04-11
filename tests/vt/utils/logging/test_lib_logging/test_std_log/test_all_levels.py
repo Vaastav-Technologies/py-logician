@@ -9,8 +9,8 @@ from unittest.mock import patch
 
 import pytest
 
-from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, TIMED_DETAIL_LOG_FMT, DEFAULT_STACK_LEVEL
-from vt.utils.logging.logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl, TempSetCmdLvlName
+from vt.utils.logging.lib_logging.std_log import TRACE_LOG_LEVEL, TIMED_DETAIL_LOG_FMT, DEFAULT_STACK_LEVEL
+from vt.utils.logging.lib_logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl, TempSetCmdLvlName
 
 
 def test_ensure_correct_logging_lines():
