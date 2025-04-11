@@ -17,7 +17,7 @@ from vt.utils.logging.logging.std_log import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL
 from vt.utils.logging.logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl
 from vt.utils.logging.logging.std_log.formatters import StdLogAllLevelDiffFmt, \
     StdLogAllLevelSameFmt, STDERR_ALL_LVL_SAME_FMT, STDERR_ALL_LVL_DIFF_FMT
-from vt.utils.logging.warnings import vt_warn
+from vt.utils.errors.warnings import vt_warn
 
 
 class StdLoggerConfigurator(LoggerConfigurator):

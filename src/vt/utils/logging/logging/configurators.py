@@ -9,8 +9,10 @@ import logging
 from abc import abstractmethod
 from typing import Protocol, Literal, override, Any
 
+from vt.utils.errors.error_specs import DefaultOrError, WarningWithDefault, SimpleWarningWithDefault
+
 from vt.utils.logging.logging.std_log.base import DirectStdAllLevelLogger
-from vt.utils.logging.warnings import vt_warn, Warner
+from vt.utils.errors.warnings import vt_warn, Warner
 
 
 class LoggerConfigurator(Protocol):
@@ -118,132 +120,6 @@ class VQCommConfigurator[T](VQConfigurator[T], Protocol):
             to raise error for this.
         """
         ...
-
-
-def form_errmsg_for_choices(emphasis: str | None = None, choices: list[Any] | None = None) -> str:
-    """
-    Create a sensible error message when a value is provided unexpectedly.
-
-    Examples::
-
-    >>> form_errmsg_for_choices()
-    'Unexpected value.'
-
-    >>> form_errmsg_for_choices('verbosity')
-    'Unexpected verbosity value.'
-
-    >>> form_errmsg_for_choices(choices=['v', 'vv', 'vvv'])
-    "Unexpected value. Choose from ['v', 'vv', 'vvv']."
-
-    >>> form_errmsg_for_choices('quietness', ['q', 'qq', 'qqq'])
-    "Unexpected quietness value. Choose from ['q', 'qq', 'qqq']."
-
-    :param emphasis: the string which is emphasised in the returned error message. The emphasising of string is not
-        done if this value is ``None`` or not provided.
-    :param choices: all the acceptable choices. Choices are not included in the error message if this value is ``None``
-        or not supplied.
-    :return: The formed errmsg string.
-    """
-    if emphasis:
-        errmsg = f"Unexpected {emphasis} value."
-    else:
-        errmsg = "Unexpected value."
-    if choices:
-        errmsg = f"{errmsg} Choose from {choices}."
-    return errmsg
-
-
-class DefaultOrError[T](Protocol):
-
-    def handle_key_error(self, key_error: KeyError, default_level: T, emphasis: str = None,
-                         choices: list[Any] = None) -> T:
-        """
-        Subclasses will decide how to treat the ``KeyError`` from ``level_or_default()``.
-
-        :param key_error: The ``KeyError`` raised from ``level_or_default()``.
-        :param emphasis: strings '`verbosity`' or '`quietness`'.
-        :param default_level: logging level to be returned if ``ver_qui`` is ``None``.
-        :param choices: What are the choices for `verbosity` or `quietness`.
-        :return: ``default_level``.
-        :raise KeyError: if verbosity and quietness are absent in ``vq_level_map`` and ``self.handle_key_error()``
-            decides to re raise the error.
-        """
-        errmsg = form_errmsg_for_choices(emphasis, choices)
-        if self.raise_error:
-            raise KeyError(f"{key_error}: {errmsg}")
-        return default_level
-
-    @property
-    @abstractmethod
-    def raise_error(self) -> bool:
-        ...
-
-
-class RaiseError[T](DefaultOrError[T]):
-
-    def __init__(self, raise_error: bool = True):
-        self._raise_error = raise_error
-
-    @property
-    @abstractmethod
-    def raise_error(self) -> bool:
-        return self._raise_error
-
-
-class WarningWithDefault[T](DefaultOrError[T], Warner, Protocol):
-
-    @override
-    def handle_key_error(self, key_error: KeyError, default_level: T, emphasis: str = None,
-                         choices: list[Any] = None) -> T:
-        """
-        Subclasses will decide how to treat the ``KeyError`` from ``level_or_default()``.
-
-        :param key_error: The ``KeyError`` raised from ``level_or_default()``.
-        :param emphasis: strings '`verbosity`' or '`quietness`'.
-        :param default_level: logging level to be returned if ``ver_qui`` is ``None``.
-        :param choices: What are the choices for `verbosity` or `quietness`.
-        :return: ``default_level``.
-        :raise KeyError: if verbosity and quietness are absent in ``vq_level_map`` and ``self.handle_key_error()``
-            decides to re raise the error.
-        """
-        errmsg = form_errmsg_for_choices(emphasis, choices)
-        if self.warn_only:
-            vt_warn(f"{key_error}: {errmsg}")
-        else:
-            if self.raise_error:
-                raise KeyError(f"{key_error}: {errmsg}")
-        return default_level
-
-    @override
-    def raise_error(self) -> bool:
-        return not self.warn_only
-
-
-class SimpleWarningWithDefault[T](WarningWithDefault[T]):
-
-    def __init__(self, warn_only: bool = True):
-        self._warn_only = warn_only
-
-    @override
-    @property
-    def warn_only(self) -> bool:
-        return self._warn_only
-
-
-class NoErrWarningWithDefault[T](WarningWithDefault[T]):
-
-    def __init__(self, warn_only: bool = True):
-        self._warn_only = warn_only
-
-    @override
-    @property
-    def warn_only(self) -> bool:
-        return self._warn_only
-
-    @override
-    @property
-    def raise_error(self) -> bool:
-        return False
 
 
 class VQLevelOrDefault[T](VQConfigurator[T], Protocol):

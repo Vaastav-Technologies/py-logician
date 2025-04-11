@@ -16,9 +16,9 @@ import pytest
 
 from vt.utils.logging.logging import DirectAllLevelLogger
 from vt.utils.logging.logging.std_log.configurator import StdLoggerConfigurator
+from vt.utils.logging.logging.std_log.formatters import STDERR_ALL_LVL_SAME_FMT
 from vt.utils.logging.logging.std_log.formatters import StdLogAllLevelSameFmt, \
     StdLogAllLevelDiffFmt, STDERR_ALL_LVL_DIFF_FMT
-from vt.utils.logging.logging.std_log.formatters import STDERR_ALL_LVL_SAME_FMT
 from vt.utils.logging.logging.std_log.utils import level_name_mapping
 
 BOGUS_LEVELS = ['BOGUS', 'bogus', 'non -lev']
@@ -28,6 +28,11 @@ LEVEL_NAME_MAPS = [
     {logging.INFO: 'ANO-INFO', logging.ERROR: 'ANO-ERROR'},
     {28: 'ANO-CMD', 80: '80-LVL', 90: 'NINETY-LVL'}
 ]
+
+def devnull_stream():
+    f = open(os.devnull, 'w')
+    yield f
+    f.close()
 
 class TestStdLoggerConfigurator:
     class TestArgs:
@@ -63,7 +68,7 @@ class TestStdLoggerConfigurator:
             #   an ABC hence, cannot be instantiated as that is not okay with mypy also. Just using open(os.devnull)
             #   works but does not look satisfactory.
             @pytest.mark.parametrize('stream_list', [[sys.stderr], [sys.stderr, sys.stdout], [sys.stdout,
-                                                                                              open(os.devnull)]])
+                                                                                              devnull_stream()]])
             def test_supplied_stream_is_stored(self, stream_list):
                 cfg = StdLoggerConfigurator(stream_list=stream_list)
                 assert all(stream in cfg.stream_fmt_mapper for stream in stream_list)
@@ -131,6 +136,9 @@ class TestStdLoggerConfigurator:
                                               (StdLoggerConfigurator(stream_list=[sys.stderr, sys.stdout, sys.stdin,
                                                                                   sys.stderr]),
                                                3),
+                                              (StdLoggerConfigurator(stream_list=[sys.stderr, sys.stdout, sys.stdin,
+                                                                                  sys.stderr, devnull_stream()]),
+                                               4),
                                               (StdLoggerConfigurator(stream_fmt_mapper={}), 1),
                                               (StdLoggerConfigurator(stream_fmt_mapper={sys.stderr: StdLogAllLevelSameFmt()}), 1),
                                               (StdLoggerConfigurator(stream_fmt_mapper={sys.stderr: StdLogAllLevelSameFmt(),

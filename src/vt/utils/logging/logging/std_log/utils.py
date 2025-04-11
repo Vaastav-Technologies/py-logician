@@ -6,7 +6,7 @@ Important utilities for std python logging library.
 """
 import logging
 
-from vt.utils.logging.warnings import vt_warn
+from vt.utils.errors.warnings import vt_warn
 
 
 def level_name_mapping() -> dict[int, str]:

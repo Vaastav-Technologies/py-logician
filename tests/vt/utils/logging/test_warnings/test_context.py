@@ -11,7 +11,7 @@ import warnings
 
 import pytest
 
-from vt.utils.logging.warnings import suppress_warning_stacktrace
+from vt.utils.errors.warnings import suppress_warning_stacktrace
 
 
 def use_ctx():
