@@ -80,6 +80,7 @@ class SimpleWarningVQLevelOrDefault[T](VQLevelOrDefault[T], Warner):
     def warn_only(self) -> bool:
         return self._warn_only
 
+    @override
     @property
     def key_error_handler(self) -> WarningWithDefault[T]:
         return self._key_error_handler
