@@ -3,42 +3,30 @@
 
 
 """
-Logger interfaces for Logger configurators.
+Configurators for verbosity (V) and quietness (Q).
 """
-import logging
+
+
+import contextlib
+import sys
+import warnings
 from abc import abstractmethod
-from typing import Protocol, Literal, override, Any
+from typing import Literal, Protocol, Any, override
 
 from vt.utils.errors.error_specs import DefaultOrError, WarningWithDefault, SimpleWarningWithDefault
-
-from vt.utils.logging.logging.std_log.base import DirectStdAllLevelLogger
-from vt.utils.errors.warnings import vt_warn, Warner
-
-
-class LoggerConfigurator(Protocol):
-    """
-    Stores configuration information to configure the std python logger.
-    """
-
-    @abstractmethod
-    def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
-        """
-        Configure the std python logger for various formatting quick-hands.
-
-        :param logger: std python logger
-        :return: A configured All level logging std python logger.
-        """
-        pass
+from vt.utils.errors.warnings import Warner, vt_warn
 
 
 V_LITERAL = Literal['v', 'vv', 'vvv']
 """
 Verbosity literal. Progressively denotes more and more verbosity.
 """
+
 Q_LITERAL = Literal['q', 'qq', 'qqq']
 """
 Quietness literal. Progressively denotes more and more quietness.
 """
+
 type VQ_DICT_LITERAL[T] = dict[V_LITERAL | Q_LITERAL, T]
 """
 Literal denoting how should a {``verbosity-quietness -> logging-level``} dict should be structured.

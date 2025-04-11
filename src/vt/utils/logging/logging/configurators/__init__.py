@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+# coding=utf-8
+
+
+"""
+Logger interfaces for Logger configurators.
+"""
+import logging
+from abc import abstractmethod
+from typing import Protocol
+
+from vt.utils.logging.logging.configurators.vq import V_LITERAL, Q_LITERAL, VQ_DICT_LITERAL
+from vt.utils.logging.logging.std_log.base import DirectStdAllLevelLogger
+
+
+class LoggerConfigurator(Protocol):
+    """
+    Stores configuration information to configure the std python logger.
+    """
+
+    @abstractmethod
+    def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
+        """
+        Configure the std python logger for various formatting quick-hands.
+
+        :param logger: std python logger
+        :return: A configured All level logging std python logger.
+        """
+        pass
