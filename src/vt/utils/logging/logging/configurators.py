@@ -124,7 +124,7 @@ class VQCommConfigurator[T](VQConfigurator[T], Protocol):
 
 class VQLevelOrDefault[T](VQConfigurator[T], Protocol):
     """
-    Implementation interface to facilitate getting a logging level from VQConfigurator.
+    Interface to facilitate getting a logging level from VQConfigurator.
     """
 
     def level_or_default(self, ver_qui: V_LITERAL | Q_LITERAL | None,
@@ -343,7 +343,7 @@ class VQCommon[T](VQCommConfigurator[T]):
     def __init__(self, vq_level_map: VQ_DICT_LITERAL[T], warn_only: bool = False,
                  level_or_default_handler: VQLevelOrDefault[T] | None = None):
         """
-        Treats verbosity and quietness as on inclusive argument.
+        Treats verbosity and quietness as one inclusive argument.
 
         Treats such conditions as an error::
 
