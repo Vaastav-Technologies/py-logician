@@ -68,7 +68,7 @@ class SimpleWarningVQLevelOrDefault[T](VQLevelOrDefault[T], Warner):
         if key_error_handler:
             self._key_error_handler = key_error_handler
         else:
-            self._key_error_handler = SimpleWarningWithDefault[T](warn_only=warn_only)
+            self._key_error_handler = SimpleWarningWithDefault[T](warn_only=self.warn_only)
 
     @override
     @property
