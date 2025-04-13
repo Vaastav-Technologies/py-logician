@@ -19,7 +19,7 @@ Quietness literal. Progressively denotes more and more quietness.
 
 type VQ_DICT_LITERAL[T] = dict[V_LITERAL | Q_LITERAL, T]
 """
-Literal denoting how should a {``verbosity-quietness -> logging-level``} dict should be structured.
+Literal denoting how should a {``verbosity-quietness -> logging-level``} dict be structured.
 
 :param T: type of the logger level, for e.g. logger level type is [int | str] for python std logging lib.
 """
