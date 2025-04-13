@@ -61,14 +61,26 @@ class VQLevelOrDefault[T](VQConfigurator[T], Protocol):
 
 class SimpleWarningVQLevelOrDefault[T](VQLevelOrDefault[T], Warner):
 
-    def __init__(self, vq_level_map: VQ_DICT_LITERAL[T], warn_only: bool,
+    def __init__(self, vq_level_map: VQ_DICT_LITERAL[T], *, warn_only: bool | None = None,
                  key_error_handler: WarningWithDefault[T] | None = None):
+        """
+        Simple implementation for ``VQLevelOrDefault``. It can decided by the ``key_error_handler`` on how to handle
+        ``KeyError``. Default behavior is to simply warn the user.
+
+        :param vq_level_map: verbosity-quietness level map.
+        :param warn_only: warn the user of an error?
+        :param key_error_handler:
+        """
+        if warn_only is not None and key_error_handler is not None:
+            raise ValueError("'warn_only' and 'key_error_handler' cannot be given together.")
         self._vq_level_map = vq_level_map
-        self._warn_only = warn_only
         if key_error_handler:
             self._key_error_handler = key_error_handler
+        elif warn_only is not None:
+            self._key_error_handler = SimpleWarningWithDefault[T](warn_only=warn_only)
         else:
-            self._key_error_handler = SimpleWarningWithDefault[T](warn_only=self.warn_only)
+            raise ValueError("Both 'warn_only' and 'key_error_handler' cannot be None, at least one must be supplied.")
+        self._warn_only = self.key_error_handler.warn_only
 
     @override
     @property

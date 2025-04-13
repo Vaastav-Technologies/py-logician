@@ -75,7 +75,7 @@ class VQCommon[T](VQCommConfigurator[T]):
         if level_or_default_handler:
             self.level_or_default_handler = level_or_default_handler
         else:
-            self.level_or_default_handler = SimpleWarningVQLevelOrDefault(vq_level_map, warn_only)
+            self.level_or_default_handler = SimpleWarningVQLevelOrDefault(vq_level_map, warn_only=warn_only)
 
     @override
     @property
