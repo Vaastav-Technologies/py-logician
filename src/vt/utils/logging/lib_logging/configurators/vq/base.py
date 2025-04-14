@@ -6,7 +6,7 @@
 Base interfaces for verbosity (V) and quietness (Q) configurators.
 """
 from abc import abstractmethod
-from typing import Protocol, Literal, Any, override
+from typing import Protocol, Literal, Any, override, overload
 
 from vt.utils.errors.error_specs import DefaultOrError, WarningWithDefault
 from vt.utils.errors.error_specs.base import SimpleWarningWithDefault
@@ -63,16 +63,48 @@ class VQLevelOrDefault[T](VQConfigurator[T], Protocol):
 
 
 class SimpleWarningVQLevelOrDefault[T](VQLevelOrDefault[T], Warner):
+    @overload
+    def __init__(self, vq_level_map: VQ_DICT_LITERAL[T]):
+        ...
+
+    @overload
+    def __init__(self, vq_level_map: VQ_DICT_LITERAL[T], *, warn_only: bool):
+        ...
+
+    @overload
+    def __init__(self, vq_level_map: VQ_DICT_LITERAL[T], *, key_error_handler: WarningWithDefault[T]):
+        ...
 
     def __init__(self, vq_level_map: VQ_DICT_LITERAL[T], *, warn_only: bool | None = None,
                  key_error_handler: WarningWithDefault[T] | None = None):
         """
         Simple implementation for ``VQLevelOrDefault``. It can decided by the ``key_error_handler`` on how to handle
-        ``KeyError``. Default behavior is to simply warn the user.
+        ``KeyError``.
+
+        Default behavior is to simply warn the user on occurrence of a ``KeyError``.
+
+        Fail-fast error examples::
+
+        >>> from vt.utils.errors.error_specs.base import NoErrWarningWithDefault
+        >>> vq_levels: VQ_DICT_LITERAL[int] = {'v': 10, 'vv': 5, 'q': 30}
+
+        >>> SimpleWarningVQLevelOrDefault[int](vq_levels, warn_only=False, key_error_handler=NoErrWarningWithDefault())
+        Traceback (most recent call last):
+        ...
+        ValueError: warn_only and key_error_handler are not allowed together.
+
+
+        Correct no error examples::
+
+        >>> _ = SimpleWarningVQLevelOrDefault[int](vq_levels)
+
+        >>> _ = SimpleWarningVQLevelOrDefault[int](vq_levels, warn_only=False)
+
+        >>> _ = SimpleWarningVQLevelOrDefault[int](vq_levels, key_error_handler=NoErrWarningWithDefault())
 
         :param vq_level_map: verbosity-quietness level map.
-        :param warn_only: warn the user of an error?
-        :param key_error_handler:
+        :param warn_only: warn the user of an error? Cannot be provided with ``key_error_handler``.
+        :param key_error_handler: A custom ``KeyError`` to handle key errors.
         """
         if warn_only is not None and key_error_handler is not None:
             raise ValueError(errmsg_creator.not_allowed_together('warn_only', 'key_error_handler'))
@@ -82,7 +114,8 @@ class SimpleWarningVQLevelOrDefault[T](VQLevelOrDefault[T], Warner):
         elif warn_only is not None:
             self._key_error_handler = SimpleWarningWithDefault[T](warn_only=warn_only)
         else:
-            raise ValueError(errmsg_creator.at_least_one_required('warn_only', 'key_error_handler'))
+            # default behavior to just warn user on KeyError.
+            self._key_error_handler = SimpleWarningWithDefault[T](warn_only=True)
         self._warn_only = self.key_error_handler.warn_only
 
     @override

@@ -9,6 +9,7 @@ import pytest
 import logging
 
 from vt.utils.logging.lib_logging import DirectStdAllLevelLogger
+from vt.utils.logging.lib_logging.configurators.vq.base import SimpleWarningVQLevelOrDefault
 from vt.utils.logging.lib_logging.std_log.utils import level_name_mapping
 
 
@@ -49,3 +50,30 @@ def test_registers_default_if_not_provided(level_name_map):
     for level in DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP:
         assert level in registered_levels
         assert DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP[level] == registered_levels[level]
+
+
+class TestSimpleWarningVQLevelOrDefault:
+    def test_warns_user_by_default(self):
+        s = SimpleWarningVQLevelOrDefault[int]({'v': 10, 'vv': 20})
+        with pytest.warns(UserWarning, match="'vvv': Unexpected verbosity value. Choose from 'v' and 'vv'."):
+            s.level_or_default('vvv', 'verbosity', 1, ['v', 'vv'])
+
+    def test_can_raise_error_if_directed(self):
+        s = SimpleWarningVQLevelOrDefault[int]({'v': 10, 'vv': 20}, warn_only=False)
+        with pytest.raises(KeyError, match="'vvv': Unexpected verbosity value. Choose from 'v' and 'vv'."):
+            s.level_or_default('vvv', 'verbosity', 1, ['v', 'vv'])
+
+    def test_can_have_a_custom_key_error_handler(self):
+        from vt.utils.errors.error_specs.base import WarningWithDefault
+        class _ErrOnly[T](WarningWithDefault[T]):
+            @property
+            def raise_error(self) -> bool:
+                return True
+
+            @property
+            def warn_only(self) -> bool:
+                return not self.raise_error
+
+        s = SimpleWarningVQLevelOrDefault[int]({'v': 10, 'vv': 20}, key_error_handler=_ErrOnly())
+        with pytest.raises(KeyError, match="'vvv': Unexpected verbosity value. Choose from 'v' and 'vv'."):
+            s.level_or_default('vvv', 'verbosity', 1, ['v', 'vv'])
