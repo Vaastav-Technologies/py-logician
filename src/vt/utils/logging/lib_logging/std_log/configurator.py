@@ -7,23 +7,25 @@ Logger interfaces for standard Logger configurators.
 """
 
 import logging
-from typing import override, TextIO, overload
+from typing import override, TextIO, overload, Protocol
 
 from vt.utils.errors.warnings import vt_warn
 
 from vt.utils.logging.lib_logging import DirectAllLevelLogger, DirectStdAllLevelLogger
 from vt.utils.logging.lib_logging import errmsg_creator
-from vt.utils.logging.lib_logging.configurators import LoggerConfigurator
-from vt.utils.logging.lib_logging.configurators.vq import V_LITERAL, Q_LITERAL, VQ_DICT_LITERAL, VQConfigurator
+from vt.utils.logging.lib_logging.configurators import LoggerConfigurator, HasUnderlyingConfigurator
+from vt.utils.logging.lib_logging.configurators.vq import V_LITERAL, Q_LITERAL, VQ_DICT_LITERAL, VQConfigurator, \
+    VQSepConfigurator
+from vt.utils.logging.lib_logging.configurators.vq.sep import VQSepExclusive
 from vt.utils.logging.lib_logging.formatters import LogLevelFmt
-from vt.utils.logging.lib_logging.std_log import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL
+from vt.utils.logging.lib_logging.std_log import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL, WARNING_LEVEL
 from vt.utils.logging.lib_logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl
 from vt.utils.logging.lib_logging.std_log.formatters import StdLogAllLevelDiffFmt, \
     StdLogAllLevelSameFmt, STDERR_ALL_LVL_SAME_FMT, STDERR_ALL_LVL_DIFF_FMT
 
 
 class StdLoggerConfigurator(LoggerConfigurator):
-    DEFAULT_LOG_LEVEL_WARNING: int = logging.WARNING
+    DEFAULT_LOG_LEVEL_WARNING = WARNING_LEVEL
 
     @overload
     def __init__(self, *, level: int | str = DEFAULT_LOG_LEVEL_WARNING, cmd_name: str | None = None,
@@ -111,18 +113,29 @@ class StdLoggerConfigurator(LoggerConfigurator):
         return DirectAllLevelLogger(DirectAllLevelLoggerImpl(logger), cmd_name=self.cmd_name)
 
 
-class VQLoggerConfigurator(LoggerConfigurator, VQConfigurator[int]):
+class VQLoggerConfigurator(LoggerConfigurator, VQConfigurator[int], HasUnderlyingConfigurator, Protocol):
+    """
+    Logger configurator that can decorate other configurators to set their underlying logger levels. This log level is
+    to be set according to the supplied verbosity and quietness values.
+    """
     type T = int
+    """
+    Type for python standard logger logging level.
+    """
     VQ_LEVEL_MAP: VQ_DICT_LITERAL[T] = dict(v=logging.INFO, vv=logging.DEBUG, vvv=TRACE_LOG_LEVEL,
                         q=logging.ERROR, qq=logging.CRITICAL, qqq=FATAL_LOG_LEVEL)
     """
     Default {``verbosity-quietness -> logging-level``} mapping.
     """
+    DEFAULT_LOG_LEVEL_WARNING = WARNING_LEVEL
 
-    def __init__(self, configurator: LoggerConfigurator, *,
-                 verbosity: V_LITERAL | None = None,
-                 quietness: Q_LITERAL | None = None,
-                 vq_level_map: VQ_DICT_LITERAL[T] | None = None):
+
+class VQSepLoggerConfigurator(VQLoggerConfigurator):
+
+    def __init__(self, configurator: LoggerConfigurator,
+                 verbosity: V_LITERAL | None, quietness: Q_LITERAL | None,
+                 vq_level_map: VQ_DICT_LITERAL[VQLoggerConfigurator.T] | None = None,
+                 vq_sep_configurator: VQSepConfigurator[VQLoggerConfigurator.T] | None = None):
         """
         A logger configurator that can decorate another logger configurator to accept and infer logging level based on
         ``verbosity`` and ``quietness`` values.
@@ -133,15 +146,15 @@ class VQLoggerConfigurator(LoggerConfigurator, VQConfigurator[int]):
         ``verbosity`` and ``quietness`` cannot be supplied together
         -----------------------------------------------------------
 
-        >>> VQLoggerConfigurator(StdLoggerConfigurator(), verbosity='v', quietness='qq')
+        >>> VQSepLoggerConfigurator(StdLoggerConfigurator(), verbosity='v', quietness='qq')
         Traceback (most recent call last):
         ValueError: verbosity and quietness are not allowed together.
 
         Default ``VQLoggerConfigurator.VQ_LEVEL_MAP`` is used as ``vq_level_map`` when ``vq_level_map`` is ``None``
         -----------------------------------------------------------------------------------------------------------
 
-        >>> vq_log = VQLoggerConfigurator(StdLoggerConfigurator())
-        >>> assert vq_log.vq_level_map == VQLoggerConfigurator.VQ_LEVEL_MAP
+        >>> vq_log = VQSepLoggerConfigurator(StdLoggerConfigurator(), 'v', None)
+        >>> assert vq_log.vq_level_map == VQSepLoggerConfigurator.VQ_LEVEL_MAP
 
         :param configurator: The logger configurator to decorate.
         :param verbosity: verbosity level. Cannot be given with ``quietness``.
@@ -149,25 +162,29 @@ class VQLoggerConfigurator(LoggerConfigurator, VQConfigurator[int]):
         :param vq_level_map: A user defined {``verbosity-quietness -> logging-level``} mapping can be supplied. Assumes
             ``VQLoggerConfigurator.VQ_LEVEL_MAP`` when omitted or ``None`` is supplied.
         """
-        if verbosity and quietness:
-            raise ValueError(errmsg_creator.not_allowed_together('verbosity', 'quietness'))
+        self._vq_level_map = vq_level_map if vq_level_map else VQSepLoggerConfigurator.VQ_LEVEL_MAP
+        if not vq_sep_configurator:
+            self.vq_sep_configurator = VQSepExclusive(self.vq_level_map)
+        else:
+            self.vq_sep_configurator = vq_sep_configurator
+        self.vq_sep_configurator.validate(verbosity, quietness)
         self.configurator = configurator
-        self._vq_level_map = vq_level_map if vq_level_map else VQLoggerConfigurator.VQ_LEVEL_MAP
         self.verbosity = verbosity
         self.quietness = quietness
+        self._underlying_configurator = self.configurator
 
     @override
     def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
-        if self.verbosity:
-            int_level = self.vq_level_map[self.verbosity]
-        elif self.quietness:
-            int_level = self.vq_level_map[self.quietness]
-        else:
-            int_level = logging.WARNING
+        int_level = self.vq_sep_configurator.get_effective_level(self.verbosity, self.quietness,
+                                                                 VQLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING)
         ret_logger = self.configurator.configure(logger)
         ret_logger.underlying_logger.setLevel(int_level)
         return ret_logger
 
     @property
-    def vq_level_map(self) -> VQ_DICT_LITERAL[T]:
+    def vq_level_map(self) -> VQ_DICT_LITERAL[VQLoggerConfigurator.T]:
         return self._vq_level_map
+
+    @property
+    def underlying_configurator(self) -> LoggerConfigurator:
+        return self._underlying_configurator

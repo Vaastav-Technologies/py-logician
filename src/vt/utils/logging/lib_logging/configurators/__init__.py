@@ -26,3 +26,18 @@ class LoggerConfigurator(Protocol):
         :return: A configured All level logging std python logger.
         """
         pass
+
+
+class HasUnderlyingConfigurator(Protocol):
+    """
+    A configurator which has other configurators underneath it. Majorly used to decorate configurators to add
+    functionalities to them.
+    """
+
+    @property
+    @abstractmethod
+    def underlying_configurator(self) -> LoggerConfigurator:
+        """
+        :return: The underlying logger configurator which is decorated by this configurator.
+        """
+        ...

@@ -8,3 +8,5 @@ Configurators for verbosity (V) and quietness (Q).
 
 from vt.utils.logging.lib_logging.configurators.vq.__constants__ import *
 from vt.utils.logging.lib_logging.configurators.vq.base import VQConfigurator, VQLevelOrDefault
+from vt.utils.logging.lib_logging.configurators.vq.sep import VQSepConfigurator
+from vt.utils.logging.lib_logging.configurators.vq.comm import VQCommConfigurator

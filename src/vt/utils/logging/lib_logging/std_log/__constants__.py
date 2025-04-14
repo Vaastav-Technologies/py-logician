@@ -74,3 +74,8 @@ SHORT_LOG_FMT = '%(name)s: %(levelname)s: %(message)s'
 DETAIL_LOG_FMT = '%(name)s: %(levelname)s: [%(filename)s - %(funcName)10s() ]: %(message)s'
 TIMED_DETAIL_LOG_FMT = '%(asctime)s: %(name)s: %(levelname)s: [%(filename)s:%(lineno)d - ' \
                        '%(funcName)10s() ]: %(message)s'
+
+WARNING_LEVEL: int = logging.WARNING
+"""
+Default logging level for the python std lib.
+"""
