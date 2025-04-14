@@ -14,7 +14,7 @@ from vt.utils.errors.warnings import vt_warn
 from vt.utils.logging.lib_logging import DirectAllLevelLogger, DirectStdAllLevelLogger
 from vt.utils.logging.lib_logging import errmsg_creator
 from vt.utils.logging.lib_logging.configurators import LoggerConfigurator
-from vt.utils.logging.lib_logging.configurators.vq import V_LITERAL, Q_LITERAL, VQ_DICT_LITERAL
+from vt.utils.logging.lib_logging.configurators.vq import V_LITERAL, Q_LITERAL, VQ_DICT_LITERAL, VQConfigurator
 from vt.utils.logging.lib_logging.formatters import LogLevelFmt
 from vt.utils.logging.lib_logging.std_log import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL
 from vt.utils.logging.lib_logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl
@@ -111,8 +111,9 @@ class StdLoggerConfigurator(LoggerConfigurator):
         return DirectAllLevelLogger(DirectAllLevelLoggerImpl(logger), cmd_name=self.cmd_name)
 
 
-class VQLoggerConfigurator(LoggerConfigurator):
-    VQ_LEVEL_MAP: VQ_DICT_LITERAL[int] = dict(v=logging.INFO, vv=logging.DEBUG, vvv=TRACE_LOG_LEVEL,
+class VQLoggerConfigurator(LoggerConfigurator, VQConfigurator[int]):
+    type T = int
+    VQ_LEVEL_MAP: VQ_DICT_LITERAL[T] = dict(v=logging.INFO, vv=logging.DEBUG, vvv=TRACE_LOG_LEVEL,
                         q=logging.ERROR, qq=logging.CRITICAL, qqq=FATAL_LOG_LEVEL)
     """
     Default {``verbosity-quietness -> logging-level``} mapping.
@@ -121,7 +122,7 @@ class VQLoggerConfigurator(LoggerConfigurator):
     def __init__(self, configurator: LoggerConfigurator, *,
                  verbosity: V_LITERAL | None = None,
                  quietness: Q_LITERAL | None = None,
-                 vq_level_map: VQ_DICT_LITERAL[int] | None = None):
+                 vq_level_map: VQ_DICT_LITERAL[T] | None = None):
         """
         A logger configurator that can decorate another logger configurator to accept and infer logging level based on
         ``verbosity`` and ``quietness`` values.
@@ -151,7 +152,7 @@ class VQLoggerConfigurator(LoggerConfigurator):
         if verbosity and quietness:
             raise ValueError(errmsg_creator.not_allowed_together('verbosity', 'quietness'))
         self.configurator = configurator
-        self.vq_level_map = vq_level_map if vq_level_map else VQLoggerConfigurator.VQ_LEVEL_MAP
+        self._vq_level_map = vq_level_map if vq_level_map else VQLoggerConfigurator.VQ_LEVEL_MAP
         self.verbosity = verbosity
         self.quietness = quietness
 
@@ -166,3 +167,7 @@ class VQLoggerConfigurator(LoggerConfigurator):
         ret_logger = self.configurator.configure(logger)
         ret_logger.underlying_logger.setLevel(int_level)
         return ret_logger
+
+    @property
+    def vq_level_map(self) -> VQ_DICT_LITERAL[T]:
+        return self._vq_level_map
