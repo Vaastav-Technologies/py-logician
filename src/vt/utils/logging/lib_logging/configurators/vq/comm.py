@@ -71,7 +71,6 @@ class VQCommon[T](VQCommConfigurator[T]):
             not supplied.
         """
         self._vq_level_map = vq_level_map
-        self.warn_only = warn_only
         if level_or_default_handler:
             self.level_or_default_handler = level_or_default_handler
         else:
