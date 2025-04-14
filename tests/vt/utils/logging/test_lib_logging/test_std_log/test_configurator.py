@@ -39,14 +39,13 @@ class TestStdLoggerConfigurator:
         class TestStreamMapperNotAllowed:
             @pytest.mark.parametrize('diff', [True, False])
             def test_with_diff_fmt(self, diff):
-                with pytest.raises(ValueError, match="Cannot provide both 'stream_fmt_mapper' and "
-                                                     "'diff_fmt_per_level'. Choose one."):
+                with pytest.raises(ValueError, match="stream_fmt_mapper and diff_fmt_per_level are not allowed "
+                                                     "together."):
                     StdLoggerConfigurator(stream_fmt_mapper=STDERR_ALL_LVL_SAME_FMT, diff_fmt_per_level=diff) # noqa
 
             @pytest.mark.parametrize('stream_list', [[sys.stderr], [sys.stderr, sys.stdout]])
             def test_with_stream_list(self, stream_list):
-                with pytest.raises(ValueError, match="Cannot provide both 'stream_fmt_mapper' and "
-                                                     "'stream_list'. Choose one."):
+                with pytest.raises(ValueError, match="stream_fmt_mapper and stream_list are not allowed together."):
                     StdLoggerConfigurator(stream_fmt_mapper=STDERR_ALL_LVL_SAME_FMT, stream_list=stream_list) # noqa
 
         class TestStreamList:

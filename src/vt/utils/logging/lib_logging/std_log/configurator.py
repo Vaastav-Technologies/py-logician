@@ -9,7 +9,10 @@ Logger interfaces for standard Logger configurators.
 import logging
 from typing import override, TextIO, overload
 
+from vt.utils.errors.warnings import vt_warn
+
 from vt.utils.logging.lib_logging import DirectAllLevelLogger, DirectStdAllLevelLogger
+from vt.utils.logging.lib_logging import errmsg_creator
 from vt.utils.logging.lib_logging.configurators import LoggerConfigurator
 from vt.utils.logging.lib_logging.configurators.vq import V_LITERAL, Q_LITERAL, VQ_DICT_LITERAL
 from vt.utils.logging.lib_logging.formatters import LogLevelFmt
@@ -17,7 +20,6 @@ from vt.utils.logging.lib_logging.std_log import TRACE_LOG_LEVEL, FATAL_LOG_LEVE
 from vt.utils.logging.lib_logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl
 from vt.utils.logging.lib_logging.std_log.formatters import StdLogAllLevelDiffFmt, \
     StdLogAllLevelSameFmt, STDERR_ALL_LVL_SAME_FMT, STDERR_ALL_LVL_DIFF_FMT
-from vt.utils.errors.warnings import vt_warn
 
 
 class StdLoggerConfigurator(LoggerConfigurator):
@@ -59,9 +61,9 @@ class StdLoggerConfigurator(LoggerConfigurator):
         :param no_warn: do not warn if a supplied level is not registered with the logging library.
         """
         if stream_fmt_mapper is not None and stream_list is not None:
-            raise ValueError("Cannot provide both 'stream_fmt_mapper' and 'stream_list'. Choose one.")
+            raise ValueError(errmsg_creator.not_allowed_together('stream_fmt_mapper', 'stream_list'))
         if stream_fmt_mapper is not None and diff_fmt_per_level is not None:
-            raise ValueError("Cannot provide both 'stream_fmt_mapper' and 'diff_fmt_per_level'. Choose one.")
+            raise ValueError(errmsg_creator.not_allowed_together('stream_fmt_mapper', 'diff_fmt_per_level'))
 
         self.level = level
         self.cmd_name = cmd_name
@@ -132,7 +134,7 @@ class VQLoggerConfigurator(LoggerConfigurator):
 
         >>> VQLoggerConfigurator(StdLoggerConfigurator(), verbosity='v', quietness='qq')
         Traceback (most recent call last):
-        ValueError: 'verbosity' and 'quietness' cannot be given together.
+        ValueError: verbosity and quietness are not allowed together.
 
         Default ``VQLoggerConfigurator.VQ_LEVEL_MAP`` is used as ``vq_level_map`` when ``vq_level_map`` is ``None``
         -----------------------------------------------------------------------------------------------------------
@@ -147,7 +149,7 @@ class VQLoggerConfigurator(LoggerConfigurator):
             ``VQLoggerConfigurator.VQ_LEVEL_MAP`` when omitted or ``None`` is supplied.
         """
         if verbosity and quietness:
-            raise ValueError("'verbosity' and 'quietness' cannot be given together.")
+            raise ValueError(errmsg_creator.not_allowed_together('verbosity', 'quietness'))
         self.configurator = configurator
         self.vq_level_map = vq_level_map if vq_level_map else VQLoggerConfigurator.VQ_LEVEL_MAP
         self.verbosity = verbosity

@@ -8,10 +8,13 @@ Base interfaces for verbosity (V) and quietness (Q) configurators.
 from abc import abstractmethod
 from typing import Protocol, Literal, Any, override
 
-from vt.utils.errors.error_specs import DefaultOrError, WarningWithDefault, SimpleWarningWithDefault
+from vt.utils.errors.error_specs import DefaultOrError, WarningWithDefault
+from vt.utils.errors.error_specs.base import SimpleWarningWithDefault
 from vt.utils.errors.warnings import Warner
 
 from vt.utils.logging.lib_logging.configurators.vq import VQ_DICT_LITERAL, V_LITERAL, Q_LITERAL
+
+from vt.utils.logging.lib_logging import errmsg_creator
 
 
 class VQConfigurator[T](Protocol):
@@ -72,14 +75,14 @@ class SimpleWarningVQLevelOrDefault[T](VQLevelOrDefault[T], Warner):
         :param key_error_handler:
         """
         if warn_only is not None and key_error_handler is not None:
-            raise ValueError("'warn_only' and 'key_error_handler' cannot be given together.")
+            raise ValueError(errmsg_creator.not_allowed_together('warn_only', 'key_error_handler'))
         self._vq_level_map = vq_level_map
         if key_error_handler:
             self._key_error_handler = key_error_handler
         elif warn_only is not None:
             self._key_error_handler = SimpleWarningWithDefault[T](warn_only=warn_only)
         else:
-            raise ValueError("Both 'warn_only' and 'key_error_handler' cannot be None, at least one must be supplied.")
+            raise ValueError(errmsg_creator.at_least_one_required('warn_only', 'key_error_handler'))
         self._warn_only = self.key_error_handler.warn_only
 
     @override

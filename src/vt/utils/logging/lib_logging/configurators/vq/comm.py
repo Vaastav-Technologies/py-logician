@@ -133,7 +133,7 @@ class VQCommon[T](VQCommConfigurator[T]):
             >>> with warnings.catch_warnings():
             ...     with contextlib.redirect_stderr(sys.stdout):
             ...         VQCommon[int]({'v': 20, 'q': 1}, True).get_effective_level('vv', 10)
-            UserWarning: 'vv': Unexpected verbosity or quietness value. Choose from ['v', 'q'].
+            UserWarning: 'vv': Unexpected verbosity or quietness value. Choose from 'v' and 'q'.
             10
 
             Raise KeyError if queried verbosity or quietness is not registered and warn_only is False or not provided:
@@ -141,7 +141,7 @@ class VQCommon[T](VQCommConfigurator[T]):
             >>> VQCommon[int]({'v': 20, 'qqq': 70}).get_effective_level('qq', 10)
             Traceback (most recent call last):
             ...
-            KeyError: "'qq': Unexpected verbosity or quietness value. Choose from ['v', 'qqq']."
+            KeyError: "'qq': Unexpected verbosity or quietness value. Choose from 'v' and 'qqq'."
 
         :param ver_qui: `verbosity` or `quietness`.
         :param default_level: level to return when verbosity and quietness are not in the ``vq_level_map``.

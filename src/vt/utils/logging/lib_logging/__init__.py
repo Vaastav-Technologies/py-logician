@@ -25,6 +25,15 @@ from vt.utils.logging.lib_logging.std_log import StdLogProtocol, StdLevelLogger,
     BaseDirectStdAllLevelLogger, DirectAllLevelLogger, DirectStdAllLevelLogger
 from vt.utils.logging.lib_logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl as _DALImpl
 
+from vt.utils.errors.error_specs import ErrorMsgFormer
+
+errmsg_creator = ErrorMsgFormer
+"""
+Create formatted error messages using this global instance.
+
+To get a local instance use ``errmsg_creator.clone_with(...)``.
+"""
+
 
 def get_direct_all_level_logger(logger: Logger) -> DirectStdAllLevelLogger:
     return DirectAllLevelLogger(_DALImpl(logger))

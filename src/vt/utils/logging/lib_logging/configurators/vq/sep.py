@@ -16,6 +16,7 @@ from typing import Protocol, override
 
 from vt.utils.errors.warnings import vt_warn
 
+from vt.utils.logging.lib_logging import errmsg_creator
 from vt.utils.logging.lib_logging.configurators.vq import VQConfigurator, V_LITERAL, Q_LITERAL, VQ_DICT_LITERAL, \
     VQLevelOrDefault
 from vt.utils.logging.lib_logging.configurators.vq.base import SimpleWarningVQLevelOrDefault
@@ -93,14 +94,14 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
         >>> VQSepExclusive({}).validate('v', 'q')
         Traceback (most recent call last):
         ...
-        ValueError: 'verbosity' and 'quietness' cannot be given together.
+        ValueError: verbosity and quietness are not allowed together.
 
         Only warn if ``warn_only`` is provided ``True``::
 
         >>> with warnings.catch_warnings():
         ...     with contextlib.redirect_stderr(sys.stdout):
         ...         VQSepExclusive({}, True).validate('v', 'q')
-        UserWarning: 'verbosity' and 'quietness' cannot be given together.
+        UserWarning: verbosity and quietness are not allowed together.
         False
 
         Return ``True`` if only one verbosity is supplied::
@@ -122,7 +123,7 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
         :return: If ``self.warn_only`` is ``True`` - ``True`` if inputs are valid, ``False`` otherwise.
         """
         if verbosity and quietness:
-            warn_str = "'verbosity' and 'quietness' cannot be given together."
+            warn_str = errmsg_creator.not_allowed_together('verbosity', 'quietness')
             if self.warn_only:
                 vt_warn(warn_str)
                 return False
@@ -153,14 +154,14 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
             >>> VQSepExclusive({}).get_effective_level('v', 'q', 10)
             Traceback (most recent call last):
             ...
-            ValueError: 'verbosity' and 'quietness' cannot be given together.
+            ValueError: verbosity and quietness are not allowed together.
 
             Only warn if warn_only is provided True and return the default_value:
 
             >>> with warnings.catch_warnings():
             ...     with contextlib.redirect_stderr(sys.stdout):
             ...         VQSepExclusive[int]({'v': 20}, True).get_effective_level('v', 'q', 10)
-            UserWarning: 'verbosity' and 'quietness' cannot be given together.
+            UserWarning: verbosity and quietness are not allowed together.
             10
 
         Level inquiry::
@@ -175,7 +176,7 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
             >>> with warnings.catch_warnings():
             ...     with contextlib.redirect_stderr(sys.stdout):
             ...         VQSepExclusive[int]({'v': 20}, True).get_effective_level('vv', None, 10)
-            UserWarning: 'vv': Unexpected verbosity value. Choose from ['v'].
+            UserWarning: 'vv': Unexpected verbosity value. Choose from 'v'.
             10
 
             Raise KeyError if queried verbosity is not registered and warn_only is False or not provided:
@@ -183,7 +184,7 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
             >>> VQSepExclusive[int]({'v': 20}).get_effective_level('vv', None, 10)
             Traceback (most recent call last):
             ...
-            KeyError: "'vv': Unexpected verbosity value. Choose from ['v']."
+            KeyError: "'vv': Unexpected verbosity value. Choose from 'v'."
 
         :param verbosity: verbosity.
         :param quietness: quietness.
