@@ -128,7 +128,7 @@ class VQLoggerConfigurator(LoggerConfigurator, VQConfigurator[int], HasUnderlyin
     """
     Default {``verbosity-quietness -> logging-level``} mapping.
     """
-    DEFAULT_LOG_LEVEL_WARNING = WARNING_LEVEL
+    DEFAULT_LOG_LEVEL_WARNING: T = WARNING_LEVEL
 
 
 class VQSepLoggerConfigurator(VQLoggerConfigurator):
