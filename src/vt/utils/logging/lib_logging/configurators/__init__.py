@@ -8,7 +8,7 @@ Logger interfaces for Logger configurators.
 import logging
 import os
 from abc import abstractmethod
-from typing import Protocol, Callable
+from typing import Protocol, Callable, override
 
 from vt.utils.logging.lib_logging import VT_ALL_LOG_ENV_VAR
 from vt.utils.logging.lib_logging.std_log.base import DirectStdAllLevelLogger
@@ -69,7 +69,8 @@ class LevelLoggerConfigurator[T](LevelTarget[T], LoggerConfigurator, Protocol):
     pass
 
 
-class SupplierLoggerConfigurator[T](LoggerConfigurator):
+class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
+
     def __init__(self, level_supplier: Callable[[], T], configurator: LevelLoggerConfigurator[T]):
         """
         Configurator that configures loggers as per the level supplied by the ``level_supplier``.
@@ -85,8 +86,13 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator):
         self.configurator.set_level(final_level)
         return self.configurator.configure(logger)
 
+    @override
+    @property
+    def underlying_configurator(self) -> LoggerConfigurator:
+        return self.configurator
 
-class ListLoggerConfigurator[T](LoggerConfigurator):
+
+class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
 
     def __init__(self, level_list: list[T | None], configurator: LevelLoggerConfigurator,
                  level_pickup_strategy =get_first_non_none):
@@ -110,6 +116,11 @@ class ListLoggerConfigurator[T](LoggerConfigurator):
         if final_level:
             self.configurator.set_level(final_level)
         return self.configurator.configure(logger)
+
+    @override
+    @property
+    def underlying_configurator(self) -> LoggerConfigurator:
+        return self.configurator
 
 
 class EnvListLC[T](ListLoggerConfigurator):
