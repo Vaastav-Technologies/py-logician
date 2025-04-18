@@ -41,3 +41,26 @@ class HasUnderlyingConfigurator(Protocol):
         :return: The underlying logger configurator which is decorated by this configurator.
         """
         ...
+
+
+class LevelTarget[T](Protocol):
+    """
+    Permits levels to be set.
+    """
+
+    @abstractmethod
+    def set_level(self, new_level: T) -> T:
+        """
+        Sets new level.
+
+        :param new_level: sets to this level.
+        :return: the old level.
+        """
+        ...
+
+
+class LevelLoggerConfigurator[T](LevelTarget[T], LoggerConfigurator, Protocol):
+    """
+    A logger configurator which allows setting levels from outside of it.
+    """
+    pass
