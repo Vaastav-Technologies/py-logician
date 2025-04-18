@@ -134,8 +134,7 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
 
     def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
         final_level = self.level_pickup_strategy(self.level_list)
-        if final_level:
-            self.configurator.set_level(final_level)
+        self.configurator.set_level(final_level)
         return self.configurator.configure(logger)
 
     @override
