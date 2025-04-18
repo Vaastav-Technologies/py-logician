@@ -25,6 +25,7 @@ from vt.utils.logging.lib_logging.std_log import TRACE_LOG_LEVEL, FATAL_LOG_LEVE
 from vt.utils.logging.lib_logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl
 from vt.utils.logging.lib_logging.std_log.formatters import StdLogAllLevelDiffFmt, \
     StdLogAllLevelSameFmt, STDERR_ALL_LVL_SAME_FMT, STDERR_ALL_LVL_DIFF_FMT
+from vt.utils.logging.lib_logging.std_log.utils import get_first_non_none
 
 
 class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
@@ -297,17 +298,10 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator):
         return self.configurator.configure(logger)
 
 
-def get_first_non_none[T](lst: list[T | None], default: T | None = None) -> T | None:
-    for l in lst:
-        if l is not None:
-            return l
-    return default
-
-
 class ListLoggerConfigurator[T](LoggerConfigurator):
 
     def __init__(self, level_list: list[T], configurator: LevelLoggerConfigurator,
-                 level_pickup_strategy = get_first_non_none):
+                 level_pickup_strategy =get_first_non_none):
         if not level_list:
             raise ValueError("Level list must not be None or empty.")
         self.level_list = level_list
@@ -323,7 +317,7 @@ class ListLoggerConfigurator[T](LoggerConfigurator):
 
 class BaseEnvListLC[T](ListLoggerConfigurator):
     def __init__(self, env_list: list[str], configurator: LevelLoggerConfigurator[T],
-                 level_pickup_strategy = get_first_non_none):
+                 level_pickup_strategy =get_first_non_none):
         super().__init__([os.getenv(e) for e in env_list], configurator, level_pickup_strategy)
         self._env_list = env_list
 

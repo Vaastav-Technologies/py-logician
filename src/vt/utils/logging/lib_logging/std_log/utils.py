@@ -57,3 +57,17 @@ class TempSetLevelName:
             logging.addLevelName(self.level, self.reverting_lvl_name)
         else:
             logging.addLevelName(self.level, self.original_level_name)
+
+
+def get_first_non_none[T](lst: list[T | None], default: T | None = None) -> T | None:
+    """
+    Get first non ``None`` item from the list ``lst`` else ``default``.
+
+    :param lst: list of values.
+    :param default: value to return if list consists of all ``None``s.
+    :return: first non ``None`` value or ``default`` if all ``None`` are encountered.
+    """
+    for l in lst:
+        if l is not None:
+            return l
+    return default
