@@ -315,7 +315,7 @@ class ListLoggerConfigurator[T](LoggerConfigurator):
         return self.configurator.configure(logger)
 
 
-class BaseEnvListLC[T](ListLoggerConfigurator):
+class EnvListLC[T](ListLoggerConfigurator):
     def __init__(self, env_list: list[str], configurator: LevelLoggerConfigurator[T],
                  level_pickup_strategy =get_first_non_none):
         super().__init__([os.getenv(e) for e in env_list], configurator, level_pickup_strategy)
@@ -325,7 +325,7 @@ class BaseEnvListLC[T](ListLoggerConfigurator):
         return self._env_list
 
 
-class VTEnvListLC[T](BaseEnvListLC[T]):
+class VTEnvListLC[T](EnvListLC[T]):
     def __init__(self, env_list: list[str], configurator: LevelLoggerConfigurator[T],
                  level_pickup_strategy=get_first_non_none):
         env_list.append(VT_ALL_LOG_ENV_VAR)
