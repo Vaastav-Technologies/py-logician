@@ -28,24 +28,32 @@ from vt.utils.logging.lib_logging.std_log.formatters import StdLogAllLevelDiffFm
 
 class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
 
-    DEFAULT_LOG_LEVEL_WARNING = WARNING_LEVEL
+    LOG_LEVEL_WARNING = WARNING_LEVEL
+    CMD_NAME_NONE = None
+    STREAM_FMT_MAPPER_NONE = None
+    FMT_PER_LEVEL_NONE = None
+    STREAM_LIST_NONE = None
+    LEVEL_NAME_MAP_NONE = None
+    NO_WARN_FALSE = False
 
     @overload
-    def __init__(self, *, level: int | str = DEFAULT_LOG_LEVEL_WARNING, cmd_name: str | None = None,
-                 diff_fmt_per_level: bool | None = None, stream_list: list[TextIO] | None = None,
-                 level_name_map: dict[int, str] | None = None, no_warn: bool = False):
+    def __init__(self, *, level: int | str = LOG_LEVEL_WARNING, cmd_name: str | None = CMD_NAME_NONE,
+                 diff_fmt_per_level: bool | None = FMT_PER_LEVEL_NONE,
+                 stream_list: list[TextIO] | None = STREAM_LIST_NONE,
+                 level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE, no_warn: bool = NO_WARN_FALSE):
         ...
 
     @overload
-    def __init__(self, *, level: int | str = DEFAULT_LOG_LEVEL_WARNING, cmd_name: str | None = None,
-                 stream_fmt_mapper: dict[TextIO, LogLevelFmt] | None = None,
-                 level_name_map: dict[int, str] | None = None, no_warn: bool = False):
+    def __init__(self, *, level: int | str = LOG_LEVEL_WARNING, cmd_name: str | None = CMD_NAME_NONE,
+                 stream_fmt_mapper: dict[TextIO, LogLevelFmt] | None = STREAM_FMT_MAPPER_NONE,
+                 level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE, no_warn: bool = NO_WARN_FALSE):
         ...
 
-    def __init__(self, *, level: int | str = DEFAULT_LOG_LEVEL_WARNING, cmd_name: str | None = None,
-                 stream_fmt_mapper: dict[TextIO, LogLevelFmt] | None = None,
-                 diff_fmt_per_level: bool | None = None, stream_list: list[TextIO] | None = None,
-                 level_name_map: dict[int, str] | None = None, no_warn: bool = False):
+    def __init__(self, *, level: int | str = LOG_LEVEL_WARNING, cmd_name: str | None = CMD_NAME_NONE,
+                 stream_fmt_mapper: dict[TextIO, LogLevelFmt] | None = STREAM_FMT_MAPPER_NONE,
+                 diff_fmt_per_level: bool | None = FMT_PER_LEVEL_NONE,
+                 stream_list: list[TextIO] | None = STREAM_LIST_NONE,
+                 level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE, no_warn: bool = NO_WARN_FALSE):
         """
         Perform logger configuration using the python's std logger calls.
 
@@ -102,8 +110,8 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
                 vt_warn(f"{logger.name}: Undefined log level '{level}'. "
                               f"Choose from {list(levels_to_choose_from.values())}.")
                 vt_warn(f"{logger.name}: Setting log level to default: "
-                              f"'{logging.getLevelName(StdLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING)}'.")
-            int_level = StdLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING
+                              f"'{logging.getLevelName(StdLoggerConfigurator.LOG_LEVEL_WARNING)}'.")
+            int_level = StdLoggerConfigurator.LOG_LEVEL_WARNING
         logger.setLevel(int_level)
         if not stream_fmt_map:  # empty map
             for handler in logger.handlers:
@@ -144,13 +152,13 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
             - no_warn: do not warn if a supplied level is not registered with the logging library.
         :return:
         """
-        level = kwargs.pop('level', StdLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING)
-        cmd_name = kwargs.pop('cmd_name', None)
-        stream_fmt_mapper = kwargs.pop('stream_fmt_mapper', None)
-        diff_fmt_per_level = kwargs.pop('diff_fmt_per_level', None)
-        stream_list = kwargs.pop('stream_list', None)
-        level_name_map = kwargs.pop('level_name_map', None)
-        no_warn = kwargs.pop('no_warn', False)
+        level = kwargs.pop('level', StdLoggerConfigurator.LOG_LEVEL_WARNING)
+        cmd_name = kwargs.pop('cmd_name', StdLoggerConfigurator.CMD_NAME_NONE)
+        stream_fmt_mapper = kwargs.pop('stream_fmt_mapper', StdLoggerConfigurator.STREAM_FMT_MAPPER_NONE)
+        diff_fmt_per_level = kwargs.pop('diff_fmt_per_level', StdLoggerConfigurator.FMT_PER_LEVEL_NONE)
+        stream_list = kwargs.pop('stream_list', StdLoggerConfigurator.STREAM_LIST_NONE)
+        level_name_map = kwargs.pop('level_name_map', StdLoggerConfigurator.LEVEL_NAME_MAP_NONE)
+        no_warn = kwargs.pop('no_warn', StdLoggerConfigurator.NO_WARN_FALSE)
         self.validate_args(stream_fmt_mapper, stream_list, diff_fmt_per_level)
         if stream_fmt_mapper is not None:
             return StdLoggerConfigurator(level=level, cmd_name=cmd_name, stream_fmt_mapper=stream_fmt_mapper,
@@ -187,16 +195,20 @@ class VQLoggerConfigurator(LoggerConfigurator, VQConfigurator[int | str], HasUnd
     """
     Default {``verbosity-quietness -> logging-level``} mapping.
     """
-    DEFAULT_LOG_LEVEL_WARNING: T = WARNING_LEVEL
+    LOG_LEVEL_WARNING: T = WARNING_LEVEL
 
 
 class VQSepLoggerConfigurator(VQLoggerConfigurator):
 
+    VQ_LEVEL_MAP_NONE = None
+    VQ_SEP_CONF_NONE = None
+    LOG_LEVEL_WARNING = VQLoggerConfigurator.LOG_LEVEL_WARNING
+
     def __init__(self, configurator: LevelLoggerConfigurator[VQLoggerConfigurator.T],
                  verbosity: V_LITERAL | None, quietness: Q_LITERAL | None,
-                 vq_level_map: VQ_DICT_LITERAL[VQLoggerConfigurator.T] | None = None,
-                 vq_sep_configurator: VQSepConfigurator[VQLoggerConfigurator.T] | None = None,
-                 default_log_level: VQLoggerConfigurator.T = VQLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING):
+                 vq_level_map: VQ_DICT_LITERAL[VQLoggerConfigurator.T] | None = VQ_LEVEL_MAP_NONE,
+                 vq_sep_configurator: VQSepConfigurator[VQLoggerConfigurator.T] | None = VQ_SEP_CONF_NONE,
+                 default_log_level: VQLoggerConfigurator.T = LOG_LEVEL_WARNING):
         """
         A logger configurator that can decorate another logger configurator to accept and infer logging level based on
         ``verbosity`` and ``quietness`` values.
@@ -277,20 +289,24 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         configurator = kwargs.pop('configurator')
         verbosity = kwargs.pop('verbosity')
         quietness = kwargs.pop('quietness')
-        vq_level_map = kwargs.pop('vq_level_map', VQSepLoggerConfigurator.VQ_LEVEL_MAP)
-        vq_sep_configurator = kwargs.pop('vq_sep_configurator', VQSepExclusive(vq_level_map))
-        default_log_level = kwargs.pop('default_log_level', VQLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING)
+        vq_level_map = kwargs.pop('vq_level_map', VQSepLoggerConfigurator.VQ_LEVEL_MAP_NONE)
+        vq_sep_configurator = kwargs.pop('vq_sep_configurator', VQSepLoggerConfigurator.VQ_SEP_CONF_NONE)
+        default_log_level = kwargs.pop('default_log_level', VQSepLoggerConfigurator.LOG_LEVEL_WARNING)
         return VQSepLoggerConfigurator(configurator, verbosity, quietness, vq_level_map, vq_sep_configurator,
                                        default_log_level)
 
 
 class VQCommLoggerConfigurator(VQLoggerConfigurator, LevelLoggerConfigurator[V_LITERAL | Q_LITERAL | None]):
 
+    VQ_LEVEL_MAP_NONE = None
+    VQ_COMM_CONF_NONE = None
+    LOG_LEVEL_WARNING = VQLoggerConfigurator.LOG_LEVEL_WARNING
+
     def __init__(self, ver_qui: V_LITERAL | Q_LITERAL | None,
                  configurator: LevelLoggerConfigurator[VQLoggerConfigurator.T],
-                 vq_level_map: VQ_DICT_LITERAL[VQLoggerConfigurator.T] | None = None,
-                 vq_comm_configurator: VQCommConfigurator[VQLoggerConfigurator.T] | None = None,
-                 default_log_level: VQLoggerConfigurator.T = VQLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING):
+                 vq_level_map: VQ_DICT_LITERAL[VQLoggerConfigurator.T] | None = VQ_LEVEL_MAP_NONE,
+                 vq_comm_configurator: VQCommConfigurator[VQLoggerConfigurator.T] | None = VQ_COMM_CONF_NONE,
+                 default_log_level: VQLoggerConfigurator.T = LOG_LEVEL_WARNING):
         """
         A logger configurator that can decorate another logger configurator to accept and infer logging level based on
         ``verbosity`` or ``quietness`` values.
@@ -368,7 +384,7 @@ class VQCommLoggerConfigurator(VQLoggerConfigurator, LevelLoggerConfigurator[V_L
         """
         configurator = kwargs.pop('configurator')
         ver_qui = kwargs.pop('ver_qui')
-        vq_level_map = kwargs.pop('vq_level_map', VQCommLoggerConfigurator.VQ_LEVEL_MAP)
-        vq_comm_configurator = kwargs.pop('vq_comm_configurator', VQCommon(self.vq_level_map, warn_only=True))
-        default_log_level = kwargs.pop('default_log_level', VQLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING)
+        vq_level_map = kwargs.pop('vq_level_map', VQCommLoggerConfigurator.VQ_LEVEL_MAP_NONE)
+        vq_comm_configurator = kwargs.pop('vq_comm_configurator', VQCommLoggerConfigurator.VQ_COMM_CONF_NONE)
+        default_log_level = kwargs.pop('default_log_level', VQLoggerConfigurator.LOG_LEVEL_WARNING)
         return VQCommLoggerConfigurator(ver_qui, configurator, vq_level_map, vq_comm_configurator, default_log_level)

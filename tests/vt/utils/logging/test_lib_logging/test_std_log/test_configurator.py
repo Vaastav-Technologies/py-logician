@@ -182,8 +182,8 @@ class TestStdLoggerConfigurator:
                 assert warn_recs[0].message.args[0] == f"{logger.name}: Undefined log level '{level}'. "\
                                                 f"Choose from {list(levels_to_choose_from.values())}."
                 assert warn_recs[1].message.args[0] == f"{logger.name}: Setting log level to default: "\
-                                                       f"'{logging.getLevelName(StdLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING)}'."
-                assert logger.underlying_logger.level == StdLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING
+                                                       f"'{logging.getLevelName(StdLoggerConfigurator.LOG_LEVEL_WARNING)}'."
+                assert logger.underlying_logger.level == StdLoggerConfigurator.LOG_LEVEL_WARNING
 
             def test_no_warn_on_incorrectly_given_levels_when_no_warn(self, lvl_fixture, request):
                 level = lvl_fixture.level
@@ -194,7 +194,7 @@ class TestStdLoggerConfigurator:
                 with warnings.catch_warnings():
                     warnings.simplefilter("error")
                     logger = cfg.configure(log)
-                assert logger.underlying_logger.level == StdLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING
+                assert logger.underlying_logger.level == StdLoggerConfigurator.LOG_LEVEL_WARNING
 
             @pytest.mark.parametrize('no_warn', [True, False])
             def test_sets_default_level_on_when_bogus_level_provided(self, lvl_fixture, request, no_warn):
@@ -208,4 +208,4 @@ class TestStdLoggerConfigurator:
                 else:
                     with pytest.warns():
                         logger = cfg.configure(log)
-                assert logger.underlying_logger.level == StdLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING
+                assert logger.underlying_logger.level == StdLoggerConfigurator.LOG_LEVEL_WARNING

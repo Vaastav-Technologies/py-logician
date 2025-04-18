@@ -161,8 +161,11 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
 
 
 class EnvListLC[T](ListLoggerConfigurator):
+
+    DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = ListLoggerConfigurator.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE
+
     def __init__(self, env_list: list[str], configurator: LevelLoggerConfigurator[T],
-                 level_pickup_strategy =ListLoggerConfigurator.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE):
+                 level_pickup_strategy=DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE):
         """
         This logger configurator can be used to configure log level using values supplied from environment variables.
         Default behavior is to pick up the first passed environment variable value. Designed to process log level from
@@ -192,14 +195,16 @@ class EnvListLC[T](ListLoggerConfigurator):
         """
         level_list = kwargs.pop('env_list')
         configurator = kwargs.pop('configurator')
-        level_pickup_strategy = kwargs.pop('level_pickup_strategy',
-                                           ListLoggerConfigurator.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE)
+        level_pickup_strategy = kwargs.pop('level_pickup_strategy', EnvListLC.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE)
         return EnvListLC[T](level_list, configurator, level_pickup_strategy)
 
 
 class VTEnvListLC[T](EnvListLC[T]):
+
+    DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = EnvListLC.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE
+
     def __init__(self, env_list: list[str], configurator: LevelLoggerConfigurator[T],
-                 level_pickup_strategy=ListLoggerConfigurator.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE):
+                 level_pickup_strategy=DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE):
         """
         This logger configurator can be used to configure log level using values supplied from environment variables.
         Default behavior is to pick up the first passed environment variable value. Designed to process log level from
@@ -229,5 +234,5 @@ class VTEnvListLC[T](EnvListLC[T]):
         level_list = kwargs.pop('env_list')
         configurator = kwargs.pop('configurator')
         level_pickup_strategy = kwargs.pop('level_pickup_strategy',
-                                           ListLoggerConfigurator.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE)
+                                           VTEnvListLC.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE)
         return VTEnvListLC[T](level_list, configurator, level_pickup_strategy)
