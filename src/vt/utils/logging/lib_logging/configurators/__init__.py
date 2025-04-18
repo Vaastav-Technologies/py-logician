@@ -102,10 +102,10 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurato
     @override
     def clone_with(self, **kwargs) -> 'SupplierLoggerConfigurator':
         """
-        **kwargs has:
-            - level_supplier: a supplier to supply level.
-            - configurator: underlying configurator.
+        kwargs:
+            ``level_supplier`` - a supplier to supply level.
 
+            ``configurator`` - underlying configurator.
         :return: a new ``SupplierLoggerConfigurator``.
         """
         level_supplier = kwargs.pop('level_supplier')
@@ -145,12 +145,13 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
     @override
     def clone_with(self, **kwargs) -> 'ListLoggerConfigurator[T]':
         """
-        **kwargs:
-            - level_list: list of log levels which may contain ``None``. First non-``None`` value
-                is picked-up by default for logger configuration.
-            - configurator: configurator which is decorated by this logger-configurator.
-            - level_pickup_strategy: pick up a level from the list of levels supplied in ``level_list``. Default is
-                to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
+        kwargs:
+            ``level_list`` - list of log levels which may contain ``None``. First non-``None`` value is picked-up by default for logger configuration.
+
+            ``configurator`` - configurator which is decorated by this logger-configurator.
+
+            ``level_pickup_strategy`` - pick up a level from the list of levels supplied in ``level_list``.
+            Default is to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
         :return: a new ``ListLoggerConfigurator``.
         """
         level_list = kwargs.pop('level_list')
@@ -186,11 +187,13 @@ class EnvListLC[T](ListLoggerConfigurator):
     @override
     def clone_with(self, **kwargs) -> 'EnvListLC[T]':
         """
-        **kwargs:
-            - env_list: list of environment variables. Default behavior is to take precedence in decreasing order.
-            - configurator: configurator which is decorated by this logger-configurator.
-            - level_pickup_strategy: pick up a level from the list of levels supplied in ``level_list``. Default is
-                to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
+        kwargs:
+            ``env_list`` - list of environment variables. Default behavior is to take precedence in decreasing order.
+
+            ``configurator`` - configurator which is decorated by this logger-configurator.
+
+            ``level_pickup_strategy`` - pick up a level from the list of levels supplied in ``level_list``. Default is
+            to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
         :return: a new ``EnvListLC``.
         """
         level_list = kwargs.pop('env_list')
@@ -224,11 +227,13 @@ class VTEnvListLC[T](EnvListLC[T]):
     @override
     def clone_with(self, **kwargs) -> 'VTEnvListLC[T]':
         """
-        **kwargs:
-            - env_list: list of environment variables. Default behavior is to take precedence in decreasing order.
-            - configurator: configurator which is decorated by this logger-configurator.
-            - level_pickup_strategy: pick up a level from the list of levels supplied in ``level_list``. Default is
-                to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
+        kwargs:
+            ``env_list`` - list of environment variables. Default behavior is to take precedence in decreasing order.
+
+            ``configurator`` - configurator which is decorated by this logger-configurator.
+
+            ``level_pickup_strategy`` - pick up a level from the list of levels supplied in ``level_list``. Default is
+            to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
         :return: a new ``VTEnvListLC``.
         """
         level_list = kwargs.pop('env_list')

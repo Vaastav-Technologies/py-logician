@@ -134,23 +134,29 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
     @override
     def clone_with(self, **kwargs) -> 'StdLoggerConfigurator':
         """
-        **kwargs:
-            - level: active logging level.
-            - cmd_name: The command name to register the command logging level to. If ``None`` then the default
-                ``COMMAND`` is picked-up and that will be shown on the ``log.cmd()`` call.
-            - stream_fmt_mapper: an output-stream -> log format mapper. Defaults to ``STDERR_ALL_LVL_SAME_FMT`` if
-                ``None`` is supplied. Cannot be used with ``diff_fmt_per_level``
-                and ``stream_list``. Note that ``{}`` denoting an empty stream_fmt_mapper is accepted and specifies
-                the user's intent of not logging to any stream.
-            - diff_fmt_per_level: Use different log format per logging level. Cannot be provided with
-                ``stream_fmt_mapper``.
-            - stream_list: list of streams to apply level formatting logic to. Cannot be provided with
-                ``stream_fmt_mapper``.Note that ``[]`` denoting an empty stream_list is accepted and specifies
-                the user's intent of not logging to any stream.
-            - level_name_map: log level - name mapping. This mapping updates the std python logging library's
-                registered log levels . Check ``DirectAllLevelLogger.register_levels()`` for more info.
-            - no_warn: do not warn if a supplied level is not registered with the logging library.
-        :return:
+        kwargs:
+            ``level`` - active logging level.
+
+            ``cmd_name`` - The command name to register the command logging level to. If ``None`` then the default
+            ``COMMAND`` is picked-up and that will be shown on the ``log.cmd()`` call.
+
+            ``stream_fmt_mapper`` - an output-stream -> log format mapper. Defaults to ``STDERR_ALL_LVL_SAME_FMT`` if
+            ``None`` is supplied. Cannot be used with ``diff_fmt_per_level`` and ``stream_list``. Note that ``{}``
+            denoting an empty stream_fmt_mapper is accepted and specifies the user's intent of not logging to any
+            stream.
+
+            ``diff_fmt_per_level`` - Use different log format per logging level. Cannot be provided with
+            ``stream_fmt_mapper``.
+
+            ``stream_list`` - list of streams to apply level formatting logic to. Cannot be provided with
+            ``stream_fmt_mapper``.Note that ``[]`` denoting an empty stream_list is accepted and specifies the user's
+            intent of not logging to any stream.
+
+            ``level_name_map`` - log level - name mapping. This mapping updates the std python logging library's
+            registered log levels . Check ``DirectAllLevelLogger.register_levels()`` for more info.
+
+            ``no_warn`` - do not warn if a supplied level is not registered with the logging library.
+        :return: new ``StdLoggerConfigurator``.
         """
         level = kwargs.pop('level', StdLoggerConfigurator.LOG_LEVEL_WARNING)
         cmd_name = kwargs.pop('cmd_name', StdLoggerConfigurator.CMD_NAME_NONE)
@@ -275,15 +281,19 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
     @override
     def clone_with(self, **kwargs) -> 'VQSepLoggerConfigurator':
         """
-        **kwargs:
+        kwargs:
+            ``configurator`` - The logger configurator to decorate.
 
-            - configurator: The logger configurator to decorate.
-            - verbosity: verbosity level. Cannot be given with ``quietness``.
-            - quietness: quietness level. Cannot be given with ``verbosity``.
-            - vq_level_map: A user defined {``verbosity-quietness -> logging-level``} mapping can be supplied. Assumes
-                ``VQLoggerConfigurator.VQ_LEVEL_MAP`` when omitted or ``None`` is supplied.
-            - vq_sep_configurator: verbosity quietness configurator. Defaults to ``VQSepExclusive``.
-            - default_log_level: log level when none of the verbosity or quietness is supplied.
+            ``verbosity`` - verbosity level. Cannot be given with ``quietness``.
+
+            ``quietness`` - quietness level. Cannot be given with ``verbosity``.
+
+            ``vq_level_map`` - A user defined {``verbosity-quietness -> logging-level``} mapping can be supplied.
+            Assumes ``VQLoggerConfigurator.VQ_LEVEL_MAP`` when omitted or ``None`` is supplied.
+
+            ``vq_sep_configurator`` - verbosity quietness configurator. Defaults to ``VQSepExclusive``.
+
+            ``default_log_level`` - log level when none of the verbosity or quietness is supplied.
         :return: a new ``VQSepLoggerConfigurator``.
         """
         configurator = kwargs.pop('configurator')
@@ -373,13 +383,17 @@ class VQCommLoggerConfigurator(VQLoggerConfigurator, LevelLoggerConfigurator[V_L
     @override
     def clone_with(self, **kwargs) -> 'VQCommLoggerConfigurator':
         """
-        **kwargs:
-            - configurator: The logger configurator to decorate.
-            - ver_qui: verbosity or quietness level.
-            - vq_level_map: A user defined {``verbosity-quietness -> logging-level``} mapping can be supplied. Assumes
-                ``VQLoggerConfigurator.VQ_LEVEL_MAP`` when omitted or ``None`` is supplied.
-            - vq_comm_configurator: verbosity quietness configurator. Defaults to ``VQCommon``.
-            - default_log_level: log level when none of the verbosity or quietness is supplied.
+        kwargs:
+            ``configurator`` - The logger configurator to decorate.
+
+            ``ver_qui`` - verbosity or quietness level.
+
+            ``vq_level_map`` - A user defined {``verbosity-quietness -> logging-level``} mapping can be supplied.
+            Assumes ``VQLoggerConfigurator.VQ_LEVEL_MAP`` when omitted or ``None`` is supplied.
+
+            ``vq_comm_configurator`` - verbosity quietness configurator. Defaults to ``VQCommon``.
+
+            ``default_log_level`` - log level when none of the verbosity or quietness is supplied.
         :return: a new ``VQCommLoggerConfigurator``.
         """
         configurator = kwargs.pop('configurator')
