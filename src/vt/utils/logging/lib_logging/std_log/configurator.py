@@ -237,7 +237,7 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         if vq_sep_configurator:
             self.vq_sep_configurator = vq_sep_configurator
         else:
-            self.vq_sep_configurator = VQSepExclusive(self.vq_level_map, warn_only=True)
+            self.vq_sep_configurator = VQSepExclusive(self.vq_level_map)
         self.vq_sep_configurator.validate(verbosity, quietness)
         self.configurator = configurator
         self.verbosity = verbosity
@@ -278,7 +278,7 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         verbosity = kwargs.pop('verbosity')
         quietness = kwargs.pop('quietness')
         vq_level_map = kwargs.pop('vq_level_map', VQSepLoggerConfigurator.VQ_LEVEL_MAP)
-        vq_sep_configurator = kwargs.pop('vq_sep_configurator', VQSepExclusive(vq_level_map, warn_only=True))
+        vq_sep_configurator = kwargs.pop('vq_sep_configurator', VQSepExclusive(vq_level_map))
         default_log_level = kwargs.pop('default_log_level', VQLoggerConfigurator.DEFAULT_LOG_LEVEL_WARNING)
         return VQSepLoggerConfigurator(configurator, verbosity, quietness, vq_level_map, vq_sep_configurator,
                                        default_log_level)
