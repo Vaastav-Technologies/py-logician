@@ -30,6 +30,14 @@ class LoggerConfigurator(Protocol):
         """
         pass
 
+    @abstractmethod
+    def clone_with(self, **kwargs) -> 'LoggerConfigurator':
+        """
+        :param kwargs: overriding keyword args.
+        :return: a new instance of the ``LoggerConfigurator`` with the provided overrides.
+        """
+        ...
+
 
 class HasUnderlyingConfigurator(Protocol):
     """
@@ -91,11 +99,24 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurato
     def underlying_configurator(self) -> LoggerConfigurator:
         return self.configurator
 
+    @override
+    def clone_with(self, **kwargs) -> 'SupplierLoggerConfigurator':
+        """
+        **kwargs has:
+            - level_supplier: a supplier to supply level.
+            - configurator: underlying configurator.
+
+        :return: a new ``SupplierLoggerConfigurator``.
+        """
+        level_supplier = kwargs.pop('level_supplier')
+        configurator = kwargs.pop('configurator')
+        return SupplierLoggerConfigurator(level_supplier, configurator)
+
 
 class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
-
+    DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = get_first_non_none
     def __init__(self, level_list: list[T | None], configurator: LevelLoggerConfigurator,
-                 level_pickup_strategy =get_first_non_none):
+                 level_pickup_strategy =DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE):
         """
         Picks up the first non ``None`` level from the ``level_list`` to configure the logger underneath.
 
@@ -103,7 +124,7 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
             is picked-up by default for logger configuration.
         :param configurator: configurator which is decorated by this logger-configurator.
         :param level_pickup_strategy: pick up a level from the list of levels supplied in ``level_list``. Default is
-            to pick up the first non-``None`` level.
+            to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
         """
         if not level_list:
             raise ValueError("Level list must not be None or empty.")
@@ -122,10 +143,27 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
     def underlying_configurator(self) -> LoggerConfigurator:
         return self.configurator
 
+    @override
+    def clone_with(self, **kwargs) -> 'ListLoggerConfigurator[T]':
+        """
+        **kwargs:
+            - level_list: list of log levels which may contain ``None``. First non-``None`` value
+                is picked-up by default for logger configuration.
+            - configurator: configurator which is decorated by this logger-configurator.
+            - level_pickup_strategy: pick up a level from the list of levels supplied in ``level_list``. Default is
+                to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
+        :return: a new ``ListLoggerConfigurator``.
+        """
+        level_list = kwargs.pop('level_list')
+        configurator = kwargs.pop('configurator')
+        level_pickup_strategy = kwargs.pop('level_pickup_strategy',
+                                           ListLoggerConfigurator.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE)
+        return ListLoggerConfigurator[T](level_list, configurator, level_pickup_strategy)
+
 
 class EnvListLC[T](ListLoggerConfigurator):
     def __init__(self, env_list: list[str], configurator: LevelLoggerConfigurator[T],
-                 level_pickup_strategy =get_first_non_none):
+                 level_pickup_strategy =ListLoggerConfigurator.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE):
         """
         This logger configurator can be used to configure log level using values supplied from environment variables.
         Default behavior is to pick up the first passed environment variable value. Designed to process log level from
@@ -143,10 +181,26 @@ class EnvListLC[T](ListLoggerConfigurator):
     def get_env_list(self):
         return self._env_list
 
+    @override
+    def clone_with(self, **kwargs) -> 'EnvListLC[T]':
+        """
+        **kwargs:
+            - env_list: list of environment variables. Default behavior is to take precedence in decreasing order.
+            - configurator: configurator which is decorated by this logger-configurator.
+            - level_pickup_strategy: pick up a level from the list of levels supplied in ``level_list``. Default is
+                to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
+        :return: a new ``EnvListLC``.
+        """
+        level_list = kwargs.pop('env_list')
+        configurator = kwargs.pop('configurator')
+        level_pickup_strategy = kwargs.pop('level_pickup_strategy',
+                                           ListLoggerConfigurator.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE)
+        return EnvListLC[T](level_list, configurator, level_pickup_strategy)
+
 
 class VTEnvListLC[T](EnvListLC[T]):
     def __init__(self, env_list: list[str], configurator: LevelLoggerConfigurator[T],
-                 level_pickup_strategy=get_first_non_none):
+                 level_pickup_strategy=ListLoggerConfigurator.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE):
         """
         This logger configurator can be used to configure log level using values supplied from environment variables.
         Default behavior is to pick up the first passed environment variable value. Designed to process log level from
@@ -162,3 +216,19 @@ class VTEnvListLC[T](EnvListLC[T]):
         """
         env_list.append(VT_ALL_LOG_ENV_VAR)
         super().__init__(env_list, configurator, level_pickup_strategy)
+
+    @override
+    def clone_with(self, **kwargs) -> 'VTEnvListLC[T]':
+        """
+        **kwargs:
+            - env_list: list of environment variables. Default behavior is to take precedence in decreasing order.
+            - configurator: configurator which is decorated by this logger-configurator.
+            - level_pickup_strategy: pick up a level from the list of levels supplied in ``level_list``. Default is
+                to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
+        :return: a new ``VTEnvListLC``.
+        """
+        level_list = kwargs.pop('env_list')
+        configurator = kwargs.pop('configurator')
+        level_pickup_strategy = kwargs.pop('level_pickup_strategy',
+                                           ListLoggerConfigurator.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE)
+        return VTEnvListLC[T](level_list, configurator, level_pickup_strategy)
