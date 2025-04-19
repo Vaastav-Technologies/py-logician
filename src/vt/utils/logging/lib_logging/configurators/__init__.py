@@ -195,9 +195,9 @@ class EnvListLC[T](ListLoggerConfigurator):
             to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
         :return: a new ``EnvListLC``.
         """
-        level_list = kwargs.pop('env_list')
-        configurator = kwargs.pop('configurator')
-        level_pickup_strategy = kwargs.pop('level_pickup_strategy', EnvListLC.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE)
+        level_list = kwargs.pop('env_list', self.get_env_list().copy())
+        configurator = kwargs.pop('configurator', self.configurator)
+        level_pickup_strategy = kwargs.pop('level_pickup_strategy', self.level_pickup_strategy)
         return EnvListLC[T](level_list, configurator, level_pickup_strategy)
 
 
