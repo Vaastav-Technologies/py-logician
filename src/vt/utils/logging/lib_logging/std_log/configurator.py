@@ -82,16 +82,27 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         if stream_fmt_mapper is not None: # accepts empty stream_fmt_mapper
             self.stream_fmt_mapper = stream_fmt_mapper
         else:
-            if stream_list is not None: # accepts empty stream_list
-                if diff_fmt_per_level:
-                    self.stream_fmt_mapper = {stream: StdLogAllLevelDiffFmt() for stream in stream_list}
-                else:
-                    self.stream_fmt_mapper = {stream: StdLogAllLevelSameFmt() for stream in stream_list}
-            else:
-                if diff_fmt_per_level:
-                    self.stream_fmt_mapper = STDERR_ALL_LVL_DIFF_FMT
-                else:
-                    self.stream_fmt_mapper = STDERR_ALL_LVL_SAME_FMT
+            self.stream_fmt_mapper = self.compute_stream_fmt_mapper(diff_fmt_per_level, stream_list)
+
+    @staticmethod
+    def compute_stream_fmt_mapper(diff_fmt_per_level: bool | None,
+                                  stream_list: list[TextIO] | None) -> dict[TextIO, LogLevelFmt]:
+        """
+        Compute the stream format mapper form supplied arguments.
+
+        :param diff_fmt_per_level: Want different format per logging level?
+        :param stream_list: List of streams this format configuration is to be applied to. Note that ``[]`` denoting an
+            empty stream_list is accepted and specifies the user's intent of not logging to any stream.
+        :return: a configured ``stream_fmt_mapper``.
+        """
+        if stream_list is not None:  # accepts empty stream_list
+            if diff_fmt_per_level:
+                return {stream: StdLogAllLevelDiffFmt() for stream in stream_list}
+            return {stream: StdLogAllLevelSameFmt() for stream in stream_list}
+        else:
+            if diff_fmt_per_level:
+                return STDERR_ALL_LVL_DIFF_FMT
+            return STDERR_ALL_LVL_SAME_FMT
 
     @override
     def configure(self, logger: logging.Logger) -> DirectAllLevelLogger:
