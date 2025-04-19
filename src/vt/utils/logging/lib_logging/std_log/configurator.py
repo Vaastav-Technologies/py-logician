@@ -169,14 +169,15 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
             ``no_warn`` - do not warn if a supplied level is not registered with the logging library.
         :return: new ``StdLoggerConfigurator``.
         """
-        level = kwargs.pop('level', StdLoggerConfigurator.LOG_LEVEL_WARNING)
-        cmd_name = kwargs.pop('cmd_name', StdLoggerConfigurator.CMD_NAME_NONE)
-        stream_fmt_mapper = kwargs.pop('stream_fmt_mapper', StdLoggerConfigurator.STREAM_FMT_MAPPER_NONE)
+        level = kwargs.pop('level', self.level)
+        cmd_name = kwargs.pop('cmd_name', self.cmd_name)
         diff_fmt_per_level = kwargs.pop('diff_fmt_per_level', StdLoggerConfigurator.FMT_PER_LEVEL_NONE)
         stream_list = kwargs.pop('stream_list', StdLoggerConfigurator.STREAM_LIST_NONE)
-        level_name_map = kwargs.pop('level_name_map', StdLoggerConfigurator.LEVEL_NAME_MAP_NONE)
-        no_warn = kwargs.pop('no_warn', StdLoggerConfigurator.NO_WARN_FALSE)
+        stream_fmt_mapper = kwargs.pop('stream_fmt_mapper', None)
         self.validate_args(stream_fmt_mapper, stream_list, diff_fmt_per_level)
+        stream_fmt_mapper = stream_fmt_mapper if stream_fmt_mapper is not None else self.stream_fmt_mapper
+        level_name_map = kwargs.pop('level_name_map', self.level_name_map)
+        no_warn = kwargs.pop('no_warn', self.no_warn)
         if stream_fmt_mapper is not None:
             return StdLoggerConfigurator(level=level, cmd_name=cmd_name, stream_fmt_mapper=stream_fmt_mapper,
                      level_name_map=level_name_map, no_warn=no_warn)
