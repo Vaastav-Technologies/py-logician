@@ -108,8 +108,8 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurato
             ``configurator`` - underlying configurator.
         :return: a new ``SupplierLoggerConfigurator``.
         """
-        level_supplier = kwargs.pop('level_supplier')
-        configurator = kwargs.pop('configurator')
+        level_supplier = kwargs.pop('level_supplier', self.level_supplier)
+        configurator = kwargs.pop('configurator', self.configurator)
         return SupplierLoggerConfigurator(level_supplier, configurator)
 
 
