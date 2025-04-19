@@ -186,8 +186,8 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
                                          no_warn=no_warn)
 
     @staticmethod
-    def validate_args(stream_fmt_mapper: dict[TextIO, LogLevelFmt] | None = None,
-                      stream_list: list[TextIO] | None = None, diff_fmt_per_level: bool | None = None):
+    def validate_args(stream_fmt_mapper: dict[TextIO, LogLevelFmt] | None, stream_list: list[TextIO] | None,
+                      diff_fmt_per_level: bool | None):
         """
         :raises ValueError: if  ``stream_fmt_mapper`` is given with ``stream_list`` or
             if  ``stream_fmt_mapper`` is given with ``diff_fmt_per_level``.
