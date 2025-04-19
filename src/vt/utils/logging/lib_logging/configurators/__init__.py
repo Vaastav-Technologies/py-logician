@@ -154,10 +154,9 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
             Default is to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
         :return: a new ``ListLoggerConfigurator``.
         """
-        level_list = kwargs.pop('level_list')
-        configurator = kwargs.pop('configurator')
-        level_pickup_strategy = kwargs.pop('level_pickup_strategy',
-                                           ListLoggerConfigurator.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE)
+        level_list = kwargs.pop('level_list', self.level_list.copy())
+        configurator = kwargs.pop('configurator', self.configurator)
+        level_pickup_strategy = kwargs.pop('level_pickup_strategy', self.level_pickup_strategy)
         return ListLoggerConfigurator[T](level_list, configurator, level_pickup_strategy)
 
 
