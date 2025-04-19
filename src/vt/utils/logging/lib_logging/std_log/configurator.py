@@ -67,7 +67,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         :param diff_fmt_per_level: Use different log format per logging level. Cannot be provided with
             ``stream_fmt_mapper``.
         :param stream_list: list of streams to apply level formatting logic to. Cannot be provided with
-            ``stream_fmt_mapper``.Note that ``[]`` denoting an empty stream_list is accepted and specifies
+            ``stream_fmt_mapper``. Note that ``[]`` denoting an empty stream_list is accepted and specifies
             the user's intent of not logging to any stream.
         :param level_name_map: log level - name mapping. This mapping updates the std python logging library's
             registered log levels . Check ``DirectAllLevelLogger.register_levels()`` for more info.
