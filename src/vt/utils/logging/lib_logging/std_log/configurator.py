@@ -308,12 +308,12 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
             ``default_log_level`` - log level when none of the verbosity or quietness is supplied.
         :return: a new ``VQSepLoggerConfigurator``.
         """
-        configurator = kwargs.pop('configurator')
-        verbosity = kwargs.pop('verbosity')
-        quietness = kwargs.pop('quietness')
-        vq_level_map = kwargs.pop('vq_level_map', VQSepLoggerConfigurator.VQ_LEVEL_MAP_NONE)
-        vq_sep_configurator = kwargs.pop('vq_sep_configurator', VQSepLoggerConfigurator.VQ_SEP_CONF_NONE)
-        default_log_level = kwargs.pop('default_log_level', VQSepLoggerConfigurator.LOG_LEVEL_WARNING)
+        configurator = kwargs.pop('configurator', self.configurator)
+        verbosity = kwargs.pop('verbosity', self.verbosity)
+        quietness = kwargs.pop('quietness', self.quietness)
+        vq_level_map = kwargs.pop('vq_level_map', self.vq_level_map)
+        vq_sep_configurator = kwargs.pop('vq_sep_configurator', self.vq_sep_configurator)
+        default_log_level = kwargs.pop('default_log_level', self.default_log_level)
         return VQSepLoggerConfigurator(configurator, verbosity, quietness, vq_level_map, vq_sep_configurator,
                                        default_log_level)
 
