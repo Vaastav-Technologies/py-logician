@@ -235,8 +235,7 @@ class VTEnvListLC[T](EnvListLC[T]):
             to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
         :return: a new ``VTEnvListLC``.
         """
-        level_list = kwargs.pop('env_list')
-        configurator = kwargs.pop('configurator')
-        level_pickup_strategy = kwargs.pop('level_pickup_strategy',
-                                           VTEnvListLC.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE)
+        level_list = kwargs.pop('env_list', self.get_env_list().copy())
+        configurator = kwargs.pop('configurator', self.configurator)
+        level_pickup_strategy = kwargs.pop('level_pickup_strategy', self.level_pickup_strategy)
         return VTEnvListLC[T](level_list, configurator, level_pickup_strategy)
