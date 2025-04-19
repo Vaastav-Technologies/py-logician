@@ -206,7 +206,7 @@ class VTEnvListLC[T](EnvListLC[T]):
     DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = EnvListLC.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE
 
     def __init__(self, env_list: list[str], configurator: LevelLoggerConfigurator[T],
-                 level_pickup_strategy=DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE):
+                 level_pickup_strategy=DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE, all_log_env_var: str = VT_ALL_LOG_ENV_VAR):
         """
         This logger configurator can be used to configure log level using values supplied from environment variables.
         Default behavior is to pick up the first passed environment variable value. Designed to process log level from
@@ -219,8 +219,9 @@ class VTEnvListLC[T](EnvListLC[T]):
         :param configurator: underlying logger configurator.
         :param level_pickup_strategy: strategy to pick-up level from a supplied list of levels. Default is to pick up
             the first supplied, then next and then so on.
+        :param all_log_env_var: Environment variable which, by default, will be checked last to get the logging levels.
         """
-        env_list.append(VT_ALL_LOG_ENV_VAR)
+        env_list.append(all_log_env_var)
         super().__init__(env_list, configurator, level_pickup_strategy)
 
     @override
