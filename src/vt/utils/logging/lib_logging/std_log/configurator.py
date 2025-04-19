@@ -408,9 +408,9 @@ class VQCommLoggerConfigurator(VQLoggerConfigurator, LevelLoggerConfigurator[V_L
             ``default_log_level`` - log level when none of the verbosity or quietness is supplied.
         :return: a new ``VQCommLoggerConfigurator``.
         """
-        configurator = kwargs.pop('configurator')
-        ver_qui = kwargs.pop('ver_qui')
-        vq_level_map = kwargs.pop('vq_level_map', VQCommLoggerConfigurator.VQ_LEVEL_MAP_NONE)
-        vq_comm_configurator = kwargs.pop('vq_comm_configurator', VQCommLoggerConfigurator.VQ_COMM_CONF_NONE)
-        default_log_level = kwargs.pop('default_log_level', VQLoggerConfigurator.LOG_LEVEL_WARNING)
+        configurator = kwargs.pop('configurator', self.configurator)
+        ver_qui = kwargs.pop('ver_qui', self.ver_qui)
+        vq_level_map = kwargs.pop('vq_level_map', self.vq_level_map)
+        vq_comm_configurator = kwargs.pop('vq_comm_configurator', self.vq_comm_configurator)
+        default_log_level = kwargs.pop('default_log_level', self.default_log_level)
         return VQCommLoggerConfigurator(ver_qui, configurator, vq_level_map, vq_comm_configurator, default_log_level)
