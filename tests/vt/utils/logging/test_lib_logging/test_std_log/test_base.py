@@ -43,6 +43,35 @@ def test_overrides_supplied_known_levels():
     assert all(levels[level] == logging.getLevelName(level) for level in levels)
 
 
+def test_supplied_levels_are_not_altered():
+    levels = {
+        5: 'TRACE-LVL',
+        10: 'DEBUG-LVL',
+        20: 'INFO-LVL'
+    }
+    levels_copy = levels.copy()
+    DirectStdAllLevelLogger.register_levels(levels)
+    assert levels == levels_copy
+
+
+def test_overrides_supplied_created_levels():
+    """
+    Overrides levels which were created in this lib and is known to the logger, e.g. TRACE.
+    """
+    levels = {
+        5: 'TRACE-LVL',
+        10: 'DEBUG-LVL',
+        20: 'INFO-LVL'
+    }
+    # assert that previous registered level names are not the same as the newly defined ones.
+    assert all(levels[level] != logging.getLevelName(level) for level in levels)
+    DirectStdAllLevelLogger.register_levels(levels)
+    registered_int_levels = level_name_mapping()
+    assert all(level in registered_int_levels for level in levels)
+    # assert that newly registered level names are the same as the newly defined ones.
+    assert all(levels[level] == logging.getLevelName(level) for level in levels)
+
+
 @pytest.mark.parametrize("level_name_map", [None, {}])
 def test_registers_default_if_not_provided(level_name_map):
     DirectStdAllLevelLogger.register_levels(level_name_map)

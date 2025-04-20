@@ -103,10 +103,8 @@ class DirectStdAllLevelLogger(AllLevelLogger, Protocol):
         :return: An ascending sorted level -> name map of all the registered log levels.
         """
         if level_name_map:
-            level_name_map.update(DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP)
-            DirectStdAllLevelLogger.__register_all_levels(level_name_map)
-        else:
-            DirectStdAllLevelLogger.__register_all_levels(DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP)
+            DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP.update(level_name_map)
+        DirectStdAllLevelLogger.__register_all_levels(DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP)
         return level_name_mapping()
 
     @staticmethod
