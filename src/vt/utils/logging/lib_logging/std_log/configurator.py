@@ -278,9 +278,8 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
     @override
     def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
         int_level = self.vq_sep_configurator.get_effective_level(self.verbosity, self.quietness, self.default_log_level)
-        ret_logger = self.configurator.configure(logger)
-        ret_logger.underlying_logger.setLevel(int_level)
-        return ret_logger
+        self.configurator.set_level(int_level)
+        return self.configurator.configure(logger)
 
     @property
     def vq_level_map(self) -> VQ_DICT_LITERAL[VQLoggerConfigurator.T]:
