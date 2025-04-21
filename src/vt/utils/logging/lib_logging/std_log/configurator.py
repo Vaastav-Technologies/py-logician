@@ -264,10 +264,8 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         :param default_log_level: log level when none of the verbosity or quietness is supplied.
         """
         self._vq_level_map = vq_level_map if vq_level_map else VQSepLoggerConfigurator.VQ_LEVEL_MAP
-        if vq_sep_configurator:
-            self.vq_sep_configurator = vq_sep_configurator
-        else:
-            self.vq_sep_configurator = VQSepExclusive(self.vq_level_map, warn_only=True)
+        self.vq_sep_configurator = vq_sep_configurator if vq_sep_configurator \
+            else VQSepExclusive(self.vq_level_map, warn_only=True)
         self.vq_sep_configurator.validate(verbosity, quietness)
         self.configurator = configurator
         self.verbosity = verbosity
@@ -361,10 +359,8 @@ class VQCommLoggerConfigurator(VQLoggerConfigurator, LevelLoggerConfigurator[V_L
         :param default_log_level: log level when none of the verbosity or quietness is supplied.
         """
         self._vq_level_map = vq_level_map if vq_level_map else VQCommLoggerConfigurator.VQ_LEVEL_MAP
-        if vq_comm_configurator:
-            self.vq_comm_configurator = vq_comm_configurator
-        else:
-            self.vq_comm_configurator = VQCommon(self.vq_level_map, warn_only=True)
+        self.vq_comm_configurator = vq_comm_configurator if vq_comm_configurator \
+            else VQCommon(self.vq_level_map, warn_only=True)
         self.vq_comm_configurator.validate(ver_qui)
         self.configurator = configurator
         self.ver_qui = ver_qui
