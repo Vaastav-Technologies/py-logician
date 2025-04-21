@@ -38,7 +38,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
 
     @overload
     def __init__(self, *, level: int | str = LOG_LEVEL_WARNING, cmd_name: str | None = CMD_NAME_NONE,
-                 diff_fmt_per_level: bool | None = FMT_PER_LEVEL_NONE,
+                 same_fmt_per_level: bool | None = FMT_PER_LEVEL_NONE,
                  stream_list: list[TextIO] | None = STREAM_LIST_NONE,
                  level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE, no_warn: bool = NO_WARN_FALSE):
         ...
@@ -51,7 +51,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
 
     def __init__(self, *, level: int | str = LOG_LEVEL_WARNING, cmd_name: str | None = CMD_NAME_NONE,
                  stream_fmt_mapper: dict[TextIO, LogLevelFmt] | None = STREAM_FMT_MAPPER_NONE,
-                 diff_fmt_per_level: bool | None = FMT_PER_LEVEL_NONE,
+                 same_fmt_per_level: bool | None = FMT_PER_LEVEL_NONE,
                  stream_list: list[TextIO] | None = STREAM_LIST_NONE,
                  level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE, no_warn: bool = NO_WARN_FALSE):
         """
@@ -60,11 +60,11 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         :param level: active logging level.
         :param cmd_name: The command name to register the command logging level to. If ``None`` then the default
             ``COMMAND`` is picked-up and that will be shown on the ``log.cmd()`` call.
-        :param stream_fmt_mapper: an output-stream -> log format mapper. Defaults to ``STDERR_ALL_LVL_SAME_FMT`` if
-            ``None`` is supplied. Cannot be used with ``diff_fmt_per_level``
-            and ``stream_list``. Note that ``{}`` denoting an empty stream_fmt_mapper is accepted and specifies
+        :param stream_fmt_mapper: an output-stream -> log format mapper. Defaults to ``STDERR_ALL_LVL_DIFF_FMT`` if
+            ``None`` is supplied. Cannot be used with ``same_fmt_per_level``
+            and ``stream_list``. Note that ``{}`` denoting an empty ``stream_fmt_mapper`` is accepted and specifies
             the user's intent of not logging to any stream.
-        :param diff_fmt_per_level: Use different log format per logging level. Cannot be provided with
+        :param same_fmt_per_level: Use same log format per logging level. Cannot be provided with
             ``stream_fmt_mapper``.
         :param stream_list: list of streams to apply level formatting logic to. Cannot be provided with
             ``stream_fmt_mapper``. Note that ``[]`` denoting an empty stream_list is accepted and specifies
@@ -73,7 +73,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
             registered log levels . Check ``DirectAllLevelLogger.register_levels()`` for more info.
         :param no_warn: do not warn if a supplied level is not registered with the logging library.
         """
-        self.validate_args(stream_fmt_mapper, stream_list, diff_fmt_per_level)
+        self.validate_args(stream_fmt_mapper, stream_list, same_fmt_per_level)
 
         self._level = level
         self.cmd_name = cmd_name
@@ -82,27 +82,27 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         if stream_fmt_mapper is not None: # accepts empty stream_fmt_mapper
             self.stream_fmt_mapper = stream_fmt_mapper
         else:
-            self.stream_fmt_mapper = self.compute_stream_fmt_mapper(diff_fmt_per_level, stream_list)
+            self.stream_fmt_mapper = self.compute_stream_fmt_mapper(same_fmt_per_level, stream_list)
 
     @staticmethod
-    def compute_stream_fmt_mapper(diff_fmt_per_level: bool | None,
+    def compute_stream_fmt_mapper(same_fmt_per_level: bool | None,
                                   stream_list: list[TextIO] | None) -> dict[TextIO, LogLevelFmt]:
         """
         Compute the stream format mapper form supplied arguments.
 
-        :param diff_fmt_per_level: Want different format per logging level?
+        :param same_fmt_per_level: Want same format per logging level?
         :param stream_list: List of streams this format configuration is to be applied to. Note that ``[]`` denoting an
             empty stream_list is accepted and specifies the user's intent of not logging to any stream.
         :return: a configured ``stream_fmt_mapper``.
         """
         if stream_list is not None:  # accepts empty stream_list
-            if diff_fmt_per_level:
-                return {stream: StdLogAllLevelDiffFmt() for stream in stream_list}
-            return {stream: StdLogAllLevelSameFmt() for stream in stream_list}
+            if same_fmt_per_level:
+                return {stream: StdLogAllLevelSameFmt() for stream in stream_list}
+            return {stream: StdLogAllLevelDiffFmt() for stream in stream_list}
         else:
-            if diff_fmt_per_level:
-                return STDERR_ALL_LVL_DIFF_FMT
-            return STDERR_ALL_LVL_SAME_FMT
+            if same_fmt_per_level:
+                return STDERR_ALL_LVL_SAME_FMT
+            return STDERR_ALL_LVL_DIFF_FMT
 
     @override
     def configure(self, logger: logging.Logger) -> DirectAllLevelLogger:
@@ -156,10 +156,10 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
             ``cmd_name`` - The command name to register the command logging level to. If ``None`` then the default
             ``COMMAND`` is picked-up and that will be shown on the ``log.cmd()`` call.
 
-            ``stream_fmt_mapper`` - an output-stream -> log format mapper. Defaults to ``STDERR_ALL_LVL_SAME_FMT`` if
-            ``None`` is supplied. Cannot be used with ``diff_fmt_per_level`` and ``stream_list``. Note that ``{}``
-            denoting an empty stream_fmt_mapper is accepted and specifies the user's intent of not logging to any
-            stream.
+            ``stream_fmt_mapper`` - an output-stream -> log format mapper. Defaults to ``STDERR_ALL_LVL_DIFF_FMT`` if
+            ``None`` is supplied. Cannot be used with ``same_fmt_per_level``
+            and ``stream_list``. Note that ``{}`` denoting an empty ``stream_fmt_mapper`` is accepted and specifies
+            the user's intent of not logging to any stream.
 
             ``diff_fmt_per_level`` - Use different log format per logging level. Cannot be provided with
             ``stream_fmt_mapper``.
@@ -188,7 +188,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
                      level_name_map=level_name_map, no_warn=no_warn)
         else:
             return StdLoggerConfigurator(level=level, cmd_name=cmd_name, stream_list=stream_list,
-                                         diff_fmt_per_level=diff_fmt_per_level, level_name_map=level_name_map,
+                                         same_fmt_per_level=diff_fmt_per_level, level_name_map=level_name_map,
                                          no_warn=no_warn)
 
     @staticmethod
