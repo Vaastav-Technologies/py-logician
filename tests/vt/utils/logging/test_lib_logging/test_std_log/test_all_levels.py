@@ -54,7 +54,7 @@ class TestSuppliedCmdName:
         log.info('an info')
         logger = DirectAllLevelLoggerImpl(log, DEFAULT_STACK_LEVEL)
         logger.info('initialised info')
-        with pytest.warns(match="Supplied log level name for command log level [\d]+ is empty."):
+        with pytest.warns(match=r"Supplied log level name for command log level [\d]+ is empty."):
             logger.cmd('initialised cmd', cmd_name)
 
     def test_warns_when_no_cmd_name_passed(self):
