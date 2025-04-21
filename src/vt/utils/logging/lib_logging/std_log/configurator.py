@@ -75,7 +75,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         """
         self.validate_args(stream_fmt_mapper, stream_list, diff_fmt_per_level)
 
-        self.level = level
+        self._level = level
         self.cmd_name = cmd_name
         self.level_name_map = level_name_map
         self.no_warn = no_warn
@@ -139,8 +139,13 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
     @override
     def set_level(self, new_level: int | str) -> int | str:
         orig_level = self.level
-        self.level = new_level
+        self._level = new_level
         return orig_level
+
+    @override
+    @property
+    def level(self) -> int | str:
+        return self._level
 
     @override
     def clone_with(self, **kwargs) -> 'StdLoggerConfigurator':
@@ -386,6 +391,11 @@ class VQCommLoggerConfigurator(VQLoggerConfigurator, LevelLoggerConfigurator[V_L
         orig_ver_qui = self.ver_qui
         self.ver_qui = new_ver_qui
         return orig_ver_qui
+
+    @override
+    @property
+    def level(self) -> V_LITERAL | Q_LITERAL | None:
+        return self.ver_qui
 
     @override
     def clone_with(self, **kwargs) -> 'VQCommLoggerConfigurator':

@@ -59,6 +59,14 @@ class LevelTarget[T](Protocol):
     Permits levels to be set.
     """
 
+    @property
+    @abstractmethod
+    def level(self) -> T:
+        """
+        :return: current level.
+        """
+        ...
+
     @abstractmethod
     def set_level(self, new_level: T) -> T:
         """
