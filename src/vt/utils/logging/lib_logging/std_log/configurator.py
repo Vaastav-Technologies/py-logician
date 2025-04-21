@@ -267,7 +267,7 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         if vq_sep_configurator:
             self.vq_sep_configurator = vq_sep_configurator
         else:
-            self.vq_sep_configurator = VQSepExclusive(self.vq_level_map)
+            self.vq_sep_configurator = VQSepExclusive(self.vq_level_map, warn_only=True)
         self.vq_sep_configurator.validate(verbosity, quietness)
         self.configurator = configurator
         self.verbosity = verbosity
