@@ -227,8 +227,24 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
     VQ_SEP_CONF_NONE = None
     LOG_LEVEL_WARNING = VQLoggerConfigurator.LOG_LEVEL_WARNING
 
+    @overload
+    def __init__(self, configurator: LevelLoggerConfigurator[VQLoggerConfigurator.T],
+                 verbosity: int | None, quietness: int | None,
+                 vq_level_map: VQ_DICT_LITERAL[VQLoggerConfigurator.T] | None = VQ_LEVEL_MAP_NONE,
+                 vq_sep_configurator: VQSepConfigurator[VQLoggerConfigurator.T] | None = VQ_SEP_CONF_NONE,
+                 default_log_level: VQLoggerConfigurator.T = LOG_LEVEL_WARNING):
+        ...
+
+    @overload
     def __init__(self, configurator: LevelLoggerConfigurator[VQLoggerConfigurator.T],
                  verbosity: V_LITERAL | None, quietness: Q_LITERAL | None,
+                 vq_level_map: VQ_DICT_LITERAL[VQLoggerConfigurator.T] | None = VQ_LEVEL_MAP_NONE,
+                 vq_sep_configurator: VQSepConfigurator[VQLoggerConfigurator.T] | None = VQ_SEP_CONF_NONE,
+                 default_log_level: VQLoggerConfigurator.T = LOG_LEVEL_WARNING):
+        ...
+
+    def __init__(self, configurator: LevelLoggerConfigurator[VQLoggerConfigurator.T],
+                 verbosity: V_LITERAL | int | None, quietness: Q_LITERAL | int | None,
                  vq_level_map: VQ_DICT_LITERAL[VQLoggerConfigurator.T] | None = VQ_LEVEL_MAP_NONE,
                  vq_sep_configurator: VQSepConfigurator[VQLoggerConfigurator.T] | None = VQ_SEP_CONF_NONE,
                  default_log_level: VQLoggerConfigurator.T = LOG_LEVEL_WARNING):
@@ -249,16 +265,54 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
 
         ``verbosity`` and ``quietness`` cannot be supplied together
         -----------------------------------------------------------
-
-        >>> VQSepLoggerConfigurator(StdLoggerConfigurator(), verbosity='v', quietness='qq')
-        Traceback (most recent call last):
-        ValueError: verbosity and quietness are not allowed together.
+        Warning is issued.
+        >>> vq_log = VQSepLoggerConfigurator(StdLoggerConfigurator(), verbosity='v', quietness='qq')
+        >>> assert vq_log.configurator.level == vq_log.default_log_level
 
         Default ``VQLoggerConfigurator.VQ_LEVEL_MAP`` is used as ``vq_level_map`` when ``vq_level_map`` is ``None``
         -----------------------------------------------------------------------------------------------------------
 
         >>> vq_log = VQSepLoggerConfigurator(StdLoggerConfigurator(), 'v', None)
         >>> assert vq_log.vq_level_map == VQSepLoggerConfigurator.VQ_LEVEL_MAP
+
+        ``int`` can be supplied for verbosity value
+        ------------------------------------------
+
+        >>> vq_log = VQSepLoggerConfigurator(StdLoggerConfigurator(), 2, None)
+        >>> assert vq_log.verbosity == 'vv'
+
+        >>> vq_log = VQSepLoggerConfigurator(StdLoggerConfigurator(), 0, None)
+        >>> assert vq_log.verbosity is None
+
+        >>> vq_log = VQSepLoggerConfigurator(StdLoggerConfigurator(), None, None)
+        >>> assert vq_log.verbosity is None
+
+        ``int`` can be supplied for quietness value
+        -------------------------------------------
+
+        >>> vq_log = VQSepLoggerConfigurator(StdLoggerConfigurator(), None, 2)
+        >>> assert vq_log.quietness == 'qq'
+
+        >>> vq_log = VQSepLoggerConfigurator(StdLoggerConfigurator(), None, 0)
+        >>> assert vq_log.quietness is None
+
+        >>> vq_log = VQSepLoggerConfigurator(StdLoggerConfigurator(), None, None)
+        >>> assert vq_log.quietness is None
+
+        negative ints for verbosity or quietness are not supported
+        ----------------------------------------------------------
+
+        >>> VQSepLoggerConfigurator(StdLoggerConfigurator(), -1, None)
+        Traceback (most recent call last):
+        ValueError: 'verbosity' cannot be negative.
+
+        >>> VQSepLoggerConfigurator(StdLoggerConfigurator(), None, -10)
+        Traceback (most recent call last):
+        ValueError: 'quietness' cannot be negative.
+
+        over range ints produce warnings
+        --------------------------------
+        verbosity or quietness > 3 will produce warnings.
 
         :param configurator: The logger configurator to decorate.
         :param verbosity: verbosity level. Cannot be given with ``quietness``.
@@ -271,10 +325,12 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         self._vq_level_map = vq_level_map if vq_level_map else VQSepLoggerConfigurator.VQ_LEVEL_MAP
         self.vq_sep_configurator = vq_sep_configurator if vq_sep_configurator \
             else VQSepExclusive(self.vq_level_map, warn_only=True)
-        self.vq_sep_configurator.validate(verbosity, quietness)
+        c_verbosity = self.compute_verbosity(verbosity, {0: None, 1: 'v', 2: 'vv', 3: 'vvv'})
+        c_quietness = self.compute_quietness(quietness, {0: None, 1: 'q', 2: 'qq', 3: 'qqq'})
+        self.vq_sep_configurator.validate(c_verbosity, c_quietness)
         self.configurator = configurator
-        self.verbosity = verbosity
-        self.quietness = quietness
+        self.verbosity = c_verbosity
+        self.quietness = c_quietness
         self._underlying_configurator = self.configurator
         self.default_log_level = default_log_level
 
@@ -318,6 +374,29 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         default_log_level = kwargs.pop('default_log_level', self.default_log_level)
         return VQSepLoggerConfigurator(configurator, verbosity, quietness, vq_level_map, vq_sep_configurator,
                                        default_log_level)
+
+    @classmethod
+    def compute_verbosity(cls, entity: int | V_LITERAL | None, entity_map: dict[int, V_LITERAL | None]) -> V_LITERAL | None:
+        return cls._compute_entity(entity, 'verbosity', entity_map)
+
+    @classmethod
+    def compute_quietness(cls, entity: int | Q_LITERAL | None, entity_map: dict[int, Q_LITERAL | None]) -> Q_LITERAL | None:
+        return cls._compute_entity(entity, 'quietness', entity_map)
+
+    @classmethod
+    def _compute_entity(cls, entity, emphasis: str, entity_map: dict):
+        if isinstance(entity, int):
+            int_entity = int(entity)
+            if int_entity < 0:
+                raise ValueError(f"'{emphasis}' cannot be negative.")
+            max_int_entity = max(entity_map)
+            if int_entity > max_int_entity:
+                vt_warn(f"Supplied {emphasis}: '{int_entity}' is greater than the max supported "
+                        f"{emphasis}: '{max_int_entity}'. Defaulting to max {emphasis}.")
+                int_entity = max_int_entity
+            return entity_map[int_entity]
+        else:
+            return entity
 
 
 class VQCommLoggerConfigurator(VQLoggerConfigurator, LevelLoggerConfigurator[V_LITERAL | Q_LITERAL | None]):
