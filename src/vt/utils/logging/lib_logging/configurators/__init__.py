@@ -123,10 +123,27 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurato
 
 class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
     DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = get_first_non_none
+
     def __init__(self, level_list: list[T | None], configurator: LevelLoggerConfigurator,
-                 level_pickup_strategy =DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE):
+                 level_pickup_strategy=DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE):
         """
-        Picks up the first non ``None`` level from the ``level_list`` to configure the logger underneath.
+        Picks up the first non ``None`` level from the supplied ``level_list`` to configure the logger underneath.
+
+        * Examples:
+
+          * supplied ``level_list`` cannot be ``None``:
+
+            >>> ListLoggerConfigurator(None, # noqa: as level_list is deliberately passed as None
+            ...     None) # noqa: as configurator is unused and passed as None
+            Traceback (most recent call last):
+            ValueError: Level list must not be None or empty.
+
+          * supplied ``level_list`` cannot be empty:
+
+            >>> ListLoggerConfigurator([],
+            ...     None) # noqa: as configurator is unused and passed as None
+            Traceback (most recent call last):
+            ValueError: Level list must not be None or empty.
 
         :param level_list: list of log levels which may contain ``None``. First non-``None`` value
             is picked-up by default for logger configuration.
@@ -169,7 +186,6 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
 
 
 class EnvListLC[T](ListLoggerConfigurator):
-
     DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = ListLoggerConfigurator.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE
 
     def __init__(self, env_list: list[str], configurator: LevelLoggerConfigurator[T],
@@ -210,7 +226,6 @@ class EnvListLC[T](ListLoggerConfigurator):
 
 
 class VTEnvListLC[T](EnvListLC[T]):
-
     DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = EnvListLC.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE
 
     def __init__(self, env_list: list[str], configurator: LevelLoggerConfigurator[T],
