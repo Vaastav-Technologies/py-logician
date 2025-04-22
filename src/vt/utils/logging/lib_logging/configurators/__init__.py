@@ -171,7 +171,8 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
     def clone_with(self, **kwargs) -> 'ListLoggerConfigurator[T]':
         """
         kwargs:
-            ``level_list`` - list of log levels which may contain ``None``. First non-``None`` value is picked-up by default for logger configuration.
+            ``level_list`` - list of log levels which may contain ``None``. First non-``None`` value is picked-up by
+            default for logger configuration.
 
             ``configurator`` - configurator which is decorated by this logger-configurator.
 
