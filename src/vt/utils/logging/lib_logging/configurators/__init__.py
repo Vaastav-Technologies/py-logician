@@ -8,7 +8,7 @@ Logger interfaces for Logger configurators.
 import logging
 import os
 from abc import abstractmethod
-from typing import Protocol, Callable, override
+from typing import Protocol, Callable, override, cast
 
 from vt.utils.logging.lib_logging import VT_ALL_LOG_ENV_VAR
 from vt.utils.logging.lib_logging.std_log.base import DirectStdAllLevelLogger
@@ -136,14 +136,7 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
             >>> ListLoggerConfigurator(None, # noqa: as level_list is deliberately passed as None
             ...     None) # noqa: as configurator is unused and passed as None
             Traceback (most recent call last):
-            ValueError: Level list must not be None or empty.
-
-          * supplied ``level_list`` cannot be empty:
-
-            >>> ListLoggerConfigurator([],
-            ...     None) # noqa: as configurator is unused and passed as None
-            Traceback (most recent call last):
-            ValueError: Level list must not be None or empty.
+            ValueError: Level list must not be None.
 
         :param level_list: list of log levels which may contain ``None``. First non-``None`` value
             is picked-up by default for logger configuration.
@@ -151,9 +144,9 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
         :param level_pickup_strategy: pick up a level from the list of levels supplied in ``level_list``. Default is
             to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
         """
-        if not level_list:
-            raise ValueError("Level list must not be None or empty.")
-        self.level_list = level_list
+        if level_list is None:
+            raise ValueError("Level list must not be None.")
+        self._level_list = level_list
         self.configurator = configurator
         self.level_pickup_strategy = level_pickup_strategy
 
@@ -166,6 +159,10 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
     @property
     def underlying_configurator(self) -> LoggerConfigurator:
         return self.configurator
+
+    @property
+    def level_list(self) -> list[T | None]:
+        return self._level_list
 
     @override
     def clone_with(self, **kwargs) -> 'ListLoggerConfigurator[T]':
@@ -202,11 +199,17 @@ class EnvListLC[T](ListLoggerConfigurator):
         :param level_pickup_strategy: strategy to pick-up level from a supplied list of levels. Default is to pick up
             the first supplied, then next and then so on.
         """
-        super().__init__([os.getenv(e) for e in env_list], configurator, level_pickup_strategy)
+        super().__init__([], configurator, level_pickup_strategy)
         self._env_list = env_list
 
-    def get_env_list(self):
+    @property
+    def env_list(self) -> list[str]:
         return self._env_list
+
+    @override
+    @property
+    def level_list(self) -> list[T | None]:
+        return [cast(T | None, os.getenv(e)) for e in self.env_list]
 
     @override
     def clone_with(self, **kwargs) -> 'EnvListLC[T]':
@@ -220,7 +223,7 @@ class EnvListLC[T](ListLoggerConfigurator):
             to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
         :return: a new ``EnvListLC``.
         """
-        level_list = kwargs.pop('env_list', self.get_env_list().copy())
+        level_list = kwargs.pop('env_list', self.env_list.copy())
         configurator = kwargs.pop('configurator', self.configurator)
         level_pickup_strategy = kwargs.pop('level_pickup_strategy', self.level_pickup_strategy)
         return EnvListLC[T](level_list, configurator, level_pickup_strategy)
@@ -260,7 +263,7 @@ class VTEnvListLC[T](EnvListLC[T]):
             to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
         :return: a new ``VTEnvListLC``.
         """
-        level_list = kwargs.pop('env_list', self.get_env_list().copy())
+        level_list = kwargs.pop('env_list', self.env_list.copy())
         configurator = kwargs.pop('configurator', self.configurator)
         level_pickup_strategy = kwargs.pop('level_pickup_strategy', self.level_pickup_strategy)
         return VTEnvListLC[T](level_list, configurator, level_pickup_strategy)
