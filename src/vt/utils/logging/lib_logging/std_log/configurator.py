@@ -110,12 +110,16 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         level = self.level
         levels_to_choose_from: dict[int, str] = DirectAllLevelLogger.register_levels(self.level_name_map)
         try:
-            if isinstance(level, int):
-                int_level = level
-            elif level.isdigit():
-                int_level = int(level)
-            else:
-                int_level = logging.getLevelNamesMapping()[level]
+            match level:
+                case int():
+                    int_level = level
+                case str():
+                    int_level = int(level) if level.isdigit() else logging.getLevelNamesMapping()[level]
+                case None:
+                    int_level = StdLoggerConfigurator.LOG_LEVEL_WARNING
+                case _:
+                    raise TypeError(f"Wrong level value supplied: '{level}', Expected int or str, got "
+                                    f"{type(level).__name__}")
         except KeyError:
             if not self.no_warn:
                 vt_warn(f"{logger.name}: Undefined log level '{level}'. "
