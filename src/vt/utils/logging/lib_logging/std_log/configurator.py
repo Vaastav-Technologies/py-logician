@@ -106,6 +106,56 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
 
     @override
     def configure(self, logger: logging.Logger) -> DirectAllLevelLogger:
+        """
+        Configure the std python logger for various formatting quick-hands.
+
+        Examples:
+
+        * Configure with defaults, no errors::
+
+            >>> logger_defaults = StdLoggerConfigurator().configure(logging.getLogger('logger-defaults'))
+
+        * Set ``int`` level::
+
+            >>> logger_int = StdLoggerConfigurator(level=20).configure(logging.getLogger('logger-int'))
+            >>> assert logger_int.underlying_logger.level == 20
+
+        * Set digit ``str`` level::
+
+            >>> logger_int_str = StdLoggerConfigurator(level='20').configure(logging.getLogger('logger-int-str'))
+            >>> assert logger_int_str.underlying_logger.level == 20
+
+        * Set ``str`` level::
+
+            >>> logger_str = StdLoggerConfigurator(level='FATAL').configure(logging.getLogger('logger-str'))
+            >>> assert logger_str.underlying_logger.level == FATAL_LOG_LEVEL
+
+        * ``None`` level sets default `WARNING` log level::
+
+            >>> logger_none = (StdLoggerConfigurator(level=None) # noqa
+            ...     .configure(logging.getLogger('logger-none')))
+            >>> assert logger_none.underlying_logger.level == StdLoggerConfigurator.LOG_LEVEL_WARNING
+
+        * Any other level type raises a ``TypeError``:
+
+          * ``dict`` example:
+
+            >>> logger_dict = (StdLoggerConfigurator(level={}) # noqa
+            ...     .configure(logging.getLogger('logger-dict')))
+            Traceback (most recent call last):
+            TypeError: Wrong level value supplied: '{}', Expected int or str, got dict
+
+          * ``list`` example:
+
+            >>> logger_list = (StdLoggerConfigurator(level=[]) # noqa
+            ...     .configure(logging.getLogger('logger-list')))
+            Traceback (most recent call last):
+            TypeError: Wrong level value supplied: '[]', Expected int or str, got list
+
+
+        :param logger: std python logger.
+        :return: A configured All level logging std python logger.
+        """
         stream_fmt_map = self.stream_fmt_mapper
         level = self.level
         levels_to_choose_from: dict[int, str] = DirectAllLevelLogger.register_levels(self.level_name_map)
