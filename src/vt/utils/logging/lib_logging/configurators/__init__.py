@@ -8,7 +8,8 @@ Logger interfaces for Logger configurators.
 import logging
 import os
 from abc import abstractmethod
-from typing import Protocol, Callable, override, cast
+from typing import Protocol, override, cast
+from collections.abc import Callable
 
 from vt.utils.logging.lib_logging import VT_ALL_LOG_ENV_VAR
 from vt.utils.logging.lib_logging.std_log.base import DirectStdAllLevelLogger
