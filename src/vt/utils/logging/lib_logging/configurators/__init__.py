@@ -238,8 +238,8 @@ class VTEnvListLC[T](EnvListLC[T]):
         """
         This logger configurator can be used to configure log level using values supplied from environment variables.
         Default behavior is to pick up the first passed environment variable value. Designed to process log level from
-        multiple environment variables and hence has a precedence order to the values form environment variables. The
-        first environment variable value takes highest precedence and then the precedence diminishes. Environment
+        multiple environment variable values and hence has a precedence order to the values from environment variables.
+        The first environment variable value takes highest precedence and then the precedence diminishes. Environment
         variable ``VT_ALL_LOG`` is always appended to ``env_list`` so that if no environment variable is registered
         then at least this one is registered.
 
