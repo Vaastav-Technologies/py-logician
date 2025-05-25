@@ -19,7 +19,7 @@ from vt.utils.logging.lib_logging.std_log.utils import get_first_non_none
 class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
     DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = get_first_non_none
 
-    def __init__(self, level_list: list[T | None], configurator: LevelLoggerConfigurator,
+    def __init__(self, level_list: list[T | None], configurator: LevelLoggerConfigurator[T],
                  level_pickup_strategy=DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE):
         """
         Picks up the first non ``None`` level from the supplied ``level_list`` to configure the logger underneath.
