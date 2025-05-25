@@ -46,13 +46,13 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
         self.level_pickup_strategy = level_pickup_strategy
 
     def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
-        final_level = self.level_pickup_strategy(self.level_list)
-        self.configurator.set_level(final_level)
-        return self.configurator.configure(logger)
+        final_level = self.level_pickup_strategy(self.level_list, self.underlying_configurator.level)
+        self.underlying_configurator.set_level(final_level)
+        return self.underlying_configurator.configure(logger)
 
     @override
     @property
-    def underlying_configurator(self) -> LoggerConfigurator:
+    def underlying_configurator(self) -> LevelLoggerConfigurator[T]:
         return self.configurator
 
     @property
