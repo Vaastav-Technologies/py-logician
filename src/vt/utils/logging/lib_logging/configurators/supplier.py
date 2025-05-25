@@ -26,13 +26,14 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurato
         self.configurator = configurator
 
     def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
-        final_level = self.level_supplier()
-        self.configurator.set_level(final_level)
-        return self.configurator.configure(logger)
+        computed_level = self.level_supplier()
+        final_level = computed_level if computed_level is not None else self.underlying_configurator.level
+        self.underlying_configurator.set_level(final_level)
+        return self.underlying_configurator.configure(logger)
 
     @override
     @property
-    def underlying_configurator(self) -> LoggerConfigurator:
+    def underlying_configurator(self) -> LevelLoggerConfigurator[T]:
         return self.configurator
 
     @override
