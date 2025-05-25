@@ -7,83 +7,14 @@ Logger interfaces for Logger configurators.
 """
 import logging
 import os
-from abc import abstractmethod
-from typing import Protocol, override, cast
+from typing import override, cast
 from collections.abc import Callable
 
 from vt.utils.logging.lib_logging import VT_ALL_LOG_ENV_VAR
+from vt.utils.logging.lib_logging.configurators.base import LoggerConfigurator, HasUnderlyingConfigurator, \
+    LevelLoggerConfigurator
 from vt.utils.logging.lib_logging.std_log.base import DirectStdAllLevelLogger
 from vt.utils.logging.lib_logging.std_log.utils import get_first_non_none
-
-
-class LoggerConfigurator(Protocol):
-    """
-    Stores configuration information to configure the std python logger.
-    """
-
-    @abstractmethod
-    def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
-        """
-        Configure the std python logger for various formatting quick-hands.
-
-        :param logger: std python logger
-        :return: A configured All level logging std python logger.
-        """
-        pass
-
-    @abstractmethod
-    def clone_with(self, **kwargs) -> 'LoggerConfigurator':
-        """
-        :param kwargs: overriding keyword args.
-        :return: a new instance of the ``LoggerConfigurator`` with the provided overrides.
-        """
-        ...
-
-
-class HasUnderlyingConfigurator(Protocol):
-    """
-    A configurator which has other configurators underneath it. Majorly used to decorate configurators to add
-    functionalities to them.
-    """
-
-    @property
-    @abstractmethod
-    def underlying_configurator(self) -> LoggerConfigurator:
-        """
-        :return: The underlying logger configurator which is decorated by this configurator.
-        """
-        ...
-
-
-class LevelTarget[T](Protocol):
-    """
-    Permits levels to be set.
-    """
-
-    @property
-    @abstractmethod
-    def level(self) -> T:
-        """
-        :return: current level.
-        """
-        ...
-
-    @abstractmethod
-    def set_level(self, new_level: T) -> T:
-        """
-        Sets new level.
-
-        :param new_level: sets to this level.
-        :return: the old level.
-        """
-        ...
-
-
-class LevelLoggerConfigurator[T](LevelTarget[T], LoggerConfigurator, Protocol):
-    """
-    A logger configurator which allows setting levels from outside of it.
-    """
-    pass
 
 
 class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
