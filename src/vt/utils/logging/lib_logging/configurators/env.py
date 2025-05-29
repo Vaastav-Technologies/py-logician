@@ -61,7 +61,7 @@ class EnvListLC[T](ListLoggerConfigurator):
     def clone_with_envs(self, *envs: str, low_precedence: bool = False) -> 'EnvListLC[T]':
         """
         Clone the current environment list level logger configurator with some extra environment variables. May be used
-        in scenarios when a certain module needs a Loger configurator dependent on the environment variables of another
+        in scenarios when a certain module needs a Logger configurator dependent on the environment variables of another
         logger configurator and wants to include its own environment variable as well in the mix.
 
         For e.g. the `push-pull-prep` project has its logger configurator to heed to ``ENV_PPP`` environment variable
