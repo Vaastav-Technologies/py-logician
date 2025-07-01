@@ -1,2 +1,3 @@
 # vt-logger
-Project to implement logging utility for Vaastav Technologies (vt) projects using just the standard python logging.
+
+Fully typed, simple, intuitive, sensible and pragmatic logger configurator for standard python logging.
