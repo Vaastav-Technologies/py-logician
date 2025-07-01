@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"  # If not defined, then legacy behavior 
 
 
 [project]
-name = "vt-logger"
+name = "logician"
 version = "0.0.0"
 description = "Project to implement logging utility for Vaastav Technologies (vt) projects using just the standard python logging."
 readme = "README"
