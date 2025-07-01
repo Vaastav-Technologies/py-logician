@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"  # If not defined, then legacy behavior 
 [project]
 name = "logician"
 version = "0.0.0"
-description = "Project to implement logging utility for Vaastav Technologies (vt) projects using just the standard python logging."
+description = "Fully typed, simple, intuitive, sensible and pragmatic logger configurator for standard python logging."
 readme = "README"
 keywords = ["log", "logging", "logger"]
 authors = [
