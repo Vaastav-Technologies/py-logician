@@ -1,5 +1,16 @@
 # logician
 
+![PyPI - Types](https://img.shields.io/pypi/types/logician)
+![GitHub License](https://img.shields.io/github/license/Vaastav-Technologies/py-logician)
+[![🔧 test](https://github.com/Vaastav-Technologies/py-logician/actions/workflows/test.yml/badge.svg)](https://github.com/Vaastav-Technologies/py-logician/actions/workflows/test.yml)
+[![💡 typecheck](https://github.com/Vaastav-Technologies/py-logician/actions/workflows/typecheck.yml/badge.svg)](https://github.com/Vaastav-Technologies/py-logician/actions/workflows/typecheck.yml)
+[![🛠️ lint](https://github.com/Vaastav-Technologies/py-logician/actions/workflows/lint.yml/badge.svg)](https://github.com/Vaastav-Technologies/py-logician/actions/workflows/lint.yml)
+[![📊 coverage](https://codecov.io/gh/Vaastav-Technologies/py-logician/branch/main/graph/badge.svg)](https://codecov.io/gh/Vaastav-Technologies/py-logician)
+[![📤 Upload Python Package](https://github.com/Vaastav-Technologies/py-logician/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Vaastav-Technologies/py-logician/actions/workflows/python-publish.yml)
+![PyPI - Version](https://img.shields.io/pypi/v/logician)
+
+---
+
 **Fully typed, simple, intuitive, and pragmatic logger configurator for standard Python logging.**
 
 `logician` is a lightweight utility that simplifies configuring Python's built-in `logging` module. It supports logger setup using environment variables, CLI flags (`-v`, `-q`), and sensible defaults—all fully typed, tested, and documented.
