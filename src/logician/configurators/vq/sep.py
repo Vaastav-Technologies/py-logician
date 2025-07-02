@@ -92,14 +92,14 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
         >>> VQSepExclusive({}).validate('v', 'q')
         Traceback (most recent call last):
         ...
-        ValueError: verbosity and quietness are not allowed together.
+        ValueError: verbosity and quietness are not allowed together
 
         Only warn if ``warn_only`` is provided ``True``::
 
         >>> with warnings.catch_warnings():
         ...     with contextlib.redirect_stderr(sys.stdout):
         ...         VQSepExclusive({}, True).validate('v', 'q')
-        UserWarning: verbosity and quietness are not allowed together.
+        UserWarning: verbosity and quietness are not allowed together
         False
 
         Return ``True`` if only one verbosity is supplied::
@@ -152,14 +152,14 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
             >>> VQSepExclusive({}).get_effective_level('v', 'q', 10)
             Traceback (most recent call last):
             ...
-            ValueError: verbosity and quietness are not allowed together.
+            ValueError: verbosity and quietness are not allowed together
 
             Only warn if warn_only is provided True and return the default_value:
 
             >>> with warnings.catch_warnings():
             ...     with contextlib.redirect_stderr(sys.stdout):
             ...         VQSepExclusive[int]({'v': 20}, True).get_effective_level('v', 'q', 10)
-            UserWarning: verbosity and quietness are not allowed together.
+            UserWarning: verbosity and quietness are not allowed together
             10
 
         Level inquiry::

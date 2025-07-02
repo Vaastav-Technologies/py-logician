@@ -91,7 +91,7 @@ class SimpleWarningVQLevelOrDefault[T](VQLevelOrDefault[T], Warner):
         >>> SimpleWarningVQLevelOrDefault[int](vq_levels, warn_only=False, key_error_handler=NoErrWarningWithDefault())
         Traceback (most recent call last):
         ...
-        ValueError: warn_only and key_error_handler are not allowed together.
+        ValueError: warn_only and key_error_handler are not allowed together
 
 
         Correct no error examples::
