@@ -11,18 +11,18 @@ from typing import override, TextIO, overload, Protocol
 
 from vt.utils.errors.warnings import vt_warn
 
-from vt.utils.logging.lib_logging import DirectAllLevelLogger, DirectStdAllLevelLogger
-from vt.utils.logging.lib_logging import errmsg_creator
-from vt.utils.logging.lib_logging.configurators import LoggerConfigurator, HasUnderlyingConfigurator, \
+from logician import DirectAllLevelLogger, DirectStdAllLevelLogger
+from logician import errmsg_creator
+from logician.configurators import LoggerConfigurator, HasUnderlyingConfigurator, \
     LevelLoggerConfigurator
-from vt.utils.logging.lib_logging.configurators.vq import V_LITERAL, Q_LITERAL, VQ_DICT_LITERAL, VQConfigurator, \
+from logician.configurators.vq import V_LITERAL, Q_LITERAL, VQ_DICT_LITERAL, VQConfigurator, \
     VQSepConfigurator, VQCommConfigurator
-from vt.utils.logging.lib_logging.configurators.vq.comm import VQCommon
-from vt.utils.logging.lib_logging.configurators.vq.sep import VQSepExclusive
-from vt.utils.logging.lib_logging.formatters import LogLevelFmt
-from vt.utils.logging.lib_logging.std_log import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL, WARNING_LEVEL
-from vt.utils.logging.lib_logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl
-from vt.utils.logging.lib_logging.std_log.formatters import StdLogAllLevelDiffFmt, \
+from logician.configurators.vq.comm import VQCommon
+from logician.configurators.vq.sep import VQSepExclusive
+from logician.formatters import LogLevelFmt
+from logician.std_log import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL, WARNING_LEVEL
+from logician.std_log.all_levels_impl import DirectAllLevelLoggerImpl
+from logician.std_log.formatters import StdLogAllLevelDiffFmt, \
     StdLogAllLevelSameFmt, STDERR_ALL_LVL_SAME_FMT, STDERR_ALL_LVL_DIFF_FMT
 
 

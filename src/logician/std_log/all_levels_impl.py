@@ -9,11 +9,11 @@ from abc import abstractmethod
 from logging import Logger
 from typing import override, Protocol
 
-from vt.utils.logging.lib_logging.delegating import AllLevelLoggerImplABC
-from vt.utils.logging.lib_logging.std_log import TRACE_LOG_LEVEL, \
+from logician.delegating import AllLevelLoggerImplABC
+from logician.std_log import TRACE_LOG_LEVEL, \
     NOTICE_LOG_LEVEL, SUCCESS_LOG_LEVEL, StdLogProtocol, INDIRECTION_STACK_LEVEL, FATAL_LOG_LEVEL, CMD_LOG_LEVEL, \
     CMD_LOG_STR
-from vt.utils.logging.lib_logging.std_log.utils import TempSetLevelName
+from logician.std_log.utils import TempSetLevelName
 
 
 class StdProtocolAllLevelLoggerImpl(AllLevelLoggerImplABC, Protocol):

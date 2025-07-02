@@ -8,8 +8,8 @@ Configure loggers as per level supplied by a supplier.
 import logging
 from typing import Callable, override
 
-from vt.utils.logging.lib_logging import DirectStdAllLevelLogger
-from vt.utils.logging.lib_logging.configurators import LoggerConfigurator, HasUnderlyingConfigurator, \
+from logician import DirectStdAllLevelLogger
+from logician.configurators import LoggerConfigurator, HasUnderlyingConfigurator, \
     LevelLoggerConfigurator
 
 

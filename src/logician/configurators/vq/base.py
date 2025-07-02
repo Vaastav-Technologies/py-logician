@@ -12,9 +12,9 @@ from vt.utils.errors.error_specs import DefaultOrError, WarningWithDefault
 from vt.utils.errors.error_specs.base import SimpleWarningWithDefault
 from vt.utils.errors.warnings import Warner
 
-from vt.utils.logging.lib_logging.configurators.vq import VQ_DICT_LITERAL, V_LITERAL, Q_LITERAL
+from logician.configurators.vq import VQ_DICT_LITERAL, V_LITERAL, Q_LITERAL
 
-from vt.utils.logging.lib_logging import errmsg_creator
+from logician import errmsg_creator
 
 
 class VQConfigurator[T](Protocol):

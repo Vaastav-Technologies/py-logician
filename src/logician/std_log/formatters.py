@@ -9,8 +9,8 @@ import logging
 import sys
 from typing import TextIO, override
 
-from vt.utils.logging.lib_logging.formatters import AllLevelSameFmt, DiffLevelDiffFmt, LogLevelFmt
-from vt.utils.logging.lib_logging.std_log import TIMED_DETAIL_LOG_FMT, TRACE_LOG_LEVEL, DETAIL_LOG_FMT, SHORT_LOG_FMT, \
+from logician.formatters import AllLevelSameFmt, DiffLevelDiffFmt, LogLevelFmt
+from logician.std_log import TIMED_DETAIL_LOG_FMT, TRACE_LOG_LEVEL, DETAIL_LOG_FMT, SHORT_LOG_FMT, \
     SHORTER_LOG_FMT
 
 

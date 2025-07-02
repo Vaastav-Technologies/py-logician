@@ -10,11 +10,11 @@ from abc import ABC, abstractmethod
 from logging import Logger
 from typing import override, cast, Protocol
 
-from vt.utils.logging.lib_logging import AllLevelLogger
-from vt.utils.logging.lib_logging.delegating import DelegatingLogger
-from vt.utils.logging.lib_logging.std_log import StdLogProtocol
-from vt.utils.logging.lib_logging.std_log.base import DirectStdAllLevelLogger
-from vt.utils.logging.lib_logging.std_log.all_levels_impl import StdProtocolAllLevelLoggerImpl, \
+from logician import AllLevelLogger
+from logician.delegating import DelegatingLogger
+from logician.std_log import StdLogProtocol
+from logician.std_log.base import DirectStdAllLevelLogger
+from logician.std_log.all_levels_impl import StdProtocolAllLevelLoggerImpl, \
     BaseDirectStdAllLevelLoggerImpl
 
 

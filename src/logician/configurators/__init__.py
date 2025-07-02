@@ -6,5 +6,5 @@
 Logger interfaces for Logger configurators.
 """
 
-from vt.utils.logging.lib_logging.configurators.base import LoggerConfigurator, HasUnderlyingConfigurator, \
+from logician.configurators.base import LoggerConfigurator, HasUnderlyingConfigurator, \
     LevelLoggerConfigurator, LevelTarget

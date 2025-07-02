@@ -10,10 +10,10 @@ First non-None level in this supplied list is picked up by default.
 import logging
 from typing import override
 
-from vt.utils.logging.lib_logging import DirectStdAllLevelLogger
-from vt.utils.logging.lib_logging.configurators import LoggerConfigurator, HasUnderlyingConfigurator, \
+from logician import DirectStdAllLevelLogger
+from logician.configurators import LoggerConfigurator, HasUnderlyingConfigurator, \
     LevelLoggerConfigurator
-from vt.utils.logging.lib_logging.std_log.utils import get_first_non_none
+from logician.std_log.utils import get_first_non_none
 
 
 class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):

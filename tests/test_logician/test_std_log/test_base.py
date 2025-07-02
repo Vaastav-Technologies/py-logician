@@ -8,9 +8,9 @@ Tests for base interface logic.
 import pytest
 import logging
 
-from vt.utils.logging.lib_logging import DirectStdAllLevelLogger
-from vt.utils.logging.lib_logging.configurators.vq.base import SimpleWarningVQLevelOrDefault
-from vt.utils.logging.lib_logging.std_log.utils import level_name_mapping
+from logician import DirectStdAllLevelLogger
+from logician.configurators.vq.base import SimpleWarningVQLevelOrDefault
+from logician.std_log.utils import level_name_mapping
 
 
 def test_registers_supplied_unknown_levels():

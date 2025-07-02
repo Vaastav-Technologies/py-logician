@@ -20,12 +20,12 @@ supplying the logger class to perform delegation onto by this library.
 from logging import Logger
 
 
-from vt.utils.logging.lib_logging.base import AllLevelLogger, MinLogProtocol
-from vt.utils.logging.lib_logging.std_log import StdLogProtocol, StdLevelLogger, StdProtocolAllLevelLogger, \
+from logician.base import AllLevelLogger, MinLogProtocol
+from logician.std_log import StdLogProtocol, StdLevelLogger, StdProtocolAllLevelLogger, \
     BaseDirectStdAllLevelLogger, DirectAllLevelLogger, DirectStdAllLevelLogger
-from vt.utils.logging.lib_logging.std_log.all_levels_impl import DirectAllLevelLoggerImpl as _DALImpl
-from vt.utils.logging.lib_logging.constants import *
-from vt.utils.logging.lib_logging.utils import command_or_file
+from logician.std_log.all_levels_impl import DirectAllLevelLoggerImpl as _DALImpl
+from logician.constants import *
+from logician.utils import command_or_file
 
 from vt.utils.errors.error_specs import ErrorMsgFormer
 

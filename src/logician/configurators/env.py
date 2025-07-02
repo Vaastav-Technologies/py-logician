@@ -8,9 +8,9 @@ Logger configurators that configure log levels using environment variables.
 import os
 from typing import override, cast
 
-from vt.utils.logging.lib_logging import VT_ALL_LOG_ENV_VAR
-from vt.utils.logging.lib_logging.configurators import LevelLoggerConfigurator
-from vt.utils.logging.lib_logging.configurators.list_lc import ListLoggerConfigurator
+from logician import VT_ALL_LOG_ENV_VAR
+from logician.configurators import LevelLoggerConfigurator
+from logician.configurators.list_lc import ListLoggerConfigurator
 
 
 class EnvListLC[T](ListLoggerConfigurator):
