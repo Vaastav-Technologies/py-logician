@@ -127,10 +127,9 @@ class VQCommon[T](VQCommConfigurator[T]):
 
             Return default_level if queried verbosity is not registered and warn_only is True:
 
-            >>> with warnings.catch_warnings():
-            ...     with contextlib.redirect_stderr(sys.stdout):
-            ...         VQCommon[int]({'v': 20, 'q': 1}, True).get_effective_level('vv', 10)
-            UserWarning: 'vv': Unexpected verbosity or quietness value. Choose from 'v' and 'q'.
+            >>> with warnings.catch_warnings(record=True) as w:
+            ...     VQCommon[int]({'v': 20, 'q': 1}, True).get_effective_level('vv', 10)
+            ...     assert "'vv': Unexpected verbosity or quietness value. Choose from 'v' and 'q'." in str(w.pop().message)
             10
 
             Raise KeyError if queried verbosity or quietness is not registered and warn_only is False or not provided:

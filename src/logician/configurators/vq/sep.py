@@ -96,10 +96,9 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
 
         Only warn if ``warn_only`` is provided ``True``::
 
-        >>> with warnings.catch_warnings():
-        ...     with contextlib.redirect_stderr(sys.stdout):
-        ...         VQSepExclusive({}, True).validate('v', 'q')
-        UserWarning: verbosity and quietness are not allowed together
+        >>> with warnings.catch_warnings(record=True) as w:
+        ...     VQSepExclusive({}, True).validate('v', 'q')
+        ...     assert "verbosity and quietness are not allowed together" in str(w.pop().message)
         False
 
         Return ``True`` if only one verbosity is supplied::
@@ -156,10 +155,9 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
 
             Only warn if warn_only is provided True and return the default_value:
 
-            >>> with warnings.catch_warnings():
-            ...     with contextlib.redirect_stderr(sys.stdout):
-            ...         VQSepExclusive[int]({'v': 20}, True).get_effective_level('v', 'q', 10)
-            UserWarning: verbosity and quietness are not allowed together
+            >>> with warnings.catch_warnings(record=True) as w:
+            ...     VQSepExclusive[int]({'v': 20}, True).get_effective_level('v', 'q', 10)
+            ...     assert "verbosity and quietness are not allowed together" in str(w.pop().message)
             10
 
         Level inquiry::
@@ -171,10 +169,9 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
 
             Return default_level if queried verbosity is not registered and warn_only is True:
 
-            >>> with warnings.catch_warnings():
-            ...     with contextlib.redirect_stderr(sys.stdout):
-            ...         VQSepExclusive[int]({'v': 20}, True).get_effective_level('vv', None, 10)
-            UserWarning: 'vv': Unexpected verbosity value. Choose from 'v'.
+            >>> with warnings.catch_warnings(record=True) as w:
+            ...     VQSepExclusive[int]({'v': 20}, True).get_effective_level('vv', None, 10)
+            ...     assert "'vv': Unexpected verbosity value. Choose from 'v'." in str(w.pop().message)
             10
 
             Raise KeyError if queried verbosity is not registered and warn_only is False or not provided:

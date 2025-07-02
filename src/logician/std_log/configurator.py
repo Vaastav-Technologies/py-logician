@@ -317,10 +317,14 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         Examples
         ========
 
+        >>> import warnings
+
         ``verbosity`` and ``quietness`` cannot be supplied together
         -----------------------------------------------------------
         Warning is issued.
-        >>> vq_log = VQSepLoggerConfigurator(StdLoggerConfigurator(), verbosity='v', quietness='qq')
+        >>> with warnings.catch_warnings(record=True) as w:
+        ...     vq_log = VQSepLoggerConfigurator(StdLoggerConfigurator(), verbosity='v', quietness='qq')
+        ...     assert "verbosity and quietness are not allowed together" in str(w.pop().message)
         >>> assert vq_log.configurator.level == vq_log.default_log_level
 
         Default ``VQLoggerConfigurator.VQ_LEVEL_MAP`` is used as ``vq_level_map`` when ``vq_level_map`` is ``None``
