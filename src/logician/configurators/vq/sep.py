@@ -8,9 +8,7 @@ Configurators for verbosity (V) and quietness (Q) that accept verbosity and quie
 Useful when users know that verbosity and quietness will arrive in separate parameters, for e.g. a CLI which accepts
 -v, -vv ... etc. for verbosity and -qq, -qqq ... etc. for quietness.
 """
-import contextlib
-import sys
-import warnings
+
 from abc import abstractmethod
 from typing import Protocol, override
 
