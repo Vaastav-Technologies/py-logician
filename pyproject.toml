@@ -28,8 +28,6 @@ classifiers = [
   "Topic :: Education",
   "Topic :: System :: Logging",
 
-  "License :: Free For Educational Use",
-
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3 :: Only",
 ]
