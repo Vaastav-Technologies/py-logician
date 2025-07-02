@@ -30,6 +30,8 @@ classifiers = [
 
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3 :: Only",
+
+  "Typing :: Typed"
 ]
 dependencies = [
   "vt-err-hndlr @ git+https://github.com/Vaastav-Technologies/py-err-hndlr.git"
