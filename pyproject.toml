@@ -37,10 +37,8 @@ dependencies = [
   "vt-err-hndlr @ git+https://github.com/Vaastav-Technologies/py-err-hndlr.git"
 ]
 
-[project.optional-dependencies]
-dev = ["mypy"]
-test = ["pytest", "coverage"]
 [dependency-groups]
+dev = ["mypy", "ruff"]
 multitest = ["tox"]
 doc = ["sphinx", "sphinx-argparse"]
 
