@@ -20,14 +20,27 @@ supplying the logger class to perform delegation onto by this library.
 from logging import Logger
 
 
-from logician.base import AllLevelLogger, MinLogProtocol
-from logician.std_log import StdLogProtocol, StdLevelLogger, StdProtocolAllLevelLogger, \
-    BaseDirectStdAllLevelLogger, DirectAllLevelLogger, DirectStdAllLevelLogger
-from logician.std_log.all_levels_impl import DirectAllLevelLoggerImpl as _DALImpl
-from logician.constants import *
-from logician.utils import command_or_file
+# region base re-exports
+from logician.base import AllLevelLogger as AllLevelLogger
+from logician.base import MinLogProtocol as MinLogProtocol
+# endregion
 
-from vt.utils.errors.error_specs import ErrorMsgFormer
+# region std-log re-exports
+from logician.std_log import StdLogProtocol as StdLogProtocol
+from logician.std_log import StdLevelLogger as StdLevelLogger
+from logician.std_log import StdProtocolAllLevelLogger as StdProtocolAllLevelLogger
+from logician.std_log import BaseDirectStdAllLevelLogger as BaseDirectStdAllLevelLogger
+from logician.std_log import DirectAllLevelLogger as DirectAllLevelLogger
+from logician.std_log import DirectStdAllLevelLogger as DirectStdAllLevelLogger
+# endregion
+
+from logician.std_log.all_levels_impl import DirectAllLevelLoggerImpl as _DALImpl
+
+from logician.constants import VT_ALL_LOG_ENV_VAR as VT_ALL_LOG_ENV_VAR
+
+from logician.utils import command_or_file as command_or_file
+
+from vt.utils.errors.error_specs import ErrorMsgFormer as ErrorMsgFormer
 
 errmsg_creator = ErrorMsgFormer
 """

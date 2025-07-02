@@ -6,5 +6,10 @@
 Logger interfaces for Logger configurators.
 """
 
-from logician.configurators.base import LoggerConfigurator, HasUnderlyingConfigurator, \
-    LevelLoggerConfigurator, LevelTarget
+# region configurators.base re-exports
+from logician.configurators.base import LoggerConfigurator as LoggerConfigurator
+from logician.configurators.base import HasUnderlyingConfigurator as HasUnderlyingConfigurator
+from logician.configurators.base import LevelLoggerConfigurator as LevelLoggerConfigurator
+from logician.configurators.base import LevelTarget as LevelTarget
+# endregion
+
