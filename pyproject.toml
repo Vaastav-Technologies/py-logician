@@ -29,6 +29,7 @@ classifiers = [
   "Topic :: System :: Logging",
 
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3 :: Only",
 
   "Typing :: Typed"
@@ -42,6 +43,11 @@ dev = ["mypy", "ruff"]
 test = ["pytest", "pytest-cov"]
 multitest = ["tox"]
 doc = ["sphinx", "sphinx-argparse"]
+
+[project.urls]
+homepage = "https://github.com/Vaastav-Technologies/py-logician"
+source = "https://github.com/Vaastav-Technologies/py-logician"
+issues = "https://github.com/Vaastav-Technologies/py-logician/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -61,8 +67,6 @@ legacy_tox_ini = """
       python -m pytest --doctest-glob=*.rst --doctest-modules .
       python -m doctest README.md
       sphinx-build -q -b doctest docs/source docs/build/doctest
-      # TODO: try to see if docs/enc/*.md can work
-      # python -m doctest docs/enc/enc-init.md
 
     [testenv:docs]
     deps =
