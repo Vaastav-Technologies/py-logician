@@ -40,23 +40,23 @@ def test_logging_basic_types():
     logging.basicConfig()
     sh = logging.StreamHandler()
     sh.setFormatter(logging.Formatter(fmt=TIMED_DETAIL_LOG_FMT))
-    log = logging.getLogger(f"all-basic-types-logging")
+    log = logging.getLogger("all-basic-types-logging")
     logger = DirectAllLevelLogger(DirectAllLevelLoggerImpl(log))
     logger.underlying_logger.addHandler(sh)
     logger.underlying_logger.setLevel(TRACE_LOG_LEVEL)
     d = {1: 2, 2: 3, None: 4}
     logger.trace(d)
-    l = [1, 2, 3, 4, None]
-    logger.debug(l)
+    lst = [1, 2, 3, 4, None]
+    logger.debug(lst)
     t = (1, 2, 3, None)
     logger.info(t)
     s = {1, 2, 3, 4, None}
     logger.notice(s)
     logger.success('success {}'.format(d))
-    logger.warning('warning %s', l)
+    logger.warning('warning %s', lst)
     logger.error('error %(t)s', {'t': t})
     try:
-        raise ValueError(l)
+        raise ValueError(lst)
     except ValueError:
         logger.exception('Exception: ')
 
@@ -65,7 +65,7 @@ def test_all_initial_logging():
     logging.basicConfig()
     sh = logging.StreamHandler()
     sh.setFormatter(logging.Formatter(fmt=TIMED_DETAIL_LOG_FMT))
-    log = logging.getLogger(f"all-init-logging")
+    log = logging.getLogger("all-init-logging")
     logger = DirectAllLevelLogger(DirectAllLevelLoggerImpl(log))
     logger.underlying_logger.addHandler(sh)
     logger.underlying_logger.setLevel(TRACE_LOG_LEVEL)

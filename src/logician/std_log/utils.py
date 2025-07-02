@@ -67,7 +67,7 @@ def get_first_non_none[T](lst: list[T | None], default: T | None = None) -> T | 
     :param default: value to return if list consists of all ``None``s.
     :return: first non ``None`` value or ``default`` if all ``None`` are encountered.
     """
-    for l in lst:
-        if l is not None:
-            return l
+    for lst_elem in lst:
+        if lst_elem is not None:
+            return lst_elem
     return default

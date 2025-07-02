@@ -60,7 +60,7 @@ class TestStdLoggerConfigurator:
             @pytest.mark.parametrize('diff, lvl_fmt', [(True, STDERR_ALL_LVL_SAME_FMT),
                                                        (False, STDERR_ALL_LVL_DIFF_FMT),
                                                        (None, STDERR_ALL_LVL_DIFF_FMT)])
-            def test_none_stream_list_defaults_stream_formatter_list(self, diff, lvl_fmt):
+            def test_diff_stream_list_defaults_stream_formatter_list(self, diff, lvl_fmt):
                 cfg = StdLoggerConfigurator(stream_list=None, same_fmt_per_level=diff)
                 assert cfg.stream_fmt_mapper == lvl_fmt
 
@@ -179,7 +179,7 @@ class TestStdLoggerConfigurator:
                     logger = cfg.configure(log)
                 levels_to_choose_from = level_name_mapping()
                 assert len(warn_recs) == 2 # 2 warnings raised
-                assert all(w.category == UserWarning for w in warn_recs)
+                assert all(w.category is UserWarning for w in warn_recs)
                 assert warn_recs[0].message.args[0] == f"{logger.name}: Undefined log level '{level}'. "\
                                                 f"Choose from {list(levels_to_choose_from.values())}."
                 assert warn_recs[1].message.args[0] == f"{logger.name}: Setting log level to default: "\

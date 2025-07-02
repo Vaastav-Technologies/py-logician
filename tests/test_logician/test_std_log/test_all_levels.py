@@ -58,7 +58,7 @@ class TestSuppliedCmdName:
             logger.cmd('initialised cmd', cmd_name)
 
     def test_warns_when_no_cmd_name_passed(self):
-        log = logging.getLogger(f'cmd-name-set-None')
+        log = logging.getLogger('cmd-name-set-None')
         sh = logging.StreamHandler()
         sh.setFormatter(logging.Formatter(fmt=TIMED_DETAIL_LOG_FMT))
         log.addHandler(sh)
