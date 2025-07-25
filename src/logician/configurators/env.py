@@ -13,8 +13,8 @@ from logician.configurators import LevelLoggerConfigurator
 from logician.configurators.list_lc import ListLoggerConfigurator
 
 
-class EnvListLC[T](ListLoggerConfigurator):
-    DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = ListLoggerConfigurator.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE
+class EnvListLC[T](ListLoggerConfigurator[T]):
+    DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = ListLoggerConfigurator[T].DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE
 
     def __init__(self, env_list: list[str], configurator: LevelLoggerConfigurator[T],
                  level_pickup_strategy=DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE):
@@ -114,7 +114,7 @@ class EnvListLC[T](ListLoggerConfigurator):
 
 
 class VTEnvListLC[T](EnvListLC[T]):
-    DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = EnvListLC.DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE
+    DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = EnvListLC[T].DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE
 
     def __init__(self, env_list: list[str], configurator: LevelLoggerConfigurator[T],
                  level_pickup_strategy=DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE, all_log_env_var: str = VT_ALL_LOG_ENV_VAR):
