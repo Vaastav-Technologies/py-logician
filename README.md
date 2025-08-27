@@ -20,7 +20,7 @@
 ## 🚀 Features
 
 * 🔧 **Minimal boilerplate** for structured logging
-* 🌐 **Environment-variable driven configuration** (e.g. `VT_ALL_LOG=DEBUG`)
+* 🌐 **Environment-variable driven configuration** (e.g. `LGCN_ALL_LOG=DEBUG`)
 * ⚙️ **Verbosity-aware**: `-v`, `-vv`, `-q`, etc.
 * 🎛️ **Different formats for different log levels**
 * 🔌 Works seamlessly with standard loggers and any logger name used by 3rd-party libraries (e.g., `"uvicorn"`, `"sqlalchemy"`) — assuming those libraries use standard Python logging
@@ -180,7 +180,7 @@ configure(logger_names=["uvicorn", "sqlalchemy"], env_prefix="API_")
 ### CLI Tools
 
 ```python
-from vt.utils.logging import VQSepLoggerConfigurator, StdLoggerConfigurator
+from logician.std_log.configurator import VQSepLoggerConfigurator, StdLoggerConfigurator
 import logging
 
 lc = VQSepLoggerConfigurator(StdLoggerConfigurator(), verbosity=args.verbose, quietness=args.quiet)
@@ -200,7 +200,7 @@ logger = lc.configure(logger)
 
 ## 📃 License
 
-Apache License 2.0. See `LICENSE` for full text.
+Apache License 2.0. See [LICENSE](./LICENSE) for full text.
 
 ---
 
@@ -209,10 +209,16 @@ Apache License 2.0. See `LICENSE` for full text.
 Contributions welcome!
 
 ```bash
-git clone https://github.com/Vaastav-Technologies/py-logger.git
-cd py-logger
-poetry install
-pytest
+git clone https://github.com/Vaastav-Technologies/py-logician.git
+cd py-logician
+```
+
+[activate a venv](https://docs.python.org/3/library/venv.html), then run
+
+```bash
+pip install -e .
+pytest --doctest-modules
+mypy -p logician
 ```
 
 Please write tests and add doctests for public functions.
@@ -222,4 +228,4 @@ Please write tests and add doctests for public functions.
 ## 🔗 Links
 
 * 📦 PyPI: [https://pypi.org/project/logician](https://pypi.org/project/logician)
-* 🐙 GitHub: [https://github.com/Vaastav-Technologies/py-logger](https://github.com/Vaastav-Technologies/py-logger)
+* 🐙 GitHub: [https://github.com/Vaastav-Technologies/py-logician](https://github.com/Vaastav-Technologies/py-logician)
