@@ -42,13 +42,24 @@ pip install logician
 ## 🧰 Quick Start
 
 ```python
-from logician import configure
-
-configure()
-
+from logician import get_direct_all_level_logger
 import logging
-logger = logging.getLogger(__name__)
-logger.info("Hello from logician!")
+
+_base_logger = logging.getLogger(__name__)
+logger = get_direct_all_level_logger(_base_logger)
+"""
+The logician configured logger.
+"""
+logger.trace("Trace from logician.")
+logger.debug("Debug from logician.")
+logger.info("Info from logician.")
+logger.success("Success from logician.")
+logger.notice("Notice form logician.")
+logger.warning("Warning from logician.")
+logger.error("Error!")
+logger.exception("Exception!")
+logger.critical("Critical!")
+logger.fatal("Fatal!")
 ```
 
 This sets up the root logger and all loggers derived from it with a sensible default formatter and log level.
@@ -57,7 +68,7 @@ This sets up the root logger and all loggers derived from it with a sensible def
 
 ## 🔄 Environment Variable Configuration
 
-`logician` reads log levels from environment variables like:
+`logician` can read and set log levels from environment variables like:
 
 ```bash
 LGCN_ALL_LOG=DEBUG
@@ -65,12 +76,6 @@ LGCN_SOME_MODULE_LOG=WARNING
 ```
 
 These automatically control the logger levels without code changes.
-
-You can change the prefix (default is `LGCN_`) via `env_prefix`:
-
-```python
-configure(env_prefix="APP_")
-```
 
 You can also use the lower-level API directly:
 
@@ -221,7 +226,7 @@ pytest --doctest-modules
 mypy -p logician
 ```
 
-Please write tests and add doctests for public functions.
+Please write tests and add doctests for public facing APIs.
 
 ---
 
