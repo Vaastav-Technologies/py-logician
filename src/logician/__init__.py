@@ -12,7 +12,7 @@ Aim is to let users extend this library to fit their various log levels and logg
 replacing one logger implementation with another.
 
 Extending libraries are to be designed thinking that the underlying logger will be supplied by the client/caller
-at the time of vt.utils.logging.logger creation and hence client can configure the logger as they please before
+at the time of logician logger configurator creation and hence client can configure the logger as they please before
 supplying the logger class to perform delegation onto by this library.
 """
 
@@ -36,7 +36,7 @@ from logician.std_log import DirectStdAllLevelLogger as DirectStdAllLevelLogger
 
 from logician.std_log.all_levels_impl import DirectAllLevelLoggerImpl as _DALImpl
 
-from logician.constants import VT_ALL_LOG_ENV_VAR as VT_ALL_LOG_ENV_VAR
+from logician.constants import LGCN_ALL_LOG_ENV_VAR as LGCN_ALL_LOG_ENV_VAR
 
 from logician.utils import command_or_file as command_or_file
 

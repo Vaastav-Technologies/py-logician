@@ -60,13 +60,13 @@ This sets up the root logger and all loggers derived from it with a sensible def
 `logician` reads log levels from environment variables like:
 
 ```bash
-VT_ALL_LOG=DEBUG
-VT_SOME_MODULE_LOG=WARNING
+LGCN_ALL_LOG=DEBUG
+LGCN_SOME_MODULE_LOG=WARNING
 ```
 
 These automatically control the logger levels without code changes.
 
-You can change the prefix (default is `VT_`) via `env_prefix`:
+You can change the prefix (default is `LGCN_`) via `env_prefix`:
 
 ```python
 configure(env_prefix="APP_")
@@ -75,14 +75,15 @@ configure(env_prefix="APP_")
 You can also use the lower-level API directly:
 
 ```python
-from vt.utils.logging import VTEnvListLC, StdLoggerConfigurator
+from logician.std_log.configurator import StdLoggerConfigurator
+from logician.configurators.env import LgcnEnvListLC
 import logging
 
 logger = logging.getLogger('ap-generator')
-logger = VTEnvListLC(["APGEN"], StdLoggerConfigurator(level=logging.INFO)).configure(logger)
+logger = LgcnEnvListLC(["APGEN"], StdLoggerConfigurator(level=logging.INFO)).configure(logger)
 ```
 
-See `VTEnvList` in `vt.utils.logging.lib_logging.configurators.env` to learn more.
+See `LgcnEnvListLC` in `logician.configurators.env` to learn more.
 
 ---
 
@@ -92,7 +93,7 @@ Use `-v`, `-vv`, `-q`, `--quiet` flags from your CLI parser to dynamically set l
 
 ```python
 from argparse import ArgumentParser
-from vt.utils.logging import VQSepLoggerConfigurator, StdLoggerConfigurator
+from logician.std_log.configurator import StdLoggerConfigurator, VQSepLoggerConfigurator
 import logging
 
 parser = ArgumentParser()

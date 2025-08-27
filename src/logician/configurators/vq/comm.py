@@ -8,7 +8,7 @@ Configurators for verbosity (V) and quietness (Q) that accept verbosity and quie
 Useful when users know that verbosity and quietness will arrive in one parameter, for e.g. a CLI which accepts
 environment variables as such:
 
-- VT_ALL_LOG=vv
+- LGCN_ALL_LOG=vv
 - CCC_LIB_LOG = qq
 
 Here the value for a simple environment variable maybe vv or qq and hence can arrive in a single parameter.

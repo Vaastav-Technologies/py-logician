@@ -8,7 +8,7 @@ Logger configurators that configure log levels using environment variables.
 import os
 from typing import override, cast
 
-from logician import VT_ALL_LOG_ENV_VAR
+from logician import LGCN_ALL_LOG_ENV_VAR
 from logician.configurators import LevelLoggerConfigurator
 from logician.configurators.list_lc import ListLoggerConfigurator
 
@@ -113,17 +113,19 @@ class EnvListLC[T](ListLoggerConfigurator[T]):
         return self.clone_with(env_list=_env_list)
 
 
-class VTEnvListLC[T](EnvListLC[T]):
+class LgcnEnvListLC[T](EnvListLC[T]):
     DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = EnvListLC[T].DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE
 
     def __init__(self, env_list: list[str], configurator: LevelLoggerConfigurator[T],
-                 level_pickup_strategy=DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE, all_log_env_var: str = VT_ALL_LOG_ENV_VAR):
+                 level_pickup_strategy=DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE, all_log_env_var: str = LGCN_ALL_LOG_ENV_VAR):
         """
+        LgcnEnvListLC -> Logician Env List Logger Configurator.
+
         This logger configurator can be used to configure log level using values supplied from environment variables.
         Default behavior is to pick up the first passed environment variable value. Designed to process log level from
         multiple environment variable values and hence has a precedence order to the values from environment variables.
         The first environment variable value takes highest precedence and then the precedence diminishes. Environment
-        variable ``VT_ALL_LOG`` is always appended to ``env_list`` so that if no environment variable is registered
+        variable ``LGCN_ALL_LOG`` is always appended to ``env_list`` so that if no environment variable is registered
         then at least this one is registered.
 
         :param env_list: list of environment variables. Default behavior is to take precedence in decreasing order.
@@ -136,7 +138,7 @@ class VTEnvListLC[T](EnvListLC[T]):
         super().__init__(env_list, configurator, level_pickup_strategy)
 
     @override
-    def clone_with(self, **kwargs) -> 'VTEnvListLC[T]':
+    def clone_with(self, **kwargs) -> 'LgcnEnvListLC[T]':
         """
         kwargs:
             ``env_list`` - list of environment variables. Default behavior is to take precedence in decreasing order.
@@ -145,9 +147,9 @@ class VTEnvListLC[T](EnvListLC[T]):
 
             ``level_pickup_strategy`` - pick up a level from the list of levels supplied in ``level_list``. Default is
             to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
-        :return: a new ``VTEnvListLC``.
+        :return: a new ``LgcnEnvListLC``.
         """
         level_list = kwargs.pop('env_list', self.env_list.copy())
         configurator = kwargs.pop('configurator', self.configurator)
         level_pickup_strategy = kwargs.pop('level_pickup_strategy', self.level_pickup_strategy)
-        return VTEnvListLC[T](level_list, configurator, level_pickup_strategy)
+        return LgcnEnvListLC[T](level_list, configurator, level_pickup_strategy)

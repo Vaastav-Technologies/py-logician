@@ -10,8 +10,8 @@ import logging
 
 DEFAULT_STACK_LEVEL = 2
 """
-``2`` chosen as value because the classes that use this constant (e.g. vt.utils.logging.std_log.std_log.BasicStdLevelLogger)
-actually delegate logging to a user supplied underlying_logger. The underlying_logger uses stacklevel=1 to get the 
+``2`` chosen as value because the classes that use this constant actually delegate logging to a user supplied 
+underlying_logger. The underlying_logger uses stacklevel=1 to get the 
 immediate calling stack, i.e. function, source, filename, lineno, etc of the immediate caller of the log method as in
 log.debug(). But when this is delegated by another class (log-capturing-class) to underlying std logger then the 
 source information of the log-capturing-class is preferred as that is stacklevel=1, which we do not want. We want that

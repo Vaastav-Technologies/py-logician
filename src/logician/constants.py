@@ -3,10 +3,12 @@
 
 
 """
-Global constants for the vt-logger.
+Global constants for the logician.
 """
 
-VT_ALL_LOG_ENV_VAR = 'VT_ALL_LOG'
+LGCN_ALL_LOG_ENV_VAR = 'LGCN_ALL_LOG'
 """
-Set logging level for all logging that applies to VT.
+LGCN_ALL_LOG_ENV_VAR -> Logician All Log Env Var.
+
+Set logging level for all logging that applies to Logician.
 """
