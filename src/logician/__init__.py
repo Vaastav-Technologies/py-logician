@@ -51,4 +51,10 @@ To get a local instance use ``errmsg_creator.clone_with(...)``.
 
 
 def get_direct_all_level_logger(logger: Logger) -> DirectStdAllLevelLogger:
+    """
+    Simple logger configurator to directly configure a std logger to logician standards.
+
+    :param logger: python std logger.
+    :return: logician configured logger.
+    """
     return DirectAllLevelLogger(_DALImpl(logger))
