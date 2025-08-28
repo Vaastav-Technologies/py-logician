@@ -13,7 +13,9 @@
 
 **Fully typed, simple, intuitive, and pragmatic logger configurator for standard Python logging.**
 
-`logician` is a lightweight utility that simplifies configuring Python's built-in `logging` module. It supports logger setup using environment variables, CLI flags (`-v`, `-q`), and sensible defaults—all fully typed, tested, and documented.
+`logician` is a lightweight logger-configurator that simplifies configuring Python's built-in `logging` module. It
+supports logger setup using environment variables, CLI flags (`-v`, `-q`), and sensible defaults—all fully typed,
+tested, and documented.
 
 ---
 
@@ -23,11 +25,25 @@
 * 🌐 **Environment-variable driven configuration** (e.g. `LGCN_ALL_LOG=DEBUG`)
 * ⚙️ **Verbosity-aware**: `-v`, `-vv`, `-q`, etc.
 * 🎛️ **Different formats for different log levels**
-* 🔌 Works seamlessly with standard loggers and any logger name used by 3rd-party libraries (e.g., `"uvicorn"`, `"sqlalchemy"`) — assuming those libraries use standard Python logging
+* 🔌 Works seamlessly with standard loggers. More loggers are planned to be supported in the future.
 * 🧪 **Fully type annotated** and well-tested via doctests
 * 📚 **Extensive docstrings** with live examples
+* 🗂️ **Per-module logging control**: associate specific environment variables with individual modules to fine‑tune log
+  levels.
 
-> ⚠️ Note: `logician` assumes that external libraries like `uvicorn` and `sqlalchemy` use Python's standard `logging` module. If a library uses a custom or non-standard logging system, `logician` may not affect it.
+  For example:
+  ```
+  my_pkg.my_module    -> MY_MOD_ENV
+  my.pkg.their_module -> TH_MOD_ENV
+  their_pkg.kl.mod    -> KLO_ENV
+  ```
+
+  Users can then set environment variables to control log levels per module:
+  ```bash
+  MY_MOD_ENV=DEBUG KLO_ENV=TRACE python -m my_app
+  ```
+  This enables users to have fine-grained control over logging, and they can pin‑point issues just by
+  enabling/disabling/verbosifying logging on a particular module of interest.
 
 ---
 
@@ -50,45 +66,118 @@ logger = get_direct_all_level_logger(_base_logger)
 """
 The logician configured logger.
 """
-logger.trace("Trace from logician.")
-logger.debug("Debug from logician.")
-logger.info("Info from logician.")
-logger.success("Success from logician.")
-logger.notice("Notice form logician.")
-logger.warning("Warning from logician.")
-logger.error("Error!")
-logger.exception("Exception!")
-logger.critical("Critical!")
-logger.fatal("Fatal!")
+logger.trace("🌀 Trace from logician.")
+logger.debug("🐞 Debug from logician.")
+logger.info("ℹ️ Info from logician.")
+logger.success("✅ Success from logician.")
+logger.notice("🔔 Notice from logician.")
+logger.cmd("📺 My command's output (maybe captured stderr)", "MY_CMD")
+logger.warning("⚠️ Warning from logician.")
+logger.error("❌ Error!")
+logger.exception("🔥 Exception!")
+logger.critical("🚨 Critical!")
+logger.fatal("💀 Fatal!")
 ```
 
 This sets up the root logger and all loggers derived from it with a sensible default formatter and log level.
 
 ---
 
+## 🎁 Provided log levels out-of-the-box
+
+Total eleven (🙀Dude, this many!🦾) log levels are provided out-of-the-box with room for more!.
+
+These are listed in increasing order of criticality:
+
+- TRACE
+- DEBUG
+- INFO
+- SUCCESS
+- NOTICE
+- COMMAND
+- WARNING
+- ERROR 
+- EXCEPTION 
+  - (exception level is just a detailed error level.)
+- CRITICAL
+- FATAL 
+  - (Yes, CRITICAL and FATAL are two different log levels.)
+
+---
+
 ## 🔄 Environment Variable Configuration
+
+### 🫶 Self-contained loggers within their own module
+
+Modules can be configured to respond to certain env-vars which only correspond to their own logging, without affecting
+other loggers or logger-configurators.
 
 `logician` can read and set log levels from environment variables like:
 
 ```bash
-LGCN_ALL_LOG=DEBUG
-LGCN_SOME_MODULE_LOG=WARNING
+MY_MODULE_LOG=DEBUG # module configured to respond to MY_MODULE_LOG env-var now logs on debug level
+MY_SOME_MODULE_LOG=WARNING # other modules not affected by the configured module's logger
+OTHER_MODULE_LOG=TRACE
 ```
 
 These automatically control the logger levels without code changes.
 
-You can also use the lower-level API directly:
+You can also use the lower-level API directly, for e.g. the `APGEN` env-var is configured for the ap-generator app:
 
 ```python
 from logician.std_log.configurator import StdLoggerConfigurator
-from logician.configurators.env import LgcnEnvListLC
+from logician.configurators.env import EnvListLC
 import logging
 
-logger = logging.getLogger('ap-generator')
-logger = LgcnEnvListLC(["APGEN"], StdLoggerConfigurator(level=logging.INFO)).configure(logger)
+base_logger = logging.getLogger('ap-generator')  # python std logger
+logger = EnvListLC(["APGEN"], StdLoggerConfigurator(level=logging.INFO)).configure(base_logger)
 ```
 
-See `LgcnEnvListLC` in `logician.configurators.env` to learn more.
+One can have multiple env-vars set on the configurator with decreasing order of priority, for e.g.:
+
+```python
+import logging
+from logician.std_log.configurator import StdLoggerConfigurator
+from logician.configurators.env import EnvListLC
+
+base_logger = logging.getLogger('gp-generator')
+logger = EnvListLC(["GPGEN", "GPGENLP"], StdLoggerConfigurator()).configure(base_logger)
+"""
+``GPGENLP`` has lower priority that ``GPGEN`` to the logger configurator.
+
+if such is the setting
+GPGEN=WARNING
+GPGENLP=INFO
+
+then WARNING level will be picked-up for logging.
+"""
+```
+
+See `EnvListLC` in `logician.configurators.env` to learn more.
+
+### 👑 One Env-var to rule all!
+
+It can get quite detailed, verbose (and may I sa, ymessy) to remember so many env-vars. Thus, `logician` also provides
+env-var `LGCN_ALL_LOG` with the lowest priority which can set the log levels of all loggers:
+
+```shell
+# set logging level to INFO for all loggers in my-app
+export LGCN_ALL_LOG=INFO
+# run my app to see the magic!
+python -m my-app
+```
+
+Since `LGCN_ALL_LOG` is the lowest priority env-var hence, other higher priority env-vars can take over the respective
+configurations for their own module's logging if needed:
+
+```shell
+export LGCN_ALL_LOG=INFO
+
+# all modules of my-app perform logging based on the LGCN_ALL_LOG env-vars's value (INFO) but the module configured to 
+# respond to the ENV_VAR_FOR_MOD_OF_MY_INTRST env-var will only log on TRACE level. This will not affect logging of any 
+# other module.
+ENV_VAR_FOR_MOD_OF_MY_INTRST=TRACE my-app # command to run my-app (here run as a CLI script)
+```
 
 ---
 
@@ -117,9 +206,12 @@ This configures the logger to reflect the verbosity or quietness of the CLI inpu
 
 ## 🪄 Log Formatting by Log Level
 
-Many-a-times it is the case that more refined (lower) log-levels need to output more (detailed) information. Hence, `logician` maps more-detailed log-formats to lower log-levels. Different log levels can be mapped to different log formats automatically which takes effects thoughout all log levels.
+Many-a-times it is the case that more refined (lower) log-levels need to output more (detailed) information. Hence,
+`logician` maps more-detailed log-formats to lower log-levels. Different log levels can be mapped to different log
+formats automatically which takes effects throughout all log levels.
 
-> ⚠️ These format mappings currently assume use with Python's standard `logging` module. In the future, support may expand to other logging libraries or frameworks.
+> ⚠️ These format mappings currently assume use with Python's standard `logging` module. In the future, support may
+> expand to other logging libraries or frameworks.
 
 The default setup looks like this:
 
@@ -150,7 +242,7 @@ configure(
 ### Keyword Arguments
 
 | Param          | Type       | Description                                          |
-| -------------- | ---------- | ---------------------------------------------------- |
+|----------------|------------|------------------------------------------------------|
 | `logger_names` | list\[str] | Additional logger names to configure aside from root |
 | `level`        | str / int  | Default log level (e.g., "INFO", 20)                 |
 | `verbosity`    | int        | Verbosity count to decrease log level (`-v`)         |
@@ -164,10 +256,10 @@ configure(
 All public APIs include doctests. Example:
 
 ```python
->>> from logician import derive_level
->>> derive_level(base="INFO", verbosity=1)
+>> > from logician import derive_level
+>> > derive_level(base="INFO", verbosity=1)
 10
->>> derive_level(base="INFO", verbosity=0, quietness=1)
+>> > derive_level(base="INFO", verbosity=0, quietness=1)
 30
 ```
 
@@ -179,6 +271,7 @@ All public APIs include doctests. Example:
 
 ```python
 from logician import configure
+
 configure(logger_names=["uvicorn", "sqlalchemy"], env_prefix="API_")
 ```
 
@@ -197,9 +290,9 @@ logger = lc.configure(logger)
 
 ## 🧪 Testing & Typing
 
-* ✅ 100% typed (compatible with MyPy & Pyright)
-* ✅ Doctests validate examples
-* ✅ Poetry-managed project with tests in `tests/`
+* ✅ 100% typed (compatible with MyPy)
+* ✅ Doctests validated examples
+* ✅ Deep pytests in `tests/`
 
 ---
 
