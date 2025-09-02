@@ -157,7 +157,7 @@ See `EnvListLC` in `logician.configurators.env` to learn more.
 
 ### 👑 One Env-var to rule all!
 
-It can get quite detailed, verbose (and may I sa, ymessy) to remember so many env-vars. Thus, `logician` also provides
+It can get quite detailed, verbose (and may I say, messy) to remember so many env-vars. Thus, `logician` also provides
 env-var `LGCN_ALL_LOG` with the lowest priority which can set the log levels of all loggers:
 
 ```shell
