@@ -79,7 +79,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         self.cmd_name = cmd_name
         self.level_name_map = level_name_map
         self.no_warn = no_warn
-        if stream_fmt_mapper is not None: # accepts empty stream_fmt_mapper
+        if stream_fmt_mapper is not None: # accepts empty i.e. falsy stream_fmt_mapper
             self.stream_fmt_mapper = stream_fmt_mapper
         else:
             self.stream_fmt_mapper = self.compute_stream_fmt_mapper(same_fmt_per_level, stream_list)
