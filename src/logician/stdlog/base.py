@@ -10,10 +10,10 @@ from typing import Protocol, Any, Mapping, override
 
 from logician import MinLogProtocol, AllLevelLogger
 from logician.base import FatalLogProtocol, ExceptionLogProtocol, HasUnderlyingLogger
-from logician.std_log import TRACE_LOG_LEVEL, TRACE_LOG_STR, SUCCESS_LOG_LEVEL, SUCCESS_LOG_STR, \
+from logician.stdlog import TRACE_LOG_LEVEL, TRACE_LOG_STR, SUCCESS_LOG_LEVEL, SUCCESS_LOG_STR, \
     NOTICE_LOG_LEVEL, NOTICE_LOG_STR, EXCEPTION_TRACEBACK_LOG_LEVEL, EXCEPTION_TRACEBACK_LOG_STR, FATAL_LOG_LEVEL, \
     FATAL_LOG_STR, CMD_LOG_LEVEL, CMD_LOG_STR
-from logician.std_log.utils import level_name_mapping
+from logician.stdlog.utils import level_name_mapping
 
 
 class StdLogProtocol(MinLogProtocol, Protocol):

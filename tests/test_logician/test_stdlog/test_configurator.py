@@ -15,11 +15,11 @@ from unittest.mock import patch
 import pytest
 
 from logician import DirectAllLevelLogger
-from logician.std_log.configurator import StdLoggerConfigurator
-from logician.std_log.formatters import STDERR_ALL_LVL_SAME_FMT
-from logician.std_log.formatters import StdLogAllLevelSameFmt, \
+from logician.stdlog.configurator import StdLoggerConfigurator
+from logician.stdlog.formatters import STDERR_ALL_LVL_SAME_FMT
+from logician.stdlog.formatters import StdLogAllLevelSameFmt, \
     StdLogAllLevelDiffFmt, STDERR_ALL_LVL_DIFF_FMT
-from logician.std_log.utils import level_name_mapping
+from logician.stdlog.utils import level_name_mapping
 
 BOGUS_LEVELS = ['BOGUS', 'bogus', 'non -lev']
 LEVEL_NAME_MAPS = [

@@ -20,9 +20,9 @@ from logician.configurators.vq import V_LITERAL, Q_LITERAL, VQ_DICT_LITERAL, VQC
 from logician.configurators.vq.comm import VQCommon
 from logician.configurators.vq.sep import VQSepExclusive
 from logician.formatters import LogLevelFmt
-from logician.std_log import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL, WARNING_LEVEL
-from logician.std_log.all_levels_impl import DirectAllLevelLoggerImpl
-from logician.std_log.formatters import StdLogAllLevelDiffFmt, \
+from logician.stdlog import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL, WARNING_LEVEL
+from logician.stdlog.all_levels_impl import DirectAllLevelLoggerImpl
+from logician.stdlog.formatters import StdLogAllLevelDiffFmt, \
     StdLogAllLevelSameFmt, STDERR_ALL_LVL_SAME_FMT, STDERR_ALL_LVL_DIFF_FMT
 
 

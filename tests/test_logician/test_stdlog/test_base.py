@@ -10,7 +10,7 @@ import logging
 
 from logician import DirectStdAllLevelLogger
 from logician.configurators.vq.base import SimpleWarningVQLevelOrDefault
-from logician.std_log.utils import level_name_mapping
+from logician.stdlog.utils import level_name_mapping
 
 
 def test_registers_supplied_unknown_levels():

@@ -12,9 +12,9 @@ from typing import override, cast, Protocol
 
 from logician import AllLevelLogger
 from logician.delegating import DelegatingLogger
-from logician.std_log import StdLogProtocol
-from logician.std_log.base import DirectStdAllLevelLogger
-from logician.std_log.all_levels_impl import StdProtocolAllLevelLoggerImpl, \
+from logician.stdlog import StdLogProtocol
+from logician.stdlog.base import DirectStdAllLevelLogger
+from logician.stdlog.all_levels_impl import StdProtocolAllLevelLoggerImpl, \
     BaseDirectStdAllLevelLoggerImpl
 
 

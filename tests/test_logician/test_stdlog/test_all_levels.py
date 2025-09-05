@@ -9,8 +9,8 @@ from unittest.mock import patch
 
 import pytest
 
-from logician.std_log import TRACE_LOG_LEVEL, TIMED_DETAIL_LOG_FMT, DEFAULT_STACK_LEVEL
-from logician.std_log.all_levels_impl import DirectAllLevelLoggerImpl, TempSetCmdLvlName
+from logician.stdlog import TRACE_LOG_LEVEL, TIMED_DETAIL_LOG_FMT, DEFAULT_STACK_LEVEL
+from logician.stdlog.all_levels_impl import DirectAllLevelLoggerImpl, TempSetCmdLvlName
 
 
 def test_ensure_correct_logging_lines():

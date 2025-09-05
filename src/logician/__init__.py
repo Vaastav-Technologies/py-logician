@@ -26,15 +26,15 @@ from logician.base import MinLogProtocol as MinLogProtocol
 # endregion
 
 # region std-log re-exports
-from logician.std_log import StdLogProtocol as StdLogProtocol
-from logician.std_log import StdLevelLogger as StdLevelLogger
-from logician.std_log import StdProtocolAllLevelLogger as StdProtocolAllLevelLogger
-from logician.std_log import BaseDirectStdAllLevelLogger as BaseDirectStdAllLevelLogger
-from logician.std_log import DirectAllLevelLogger as DirectAllLevelLogger
-from logician.std_log import DirectStdAllLevelLogger as DirectStdAllLevelLogger
+from logician.stdlog import StdLogProtocol as StdLogProtocol
+from logician.stdlog import StdLevelLogger as StdLevelLogger
+from logician.stdlog import StdProtocolAllLevelLogger as StdProtocolAllLevelLogger
+from logician.stdlog import BaseDirectStdAllLevelLogger as BaseDirectStdAllLevelLogger
+from logician.stdlog import DirectAllLevelLogger as DirectAllLevelLogger
+from logician.stdlog import DirectStdAllLevelLogger as DirectStdAllLevelLogger
 # endregion
 
-from logician.std_log.all_levels_impl import DirectAllLevelLoggerImpl as _DALImpl
+from logician.stdlog.all_levels_impl import DirectAllLevelLoggerImpl as _DALImpl
 
 from logician.constants import LGCN_ALL_LOG_ENV_VAR as LGCN_ALL_LOG_ENV_VAR
 

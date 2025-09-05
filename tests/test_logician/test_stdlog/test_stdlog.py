@@ -6,9 +6,9 @@ import logging
 
 import pytest
 
-from logician.std_log import TRACE_LOG_LEVEL
-from logician.std_log.all_levels import DirectAllLevelLogger
-from logician.std_log.all_levels_impl import DirectAllLevelLoggerImpl
+from logician.stdlog import TRACE_LOG_LEVEL
+from logician.stdlog.all_levels import DirectAllLevelLogger
+from logician.stdlog.all_levels_impl import DirectAllLevelLoggerImpl
 
 TIMED_DETAIL_LOG_FMT = '%(asctime)s: %(name)s: [%(levelname)s]: [%(filename)s:%(lineno)d - ' \
                        '%(funcName)10s() ]: %(message)s'

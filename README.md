@@ -125,7 +125,7 @@ These automatically control the logger levels without code changes.
 You can also use the lower-level API directly, for e.g. the `APGEN` env-var is configured for the ap-generator app:
 
 ```python
-from logician.std_log.configurator import StdLoggerConfigurator
+from logician.stdlog.configurator import StdLoggerConfigurator
 from logician.configurators.env import EnvListLC
 import logging
 
@@ -137,7 +137,7 @@ One can have multiple env-vars set on the configurator with decreasing order of 
 
 ```python
 import logging
-from logician.std_log.configurator import StdLoggerConfigurator
+from logician.stdlog.configurator import StdLoggerConfigurator
 from logician.configurators.env import EnvListLC
 
 base_logger = logging.getLogger('gp-generator')
@@ -187,7 +187,7 @@ Use `-v`, `-vv`, `-q`, `--quiet` flags from your CLI parser to dynamically set l
 
 ```python
 from argparse import ArgumentParser
-from logician.std_log.configurator import StdLoggerConfigurator, VQSepLoggerConfigurator
+from logician.stdlog.configurator import StdLoggerConfigurator, VQSepLoggerConfigurator
 import logging
 
 parser = ArgumentParser()
@@ -278,7 +278,7 @@ configure(logger_names=["uvicorn", "sqlalchemy"], env_prefix="API_")
 ### CLI Tools
 
 ```python
-from logician.std_log.configurator import VQSepLoggerConfigurator, StdLoggerConfigurator
+from logician.stdlog.configurator import VQSepLoggerConfigurator, StdLoggerConfigurator
 import logging
 
 lc = VQSepLoggerConfigurator(StdLoggerConfigurator(), verbosity=args.verbose, quietness=args.quiet)

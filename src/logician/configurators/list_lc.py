@@ -13,7 +13,7 @@ from typing import override
 from logician import DirectStdAllLevelLogger
 from logician.configurators import LoggerConfigurator, HasUnderlyingConfigurator, \
     LevelLoggerConfigurator
-from logician.std_log.utils import get_first_non_none
+from logician.stdlog.utils import get_first_non_none
 
 
 class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
