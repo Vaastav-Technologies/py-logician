@@ -97,6 +97,31 @@ class DirectStdAllLevelLogger(AllLevelLogger, Protocol):
             The level changes are global in python std library hence, multiple calls to
             ``DirectStdAllLevelLogger.register_levels()`` may result in the latest call to win.
 
+        * Examples:
+
+          * Register more levels:
+
+            >>> lvl_name_map = DirectStdAllLevelLogger.register_levels({1:"TRACE_DETAILED", 70: "BOMBED"})
+            >>> assert lvl_name_map[1] == "TRACE_DETAILED"
+            >>> assert lvl_name_map[70] == "BOMBED"
+
+          * Change name for existing levels
+
+            >>> lvl_name_map = level_name_mapping()
+            >>> assert lvl_name_map[logging.DEBUG] == "DEBUG"
+            >>> lvl_name_map = DirectStdAllLevelLogger.register_levels({logging.DEBUG: "DETAILED_INFO"})
+            >>> assert lvl_name_map[logging.DEBUG] == "DETAILED_INFO" # DEBUG level name changed
+
+          * Original (Default) levels kept if no levels are supplied:
+
+            >>> lvl_name_map = DirectStdAllLevelLogger.register_levels()
+            >>> assert all(lvl_name_map[lvl]==lvl_name for lvl, lvl_name in DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP.items())
+
+          * Original (Default) levels kept if empty level dict is provided:
+
+            >>> lvl_name_map = DirectStdAllLevelLogger.register_levels()
+            >>> assert all(lvl_name_map[lvl]==lvl_name for lvl, lvl_name in DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP.items())
+
         :param level_name_map: log level - name mapping. This mapping updates the
             ``DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP`` and then all the updated
             ``DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP`` log levels are registered.
