@@ -7,6 +7,7 @@ Logger interfaces for standard Logger configurators.
 """
 
 import logging
+from collections.abc import Callable
 from typing import override, TextIO, overload, Protocol
 
 from vt.utils.errors.warnings import vt_warn
@@ -22,8 +23,13 @@ from logician.configurators.vq.sep import VQSepExclusive
 from logician.formatters import LogLevelFmt
 from logician.stdlog import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL, WARNING_LEVEL
 from logician.stdlog.all_levels_impl import DirectAllLevelLoggerImpl
-from logician.stdlog.formatters import StdLogAllLevelDiffFmt, \
-    StdLogAllLevelSameFmt, STDERR_ALL_LVL_SAME_FMT, STDERR_ALL_LVL_DIFF_FMT
+from logician.stdlog.formatters import (
+    StdLogAllLevelDiffFmt,
+    StdLogAllLevelSameFmt,
+    STDERR_ALL_LVL_SAME_FMT,
+    STDERR_ALL_LVL_DIFF_FMT,
+)
+from logician.stdlog.utils import simple_handlr_cfgr
 
 
 class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
@@ -37,23 +43,48 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
     NO_WARN_FALSE = False
 
     @overload
-    def __init__(self, *, level: int | str = LOG_LEVEL_WARNING, cmd_name: str | None = CMD_NAME_NONE,
-                 same_fmt_per_level: bool | None = FMT_PER_LEVEL_NONE,
-                 stream_list: list[TextIO] | None = STREAM_LIST_NONE,
-                 level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE, no_warn: bool = NO_WARN_FALSE):
-        ...
+    def __init__(
+        self,
+        *,
+        level: int | str = LOG_LEVEL_WARNING,
+        cmd_name: str | None = CMD_NAME_NONE,
+        same_fmt_per_level: bool | None = FMT_PER_LEVEL_NONE,
+        stream_list: list[TextIO] | None = STREAM_LIST_NONE,
+        handlr_cfgr: Callable[
+            [int, logging.Logger, dict[TextIO, LogLevelFmt]], None
+        ] = simple_handlr_cfgr,
+        level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
+        no_warn: bool = NO_WARN_FALSE,
+    ): ...
 
     @overload
-    def __init__(self, *, level: int | str = LOG_LEVEL_WARNING, cmd_name: str | None = CMD_NAME_NONE,
-                 stream_fmt_mapper: dict[TextIO, LogLevelFmt] | None = STREAM_FMT_MAPPER_NONE,
-                 level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE, no_warn: bool = NO_WARN_FALSE):
-        ...
+    def __init__(
+        self,
+        *,
+        level: int | str = LOG_LEVEL_WARNING,
+        cmd_name: str | None = CMD_NAME_NONE,
+        stream_fmt_mapper: dict[TextIO, LogLevelFmt] | None = STREAM_FMT_MAPPER_NONE,
+        handlr_cfgr: Callable[
+            [int, logging.Logger, dict[TextIO, LogLevelFmt]], None
+        ] = simple_handlr_cfgr,
+        level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
+        no_warn: bool = NO_WARN_FALSE,
+    ): ...
 
-    def __init__(self, *, level: int | str = LOG_LEVEL_WARNING, cmd_name: str | None = CMD_NAME_NONE,
-                 stream_fmt_mapper: dict[TextIO, LogLevelFmt] | None = STREAM_FMT_MAPPER_NONE,
-                 same_fmt_per_level: bool | None = FMT_PER_LEVEL_NONE,
-                 stream_list: list[TextIO] | None = STREAM_LIST_NONE,
-                 level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE, no_warn: bool = NO_WARN_FALSE):
+    def __init__(
+        self,
+        *,
+        level: int | str = LOG_LEVEL_WARNING,
+        cmd_name: str | None = CMD_NAME_NONE,
+        stream_fmt_mapper: dict[TextIO, LogLevelFmt] | None = STREAM_FMT_MAPPER_NONE,
+        same_fmt_per_level: bool | None = FMT_PER_LEVEL_NONE,
+        stream_list: list[TextIO] | None = STREAM_LIST_NONE,
+        handlr_cfgr: Callable[
+            [int, logging.Logger, dict[TextIO, LogLevelFmt]], None
+        ] = simple_handlr_cfgr,
+        level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
+        no_warn: bool = NO_WARN_FALSE,
+    ):
         """
         Perform logger configuration using the python's std logger calls.
 
@@ -69,6 +100,8 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         :param stream_list: list of streams to apply level formatting logic to. Cannot be provided with
             ``stream_fmt_mapper``. Note that ``[]`` denoting an empty stream_list is accepted and specifies
             the user's intent of not logging to any stream.
+        :param handlr_cfgr: The configurator for logger's handlers. Strategy to configure logger's handlers to
+            introduce formats on each stream.
         :param level_name_map: log level - name mapping. This mapping updates the std python logging library's
             registered log levels . Check ``DirectAllLevelLogger.register_levels()`` for more info.
         :param no_warn: do not warn if a supplied level is not registered with the logging library.
@@ -78,6 +111,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         self._level = level
         self.cmd_name = cmd_name
         self.level_name_map = level_name_map
+        self.handlr_cfgr = handlr_cfgr
         self.no_warn = no_warn
         if stream_fmt_mapper is not None: # accepts empty i.e. falsy stream_fmt_mapper
             self.stream_fmt_mapper = stream_fmt_mapper
@@ -178,17 +212,10 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
                               f"'{logging.getLevelName(StdLoggerConfigurator.LOG_LEVEL_WARNING)}'.")
             int_level = StdLoggerConfigurator.LOG_LEVEL_WARNING
         logger.setLevel(int_level)
-        if not stream_fmt_map:  # empty map
-            for handler in logger.handlers:
-                logger.removeHandler(handler)
-            logger.addHandler(logging.NullHandler())
-        else:
-            for stream in stream_fmt_map:
-                hdlr = logging.StreamHandler(stream=stream) # noqa
-                lvl_fmt_handlr = stream_fmt_map[stream]
-                hdlr.setFormatter(logging.Formatter(fmt=lvl_fmt_handlr.fmt(int_level)))
-                logger.addHandler(hdlr)
-        return DirectAllLevelLogger(DirectAllLevelLoggerImpl(logger), cmd_name=self.cmd_name)
+        self.handlr_cfgr(int_level, logger, stream_fmt_map)
+        return DirectAllLevelLogger(
+            DirectAllLevelLoggerImpl(logger), cmd_name=self.cmd_name
+        )
 
     @override
     def set_level(self, new_level: int | str) -> int | str:
@@ -225,25 +252,43 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
             ``level_name_map`` - log level - name mapping. This mapping updates the std python logging library's
             registered log levels . Check ``DirectAllLevelLogger.register_levels()`` for more info.
 
+            ``handlr_cfgr`` - The configurator for logger's handlers. Strategy to configure logger's handlers to
+            introduce formats on each stream. Check ``logician.stdlog.utils:simple_handlr_cfgr()`` for more info.
+
             ``no_warn`` - do not warn if a supplied level is not registered with the logging library.
         :return: new ``StdLoggerConfigurator``.
         """
-        level = kwargs.pop('level', self.level)
-        cmd_name = kwargs.pop('cmd_name', self.cmd_name)
-        diff_fmt_per_level = kwargs.pop('diff_fmt_per_level', StdLoggerConfigurator.FMT_PER_LEVEL_NONE)
-        stream_list = kwargs.pop('stream_list', StdLoggerConfigurator.STREAM_LIST_NONE)
-        stream_fmt_mapper = kwargs.pop('stream_fmt_mapper', None)
+        level = kwargs.pop("level", self.level)
+        cmd_name = kwargs.pop("cmd_name", self.cmd_name)
+        diff_fmt_per_level = kwargs.pop(
+            "diff_fmt_per_level", StdLoggerConfigurator.FMT_PER_LEVEL_NONE
+        )
+        stream_list = kwargs.pop("stream_list", StdLoggerConfigurator.STREAM_LIST_NONE)
+        stream_fmt_mapper = kwargs.pop("stream_fmt_mapper", None)
+        handlr_cfgr = kwargs.pop("handlr_cfgr", self.handlr_cfgr)
         self.validate_args(stream_fmt_mapper, stream_list, diff_fmt_per_level)
         stream_fmt_mapper = stream_fmt_mapper if stream_fmt_mapper is not None else self.stream_fmt_mapper
         level_name_map = kwargs.pop('level_name_map', self.level_name_map)
         no_warn = kwargs.pop('no_warn', self.no_warn)
         if stream_fmt_mapper is not None:
-            return StdLoggerConfigurator(level=level, cmd_name=cmd_name, stream_fmt_mapper=stream_fmt_mapper,
-                     level_name_map=level_name_map, no_warn=no_warn)
+            return StdLoggerConfigurator(
+                level=level,
+                cmd_name=cmd_name,
+                stream_fmt_mapper=stream_fmt_mapper,
+                level_name_map=level_name_map,
+                handlr_cfgr=handlr_cfgr,
+                no_warn=no_warn,
+            )
         else:
-            return StdLoggerConfigurator(level=level, cmd_name=cmd_name, stream_list=stream_list,
-                                         same_fmt_per_level=diff_fmt_per_level, level_name_map=level_name_map,
-                                         no_warn=no_warn)
+            return StdLoggerConfigurator(
+                level=level,
+                cmd_name=cmd_name,
+                stream_list=stream_list,
+                same_fmt_per_level=diff_fmt_per_level,
+                level_name_map=level_name_map,
+                handlr_cfgr=handlr_cfgr,
+                no_warn=no_warn,
+            )
 
     @staticmethod
     def validate_args(stream_fmt_mapper: dict[TextIO, LogLevelFmt] | None, stream_list: list[TextIO] | None,
