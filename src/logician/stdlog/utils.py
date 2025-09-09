@@ -68,7 +68,32 @@ class TempSetLevelName:
 
 def get_first_non_none[T](lst: list[T | None], default: T | None = None) -> T | None:
     """
-    Get first non ``None`` item from the list ``lst`` else ``default``.
+    Get first non-``None`` item from the list ``lst`` else ``default``.
+
+    Examples:
+
+      * Return the default if all values are ``None``:
+
+        >>> get_first_non_none([None, None, None], 5)
+        5
+
+      * default can be ``None``:
+
+        >>> get_first_non_none([None, None], None)
+
+      * first non-``None`` is returned:
+
+        >>> get_first_non_none([None, None, 2, None, 5], 9)
+        2
+
+      * default is returned when empty-list is supplied:
+
+        >>> get_first_non_none([], "some str")
+        'some str'
+
+        >>> get_first_non_none([], None) # None returned as default is None
+
+        >>> get_first_non_none([]) # None returned as default is None
 
     :param lst: list of values.
     :param default: value to return if list consists of all ``None``s.
