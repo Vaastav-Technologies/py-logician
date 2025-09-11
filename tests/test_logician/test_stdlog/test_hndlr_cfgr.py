@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Tests related to logician.stdlog.utils
+Tests related to logician.stdlog.hndlr_cfgr
 """
 import logging
 import sys
@@ -10,7 +10,8 @@ import pytest
 
 from logician.stdlog import SHORTER_LOG_FMT
 from logician.stdlog.formatters import StdLogAllLevelSameFmt
-from logician.stdlog.utils import simple_handlr_cfgr, form_stream_handlers_map
+from logician.stdlog.utils import form_stream_handlers_map
+from logician.stdlog.hndlr_cfgr import SimpleHandlerConfigurator
 
 
 class TestSimpleHandlerFormatter:
@@ -24,7 +25,7 @@ class TestSimpleHandlerFormatter:
         """
         lgr1 = logging.getLogger(request.node.name)
         assert len(lgr1.handlers) >= 0  # there are handlers already configured when logger gets created else logging.lastResort is picked up.
-        simple_handlr_cfgr(
+        SimpleHandlerConfigurator().configure(
             None,  # type: ignore[arg-type] expected int, supplied None
             lgr1,
             {}  # empty stream_fmt_map to remove any handlers from lgr
@@ -43,7 +44,7 @@ class TestSimpleHandlerFormatter:
         lgr2 = logging.getLogger(request.node.name)
         str_hn_map = form_stream_handlers_map(lgr2)
         assert sys.stdout not in str_hn_map  # no handlers configured for STDOUT stream
-        simple_handlr_cfgr(logging.DEBUG, lgr2,
+        SimpleHandlerConfigurator().configure(logging.DEBUG, lgr2,
             {sys.stdout: StdLogAllLevelSameFmt()}   # fmt added for STDOUT stream
         )
         str_hn_map = form_stream_handlers_map(lgr2)  # for the new stream->list[handlers] map
@@ -102,7 +103,7 @@ class TestSimpleHandlerFormatter:
             * now, configuring handler for stdout stream must only affect the first (0th index) attached handler.
             """
             lgr = stdout_3_handlr_logger
-            simple_handlr_cfgr(logging.DEBUG, lgr, {sys.stdout: StdLogAllLevelSameFmt("%(name)s")})
+            SimpleHandlerConfigurator().configure(logging.DEBUG, lgr, {sys.stdout: StdLogAllLevelSameFmt("%(name)s")})
             str_hn_map = form_stream_handlers_map(lgr)
             assert "%(name)s" == str_hn_map[sys.stdout][0].formatter._fmt  # type: ignore[attr-defined] 0th handler reconfigured to include the supplied format.
 
@@ -113,7 +114,7 @@ class TestSimpleHandlerFormatter:
             * now, configuring handler for stdout stream must not affect any attached handler other than the 0th.
             """
             lgr = stdout_3_handlr_logger
-            simple_handlr_cfgr(logging.DEBUG, lgr, {sys.stdout: StdLogAllLevelSameFmt("%(name)s")})
+            SimpleHandlerConfigurator().configure(logging.DEBUG, lgr, {sys.stdout: StdLogAllLevelSameFmt("%(name)s")})
             str_hn_map = form_stream_handlers_map(lgr)
             assert all(
                 "%(name)s" != hn.formatter._fmt for hn in str_hn_map[sys.stdout][1:] if hn.formatter)  # type: ignore[attr-defined]
@@ -126,7 +127,7 @@ class TestSimpleHandlerFormatter:
 
         * prepare a logger.
         * add a handler for the STDERR stream but do not set any formatter for it.
-        * now, ``simple_handlr_cfgr`` adds a formatter for the handler of that stream.
+        * now, ``SimpleHandlerConfigurator().configure`` adds a formatter for the handler of that stream.
         """
         handler = logging.StreamHandler()   # stderr handler
         assert not handler.formatter    # handler has no formatter set
@@ -136,7 +137,7 @@ class TestSimpleHandlerFormatter:
         assert handler in lgr4.handlers # our added handler in lgr4's handlers
         assert len(lgr4.handlers) == 1 # only our handler present
         assert not lgr4.handlers[0].formatter  # the present handler has no formatter
-        simple_handlr_cfgr(logging.DEBUG, lgr4, {sys.stderr: StdLogAllLevelSameFmt("%(name)s")})
+        SimpleHandlerConfigurator().configure(logging.DEBUG, lgr4, {sys.stderr: StdLogAllLevelSameFmt("%(name)s")})
         assert handler in lgr4.handlers # our added handler in lgr4's handlers
         assert len(lgr4.handlers) == 1 # only our handler present
         assert lgr4.handlers[0].formatter  # the present handler has a formatter now

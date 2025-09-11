@@ -8,7 +8,7 @@ Logger interfaces for standard Logger configurators.
 
 import logging
 from collections.abc import Callable
-from typing import override, TextIO, overload, Protocol
+from typing import override, TextIO, overload, Protocol, IO
 
 from vt.utils.errors.warnings import vt_warn
 
@@ -29,7 +29,7 @@ from logician.stdlog.formatters import (
     STDERR_ALL_LVL_SAME_FMT,
     STDERR_ALL_LVL_DIFF_FMT,
 )
-from logician.stdlog.utils import simple_handlr_cfgr
+from logician.stdlog.hndlr_cfgr import HandlerConfigurator, SimpleHandlerConfigurator
 
 
 class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
@@ -50,10 +50,8 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         level: int | str = LOG_LEVEL_WARNING,
         cmd_name: str | None = CMD_NAME_NONE,
         same_fmt_per_level: bool | None = FMT_PER_LEVEL_NONE,
-        stream_list: list[TextIO] | None = STREAM_LIST_NONE,
-        handlr_cfgr: Callable[
-            [int, logging.Logger, dict[TextIO, LogLevelFmt]], None
-        ] = simple_handlr_cfgr,
+        stream_list: list[IO] | None = STREAM_LIST_NONE,
+        handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
         level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE
@@ -65,10 +63,8 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         *,
         level: int | str = LOG_LEVEL_WARNING,
         cmd_name: str | None = CMD_NAME_NONE,
-        stream_fmt_mapper: dict[TextIO, LogLevelFmt] | None = STREAM_FMT_MAPPER_NONE,
-        handlr_cfgr: Callable[
-            [int, logging.Logger, dict[TextIO, LogLevelFmt]], None
-        ] = simple_handlr_cfgr,
+        stream_fmt_mapper: dict[IO, LogLevelFmt[int, str]] | None = STREAM_FMT_MAPPER_NONE,
+        handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
         level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE
@@ -79,12 +75,10 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         *,
         level: int | str = LOG_LEVEL_WARNING,
         cmd_name: str | None = CMD_NAME_NONE,
-        stream_fmt_mapper: dict[TextIO, LogLevelFmt] | None = STREAM_FMT_MAPPER_NONE,
+        stream_fmt_mapper: dict[IO, LogLevelFmt[int, str]] | None = STREAM_FMT_MAPPER_NONE,
         same_fmt_per_level: bool | None = FMT_PER_LEVEL_NONE,
-        stream_list: list[TextIO] | None = STREAM_LIST_NONE,
-        handlr_cfgr: Callable[
-            [int, logging.Logger, dict[TextIO, LogLevelFmt]], None
-        ] = simple_handlr_cfgr,
+        stream_list: list[IO] | None = STREAM_LIST_NONE,
+        handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
         level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE
@@ -126,7 +120,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
 
     @staticmethod
     def compute_stream_fmt_mapper(same_fmt_per_level: bool | None,
-                                  stream_list: list[TextIO] | None) -> dict[TextIO, LogLevelFmt]:
+                                  stream_list: list[IO] | None) -> dict[IO, LogLevelFmt[int, str]]:
         """
         Compute the stream format mapper form supplied arguments.
 
@@ -218,7 +212,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
                               f"'{logging.getLevelName(StdLoggerConfigurator.LOG_LEVEL_WARNING)}'.")
             int_level = StdLoggerConfigurator.LOG_LEVEL_WARNING
         logger.setLevel(int_level)
-        self.handlr_cfgr(int_level, logger, stream_fmt_map)
+        self.handlr_cfgr.configure(int_level, logger, stream_fmt_map)
         logger.propagate = self.propagate
         return DirectAllLevelLogger(
             DirectAllLevelLoggerImpl(logger), cmd_name=self.cmd_name
@@ -298,7 +292,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
             )
 
     @staticmethod
-    def validate_args(stream_fmt_mapper: dict[TextIO, LogLevelFmt] | None, stream_list: list[TextIO] | None,
+    def validate_args(stream_fmt_mapper: dict[IO, LogLevelFmt[int, str]] | None, stream_list: list[IO] | None,
                       diff_fmt_per_level: bool | None):
         """
         :raises ValueError: if  ``stream_fmt_mapper`` is given with ``stream_list`` or
