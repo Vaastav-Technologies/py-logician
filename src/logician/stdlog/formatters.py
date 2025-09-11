@@ -7,7 +7,7 @@ Logger interfaces for standard Logger formatters.
 """
 import logging
 import sys
-from typing import TextIO, override
+from typing import TextIO, override, IO
 
 from logician.formatters import AllLevelSameFmt, DiffLevelDiffFmt, LogLevelFmt
 from logician.stdlog import TIMED_DETAIL_LOG_FMT, TRACE_LOG_LEVEL, DETAIL_LOG_FMT, SHORT_LOG_FMT, \
@@ -86,12 +86,12 @@ class StdLogAllLevelDiffFmt(DiffLevelDiffFmt[int, str]):
         return max_level
 
 
-STDERR_ALL_LVL_SAME_FMT: dict[TextIO, LogLevelFmt[int, str]] = {sys.stderr: StdLogAllLevelSameFmt()}
+STDERR_ALL_LVL_SAME_FMT: dict[IO, LogLevelFmt[int, str]] = {sys.stderr: StdLogAllLevelSameFmt()}
 """
 Maps ``sys.stderr`` to same logging format for all levels.
 """
 
-STDERR_ALL_LVL_DIFF_FMT: dict[TextIO, LogLevelFmt[int, str]] = {sys.stderr: StdLogAllLevelDiffFmt()}
+STDERR_ALL_LVL_DIFF_FMT: dict[IO, LogLevelFmt[int, str]] = {sys.stderr: StdLogAllLevelDiffFmt()}
 """
 Maps ``sys.stderr`` to different logging format for all levels.
 """
