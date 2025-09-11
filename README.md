@@ -231,14 +231,68 @@ You can override these or pass in your own formatting configuration.
 
 ### CLI Tools
 
-```python
-from logician.stdlog.configurator import VQSepLoggerConfigurator, StdLoggerConfigurator
-import logging
+* Have verbosity (v, vv, vvv) and quietness (q, qq, qqq) supported by the logger.
 
-lc = VQSepLoggerConfigurator(StdLoggerConfigurator(), verbosity=args.verbose, quietness=args.quiet)
-logger = logging.getLogger("my_tool")
-logger = lc.configure(logger)
-```
+  ```shell
+  # run my_tool with -qq cli args
+  my_tool -qq
+  ```
+  ```python
+  >>> import logging
+  >>> from logician.stdlog.configurator import VQSepLoggerConfigurator, StdLoggerConfigurator
+  
+  >>> class Args:
+  ...   "get args from CLI or argparse or click or whatever"
+  ...   pass
+
+  >>> args = Args()
+  >>> args.verbose = "v"
+  >>> args.quiet = None
+  >>> lc = VQSepLoggerConfigurator(StdLoggerConfigurator(), verbosity=args.verbose, quietness=args.quiet)
+  >>> _logger = logging.getLogger("my_tool")
+  >>> logger = lc.configure(_logger)
+
+  ```
+
+### Environment Variables
+
+* Support env-vars to configure logging levels (INFO, DEBUG, SUCCESS, ... etc)
+
+  ```shell
+  # run my-another-tool with env-var ENV1 supplying log level as ENV1=DEBUG
+  ENV1=DEBUG my-another-tool
+  ```
+  ```python
+  >>> import logging
+  >>> from logician.configurators.env import LgcnEnvListLC
+  >>> from logician.stdlog.configurator import StdLoggerConfigurator
+  
+  # get a logger configurator supporting ENV1 and ANO_ENV
+  # now ENV1=DEBUG can be set to enable DEBUG level for the logger
+  >>> lc = LgcnEnvListLC(["ENV1", "ANO_ENV"], StdLoggerConfigurator())
+  >>> _logger = logging.getLogger("my-another-tool")
+  >>> logger = lc.configure(_logger)
+  
+  ```
+
+* Support env-vars to configure verbosity levels (v, vv, vvv, q, qq, qqq)
+
+  ```shell
+  # run my-another-tool with env-var ENV1 supplying log level as ENV1=q (sepcifying ERROR log leve;)
+  ENV1=q my-another-tool
+  ```
+  ```python
+  >>> import logging
+  >>> from logician.configurators.env import LgcnEnvListLC
+  >>> from logician.stdlog.configurator import StdLoggerConfigurator, VQCommLoggerConfigurator
+  
+  # get a logger configurator supporting ENV1 and ANO_ENV
+  # now ENV1=vv can be set to enable DEBUG level for the logger
+  >>> lc = LgcnEnvListLC(["ENV1", "ANO_ENV"], VQCommLoggerConfigurator(None, StdLoggerConfigurator()))
+  >>> _logger = logging.getLogger("my-another-tool")
+  >>> logger = lc.configure(_logger)
+  
+  ```
 
 ---
 
