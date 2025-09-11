@@ -96,8 +96,7 @@ def form_stream_handlers_map(logger: logging.Logger) -> dict[IO, list[Handler]]:
     return stream_handler_map
 
 
-def simple_handlr_cfgr(level: int, logger: logging.Logger, stream_fmt_map: dict[TextIO, LogLevelFmt],
-                propagate: bool = False) -> None:
+def simple_handlr_cfgr(level: int, logger: logging.Logger, stream_fmt_map: dict[TextIO, LogLevelFmt]) -> None:
     """
     Logger handler's configurator.
 
@@ -134,7 +133,6 @@ def simple_handlr_cfgr(level: int, logger: logging.Logger, stream_fmt_map: dict[
     :param level: int logging level.
     :param logger: the logger to configure.
     :param stream_fmt_map: the stream-format-handler-map that will configure the supplied logger's handlers.
-    :param propagate: propagate logger records to parent loggers.
     """
 
     def new_formatter(_logger, _stream, _fmt, add_handler=True):
@@ -144,7 +142,6 @@ def simple_handlr_cfgr(level: int, logger: logging.Logger, stream_fmt_map: dict[
             _logger.addHandler(_handlr)
         return _handlr
 
-    logger.propagate = propagate
     if not stream_fmt_map:
         # empty user-supplied stream->formatter map
         # specifies the user's intent to not log anywhere hence, clear all existing handlers
