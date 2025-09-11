@@ -41,6 +41,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
     STREAM_LIST_NONE = None
     LEVEL_NAME_MAP_NONE = None
     NO_WARN_FALSE = False
+    PROPAGATE_FALSE = False
 
     @overload
     def __init__(
@@ -55,6 +56,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         ] = simple_handlr_cfgr,
         level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
+        propagate: bool = PROPAGATE_FALSE
     ): ...
 
     @overload
@@ -69,6 +71,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         ] = simple_handlr_cfgr,
         level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
+        propagate: bool = PROPAGATE_FALSE
     ): ...
 
     def __init__(
@@ -84,6 +87,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         ] = simple_handlr_cfgr,
         level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
+        propagate: bool = PROPAGATE_FALSE
     ):
         """
         Perform logger configuration using the python's std logger calls.
@@ -105,6 +109,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         :param level_name_map: log level - name mapping. This mapping updates the std python logging library's
             registered log levels . Check ``DirectAllLevelLogger.register_levels()`` for more info.
         :param no_warn: do not warn if a supplied level is not registered with the logging library.
+        :param propagate: propagate logger records to parent loggers.
         """
         self.validate_args(stream_fmt_mapper, stream_list, same_fmt_per_level)
 
@@ -113,6 +118,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         self.level_name_map = level_name_map
         self.handlr_cfgr = handlr_cfgr
         self.no_warn = no_warn
+        self.propagate = propagate
         if stream_fmt_mapper is not None: # accepts empty i.e. falsy stream_fmt_mapper
             self.stream_fmt_mapper = stream_fmt_mapper
         else:
@@ -213,6 +219,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
             int_level = StdLoggerConfigurator.LOG_LEVEL_WARNING
         logger.setLevel(int_level)
         self.handlr_cfgr(int_level, logger, stream_fmt_map)
+        logger.propagate = self.propagate
         return DirectAllLevelLogger(
             DirectAllLevelLoggerImpl(logger), cmd_name=self.cmd_name
         )

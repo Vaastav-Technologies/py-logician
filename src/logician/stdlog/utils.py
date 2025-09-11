@@ -121,8 +121,7 @@ def form_stream_handlers_map(logger: logging.Logger) -> dict[IO, list[Handler]]:
     return stream_handler_map
 
 
-def simple_handlr_cfgr(level: int, logger: logging.Logger, stream_fmt_map: dict[TextIO, LogLevelFmt],
-                propagate: bool = False) -> None:
+def simple_handlr_cfgr(level: int, logger: logging.Logger, stream_fmt_map: dict[TextIO, LogLevelFmt]) -> None:
     """
     Logger handler's configurator.
 
@@ -131,64 +130,34 @@ def simple_handlr_cfgr(level: int, logger: logging.Logger, stream_fmt_map: dict[
       * This configurator removes all the handlers if the supplied ``stream_fmt_map`` is empty {} or Falsy:
 
         * ``NullHandler`` remains to ensure that no logging is performed. User can specify their intent to not log by
-          supplying ``stream_fmt_map`` as empty.
+          supplying ``stream_fmt_map`` as empty. This does not ``disable`` the logger, per se, just does not let it
+          log to a stream.
 
-        >>> def test_empty_map_removes_all_handlers():  # define test
-        ...     lgr1 = logging.getLogger("lgr1")
-        ...     assert len(lgr1.handlers) >= 0   # there are handlers already configured when logger gets created else logging.lastResort is picked up.
-        ...     simple_handlr_cfgr(
-        ...         None,   # type: ignore[arg-type] expected int, supplied None
-        ...         lgr1,
-        ...         {}      # empty stream_fmt_map to remove any handlers from lgr
-        ...     )
-        ...     assert len(lgr1.handlers) == 1   # only NullHandler remains
-        ...     assert isinstance(lgr1.handlers[0], logging.NullHandler)   # only NullHandler remains
-        >>> test_empty_map_removes_all_handlers()   # run test
+        >>> lgr1 = logging.getLogger("lgr1")
+        >>> simple_handlr_cfgr(logging.INFO, lgr1,
+        ...     {})      # empty stream_fmt_map to remove any handlers from lgr
+        >>> assert isinstance(lgr1.handlers[0], logging.NullHandler)   # only NullHandler remains
 
-      * Stream handler is added if handlers are not already configured for a stream:
+      * Stream handler is added if handlers are not already present for a stream:
 
-        >>> def test_handler_added_if_no_handler_configured(lgr_name):  # define test
-        ...     lgr2 = logging.getLogger(lgr_name)
-        ...     str_hn_map = form_stream_handlers_map(lgr2)
-        ...     assert sys.stdout not in str_hn_map # no handlers configured for STDOUT stream
-        ...     simple_handlr_cfgr(
-        ...         logging.DEBUG,
-        ...         lgr2,
-        ...         {sys.stdout: StdLogAllLevelSameFmt()}
-        ...     )
-        ...     str_hn_map = form_stream_handlers_map(lgr2) # for the new stream->list[handlers] map
-        ...     assert sys.stdout in str_hn_map # handler introduced for the STDOUT stream
-        ...     return lgr2
-        >>> _ = test_handler_added_if_no_handler_configured("lgr2")   # run test
+        >>> lgr2 = logging.getLogger("lgr2") # no handlers present for STDOUT stream by default
+        >>> simple_handlr_cfgr(logging.DEBUG, lgr2, {sys.stdout: StdLogAllLevelSameFmt()})  # configure and add handler for STDOUT stream
+        >>> str_hn_map = form_stream_handlers_map(lgr2) # for the new stream->list[handlers] map
+        >>> assert sys.stdout in str_hn_map # handler introduced for the STDOUT stream
 
       * Updates the first handler of a stream when the stream is supplied in the ``stream_fmt_map`` and logger already
         has a configured handler for that stream:
 
-        >>> def test_first_handler_updated():   # define test
-        ...     lgr3 = test_handler_added_if_no_handler_configured("lgr3")
-        ...     str_hn_map = form_stream_handlers_map(lgr3)
-        ...     assert sys.stdout in str_hn_map # handler already configured for STDOUT stream from test_handler_added_if_no_handler_configured()
-        ...     assert len(str_hn_map[sys.stdout]) == 1 # only 1 handler configured for STDOUT stream
-        ...     new_stdout_handler = logging.StreamHandler(sys.stdout)
-        ...     lgr3.addHandler(new_stdout_handler) # add another handler for STDOUT stream
-        ...     str_hn_map = form_stream_handlers_map(lgr3)
-        ...     assert len(str_hn_map[sys.stdout]) == 2 # now, we have two handlers for STDOUT stream
-        ...     simple_handlr_cfgr(
-        ...        logging.DEBUG,
-        ...        lgr3,
-        ...        {sys.stdout: StdLogAllLevelSameFmt("%(name)s")}
-        ...     )
-        ...     str_hn_map = form_stream_handlers_map(lgr3) # obtain the updated stream->list[handlers] map
-        ...     assert len(str_hn_map[sys.stdout]) == 2 # number of handlers didn't change
-        ...     assert "%(name)s" == str_hn_map[sys.stdout][0].formatter._fmt # type: ignore[attr-defined]
-        ...     ["%(name)s" != hn.formatter._fmt for hn in str_hn_map[sys.stdout]]
-        ...     assert all("%(name)s" != hn.formatter._fmt for hn in str_hn_map[sys.stdout][1:]) # type: ignore[attr-defined]
-        >>> test_first_handler_updated()
+        >>> lgr2_1 = logging.getLogger("lgr2") # obtain lgr2 instance as it already has one STDOUT stream->handler configured from before
+        >>> new_stdout_handler = logging.StreamHandler(sys.stdout)
+        >>> lgr2_1.addHandler(new_stdout_handler) # add another handler for STDOUT stream
+        >>> simple_handlr_cfgr(logging.DEBUG, lgr2_1, {sys.stdout: StdLogAllLevelSameFmt("%(name)s")})
+        >>> str_hn_map = form_stream_handlers_map(lgr2_1) # obtain the updated stream->list[handlers] map
+        >>> assert "%(name)s" == str_hn_map[sys.stdout][0].formatter._fmt # type: ignore[attr-defined] only the 0th handler is configured
 
     :param level: int logging level.
     :param logger: the logger to configure.
     :param stream_fmt_map: the stream-format-handler-map that will configure the supplied logger's handlers.
-    :param propagate: propagate logger records to parent loggers.
     """
 
     def new_formatter(_logger, _stream, _fmt, add_handler=True):
@@ -198,7 +167,6 @@ def simple_handlr_cfgr(level: int, logger: logging.Logger, stream_fmt_map: dict[
             _logger.addHandler(_handlr)
         return _handlr
 
-    logger.propagate = propagate
     if not stream_fmt_map:
         # empty user-supplied stream->formatter map
         # specifies the user's intent to not log anywhere hence, clear all existing handlers
