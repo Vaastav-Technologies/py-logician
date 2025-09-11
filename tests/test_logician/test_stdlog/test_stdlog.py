@@ -10,8 +10,10 @@ from logician.stdlog import TRACE_LOG_LEVEL
 from logician.stdlog.all_levels import DirectAllLevelLogger
 from logician.stdlog.all_levels_impl import DirectAllLevelLoggerImpl
 
-TIMED_DETAIL_LOG_FMT = '%(asctime)s: %(name)s: [%(levelname)s]: [%(filename)s:%(lineno)d - ' \
-                       '%(funcName)10s() ]: %(message)s'
+TIMED_DETAIL_LOG_FMT = (
+    "%(asctime)s: %(name)s: [%(levelname)s]: [%(filename)s:%(lineno)d - "
+    "%(funcName)10s() ]: %(message)s"
+)
 
 
 @pytest.mark.parametrize("level_logger", [DirectAllLevelLogger])
@@ -24,16 +26,16 @@ def test_initial_logging(level_logger, logger_impl):
     log.addHandler(sh)
     log.setLevel(logging.DEBUG)
     logger = level_logger(logger_impl(log))
-    logger.debug('debug message')
-    logger.info('info message')
-    logger.warning('warning message')
-    logger.error('error message')
-    logger.critical('critical message')
+    logger.debug("debug message")
+    logger.info("info message")
+    logger.warning("warning message")
+    logger.error("error message")
+    logger.critical("critical message")
     try:
-        raise ValueError('A value is wrong.')
+        raise ValueError("A value is wrong.")
     except ValueError:
-        logger.exception('an exception')
-    logger.fatal('fatal message')
+        logger.exception("an exception")
+    logger.fatal("fatal message")
 
 
 def test_logging_basic_types():
@@ -52,13 +54,13 @@ def test_logging_basic_types():
     logger.info(t)
     s = {1, 2, 3, 4, None}
     logger.notice(s)
-    logger.success('success {}'.format(d))
-    logger.warning('warning %s', lst)
-    logger.error('error %(t)s', {'t': t})
+    logger.success("success {}".format(d))
+    logger.warning("warning %s", lst)
+    logger.error("error %(t)s", {"t": t})
     try:
         raise ValueError(lst)
     except ValueError:
-        logger.exception('Exception: ')
+        logger.exception("Exception: ")
 
 
 def test_all_initial_logging():
@@ -69,16 +71,16 @@ def test_all_initial_logging():
     logger = DirectAllLevelLogger(DirectAllLevelLoggerImpl(log))
     logger.underlying_logger.addHandler(sh)
     logger.underlying_logger.setLevel(TRACE_LOG_LEVEL)
-    logger.trace('trace message')
-    logger.debug('debug message')
-    logger.info('info message')
-    logger.success('success message')
-    logger.notice('notice message')
-    logger.warning('warning message')
-    logger.error('error message')
-    logger.critical('critical message')
+    logger.trace("trace message")
+    logger.debug("debug message")
+    logger.info("info message")
+    logger.success("success message")
+    logger.notice("notice message")
+    logger.warning("warning message")
+    logger.error("error message")
+    logger.critical("critical message")
     try:
-        raise ValueError('A value is wrong.')
+        raise ValueError("A value is wrong.")
     except ValueError:
-        logger.exception('an exception')
-    logger.fatal('fatal message')
+        logger.exception("an exception")
+    logger.fatal("fatal message")

@@ -3,13 +3,12 @@
 """
 Configurators for python std logger handlers.
 """
-import sys
+
 import logging
 from abc import abstractmethod
 from typing import Protocol, IO, override
 
 from logician.formatters import LogLevelFmt
-from logician.stdlog.formatters import StdLogAllLevelSameFmt
 from logician.stdlog.utils import form_stream_handlers_map, add_new_formatter
 
 
@@ -19,7 +18,12 @@ class HandlerConfigurator(Protocol):
     """
 
     @abstractmethod
-    def configure(self, level: int, logger: logging.Logger, stream_fmt_map: dict[IO, LogLevelFmt[int, str]]) -> None:
+    def configure(
+        self,
+        level: int,
+        logger: logging.Logger,
+        stream_fmt_map: dict[IO, LogLevelFmt[int, str]],
+    ) -> None:
         """
         Logger handler's configurator.
 
@@ -33,13 +37,17 @@ class HandlerConfigurator(Protocol):
 
 
 class SimpleHandlerConfigurator(HandlerConfigurator):
-
     @override
-    def configure(self, level: int, logger: logging.Logger, stream_fmt_map: dict[IO, LogLevelFmt]) -> None:
+    def configure(
+        self, level: int, logger: logging.Logger, stream_fmt_map: dict[IO, LogLevelFmt]
+    ) -> None:
         """
         Logger handler's configurator.
 
         Configure the logger's handlers from a user supplied stream-fmt-map.
+
+        >>> import sys
+        >>> from logician.stdlog.formatters import StdLogAllLevelSameFmt
 
           * This configurator removes all the handlers if the supplied ``stream_fmt_map`` is empty {} or Falsy:
 
@@ -84,16 +92,22 @@ class SimpleHandlerConfigurator(HandlerConfigurator):
             stream_handlers_map = form_stream_handlers_map(logger)
             for stream in stream_fmt_map:
                 lvl_fmt_handlr = stream_fmt_map[stream]
-                fmt = lvl_fmt_handlr.fmt(level) # obtain format for the required level
-                if stream in stream_handlers_map:    # handler already present for the current stream, as stream -> list[handler]
-                    if stream_handlers_map[stream]: # handlers are already configured for this stream, as stream -> [handler1, handler2, ..., handlerN]
-                        handlr = stream_handlers_map[stream][0] # get the first handler
-                        if handlr.formatter:    # handler already has a formatter
+                fmt = lvl_fmt_handlr.fmt(level)  # obtain format for the required level
+                if (
+                    stream in stream_handlers_map
+                ):  # handler already present for the current stream, as stream -> list[handler]
+                    if stream_handlers_map[
+                        stream
+                    ]:  # handlers are already configured for this stream, as stream -> [handler1, handler2, ..., handlerN]
+                        handlr = stream_handlers_map[stream][0]  # get the first handler
+                        if handlr.formatter:  # handler already has a formatter
                             handlr.formatter._fmt = fmt
-                        else:   # no formatter configured for the handler
-                            handlr.setFormatter(logging.Formatter(fmt=fmt)) # configure formatter for this handler
-                    else:   # no handler configured for the required stream, as stream -> [], empty handler list or no handlers
+                        else:  # no formatter configured for the handler
+                            handlr.setFormatter(
+                                logging.Formatter(fmt=fmt)
+                            )  # configure formatter for this handler
+                    else:  # no handler configured for the required stream, as stream -> [], empty handler list or no handlers
                         logger.addHandler(add_new_formatter(stream, fmt))
-                else:   # handlers not present for the current stream, as no stream->list[handlers] mapping present in the logger
+                else:  # handlers not present for the current stream, as no stream->list[handlers] mapping present in the logger
                     # introduce a new handler
                     logger.addHandler(add_new_formatter(stream, fmt))

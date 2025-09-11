@@ -5,6 +5,7 @@
 """
 Logger interfaces for Logger configurators.
 """
+
 import logging
 from abc import abstractmethod
 from typing import Protocol
@@ -28,7 +29,7 @@ class LoggerConfigurator(Protocol):
         pass
 
     @abstractmethod
-    def clone_with(self, **kwargs) -> 'LoggerConfigurator':
+    def clone_with(self, **kwargs) -> "LoggerConfigurator":
         """
         :param kwargs: overriding keyword args.
         :return: a new instance of the ``LoggerConfigurator`` with the provided overrides.
@@ -79,4 +80,5 @@ class LevelLoggerConfigurator[T](LevelTarget[T], LoggerConfigurator, Protocol):
     """
     A logger configurator which allows setting levels from outside of it.
     """
+
     pass

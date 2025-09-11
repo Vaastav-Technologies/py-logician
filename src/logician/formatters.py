@@ -6,7 +6,6 @@
 Logger interfaces for Logger formatters.
 """
 
-
 from abc import abstractmethod
 from typing import Protocol
 
@@ -58,6 +57,7 @@ class AllLevelSameFmt[T, F](LogLevelFmt[T, F], Protocol):
         - most verbose TRACE level.
         TRACE: some trace info
     """
+
     pass
 
 

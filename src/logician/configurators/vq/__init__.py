@@ -20,4 +20,3 @@ from logician.configurators.vq.base import VQLevelOrDefault as VQLevelOrDefault
 from logician.configurators.vq.sep import VQSepConfigurator as VQSepConfigurator
 
 from logician.configurators.vq.comm import VQCommConfigurator as VQCommConfigurator
-

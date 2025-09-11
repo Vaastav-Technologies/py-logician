@@ -4,28 +4,33 @@
 """
 Important utilities for std python logging library.
 """
+
 import logging
-import sys
 from logging import Handler
-from typing import TextIO, IO
+from typing import IO
 from collections import defaultdict
 
 from vt.utils.errors.warnings import vt_warn
-
-from logician.formatters import LogLevelFmt
-from logician.stdlog.formatters import StdLogAllLevelSameFmt
 
 
 def level_name_mapping() -> dict[int, str]:
     """
     :return: level -> name mapping from std lib.
     """
-    return {level: logging.getLevelName(level) for level in
-            sorted(logging.getLevelNamesMapping().values())}
+    return {
+        level: logging.getLevelName(level)
+        for level in sorted(logging.getLevelNamesMapping().values())
+    }
 
 
 class TempSetLevelName:
-    def __init__(self, level: int, level_name: str | None, reverting_lvl_name: str, no_warn: bool = False):
+    def __init__(
+        self,
+        level: int,
+        level_name: str | None,
+        reverting_lvl_name: str,
+        no_warn: bool = False,
+    ):
         """
         Set the log level name temporarily and then revert it back to the ``reverting_lvl_name``.
 
@@ -43,7 +48,7 @@ class TempSetLevelName:
 
     def __enter__(self):
         if self.level_name is not None:
-            if self.level_name.strip() == '':
+            if self.level_name.strip() == "":
                 self.warn_user()
             else:
                 logging.addLevelName(self.level, self.level_name)
@@ -124,6 +129,8 @@ def form_stream_handlers_map(logger: logging.Logger) -> dict[IO, list[Handler]]:
 def add_new_formatter(stream: IO, fmt: str) -> logging.StreamHandler:
     """
     Get a handler for ``stream`` with formatter conforming ``fmt`` param.
+
+    >>> import sys
 
     Examples:
 

@@ -16,8 +16,12 @@ from logician.stdlog.constants import NOTICE_LOG_LEVEL as NOTICE_LOG_LEVEL
 from logician.stdlog.constants import NOTICE_LOG_STR as NOTICE_LOG_STR
 from logician.stdlog.constants import CMD_LOG_LEVEL as CMD_LOG_LEVEL
 from logician.stdlog.constants import CMD_LOG_STR as CMD_LOG_STR
-from logician.stdlog.constants import EXCEPTION_TRACEBACK_LOG_LEVEL as EXCEPTION_TRACEBACK_LOG_LEVEL
-from logician.stdlog.constants import EXCEPTION_TRACEBACK_LOG_STR as EXCEPTION_TRACEBACK_LOG_STR
+from logician.stdlog.constants import (
+    EXCEPTION_TRACEBACK_LOG_LEVEL as EXCEPTION_TRACEBACK_LOG_LEVEL,
+)
+from logician.stdlog.constants import (
+    EXCEPTION_TRACEBACK_LOG_STR as EXCEPTION_TRACEBACK_LOG_STR,
+)
 from logician.stdlog.constants import FATAL_LOG_LEVEL as FATAL_LOG_LEVEL
 from logician.stdlog.constants import FATAL_LOG_STR as FATAL_LOG_STR
 from logician.stdlog.constants import SHORTER_LOG_FMT as SHORTER_LOG_FMT
@@ -34,7 +38,11 @@ from logician.stdlog.base import DirectStdAllLevelLogger as DirectStdAllLevelLog
 # endregion
 
 # region stdlog.all_levels re-exports
-from logician.stdlog.all_levels import StdProtocolAllLevelLogger as StdProtocolAllLevelLogger
-from logician.stdlog.all_levels import BaseDirectStdAllLevelLogger as BaseDirectStdAllLevelLogger
+from logician.stdlog.all_levels import (
+    StdProtocolAllLevelLogger as StdProtocolAllLevelLogger,
+)
+from logician.stdlog.all_levels import (
+    BaseDirectStdAllLevelLogger as BaseDirectStdAllLevelLogger,
+)
 from logician.stdlog.all_levels import DirectAllLevelLogger as DirectAllLevelLogger
 # endregion

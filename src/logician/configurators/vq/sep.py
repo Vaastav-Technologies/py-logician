@@ -15,8 +15,13 @@ from typing import Protocol, override
 from vt.utils.errors.warnings import vt_warn
 
 from logician import errmsg_creator
-from logician.configurators.vq import VQConfigurator, V_LITERAL, Q_LITERAL, VQ_DICT_LITERAL, \
-    VQLevelOrDefault
+from logician.configurators.vq import (
+    VQConfigurator,
+    V_LITERAL,
+    Q_LITERAL,
+    VQ_DICT_LITERAL,
+    VQLevelOrDefault,
+)
 from logician.configurators.vq.base import SimpleWarningVQLevelOrDefault
 
 
@@ -26,7 +31,9 @@ class VQSepConfigurator[T](VQConfigurator[T], Protocol):
     """
 
     @abstractmethod
-    def validate(self, verbosity: V_LITERAL | None, quietness: Q_LITERAL | None) -> bool:
+    def validate(
+        self, verbosity: V_LITERAL | None, quietness: Q_LITERAL | None
+    ) -> bool:
         """
         Validate whether the supplied verbosity and quietness are valid.
 
@@ -37,7 +44,9 @@ class VQSepConfigurator[T](VQConfigurator[T], Protocol):
         ...
 
     @abstractmethod
-    def get_effective_level(self, verbosity: V_LITERAL | None, quietness: Q_LITERAL | None, default_level: T) -> T:
+    def get_effective_level(
+        self, verbosity: V_LITERAL | None, quietness: Q_LITERAL | None, default_level: T
+    ) -> T:
         """
         Get the effective level for supplied verbosity and quietness.
 
@@ -51,8 +60,12 @@ class VQSepConfigurator[T](VQConfigurator[T], Protocol):
 
 
 class VQSepExclusive[T](VQSepConfigurator[T]):
-    def __init__(self, vq_level_map: VQ_DICT_LITERAL[T], warn_only: bool = False,
-                 level_or_default_handler: VQLevelOrDefault[T] | None = None):
+    def __init__(
+        self,
+        vq_level_map: VQ_DICT_LITERAL[T],
+        warn_only: bool = False,
+        level_or_default_handler: VQLevelOrDefault[T] | None = None,
+    ):
         """
         Treats verbosity and quietness as separate and exclusive, i.e. both cannot be given together.
 
@@ -69,7 +82,9 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
         if level_or_default_handler:
             self.level_or_default_handler = level_or_default_handler
         else:
-            self.level_or_default_handler = SimpleWarningVQLevelOrDefault(vq_level_map, warn_only=warn_only)
+            self.level_or_default_handler = SimpleWarningVQLevelOrDefault(
+                vq_level_map, warn_only=warn_only
+            )
 
     @override
     @property
@@ -77,7 +92,9 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
         return self._vq_level_map
 
     @override
-    def validate(self, verbosity: V_LITERAL | None, quietness: Q_LITERAL | None) -> bool:
+    def validate(
+        self, verbosity: V_LITERAL | None, quietness: Q_LITERAL | None
+    ) -> bool:
         """
         ``verbosity`` and ``quietness`` are not accepted together.
 
@@ -120,7 +137,7 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
         :return: If ``self.warn_only`` is ``True`` - ``True`` if inputs are valid, ``False`` otherwise.
         """
         if verbosity and quietness:
-            warn_str = errmsg_creator.not_allowed_together('verbosity', 'quietness')
+            warn_str = errmsg_creator.not_allowed_together("verbosity", "quietness")
             if self.warn_only:
                 vt_warn(warn_str)
                 return False
@@ -130,7 +147,9 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
             return True
 
     @override
-    def get_effective_level(self, verbosity: V_LITERAL | None, quietness: Q_LITERAL | None, default_level: T) -> T:
+    def get_effective_level(
+        self, verbosity: V_LITERAL | None, quietness: Q_LITERAL | None, default_level: T
+    ) -> T:
         """
         Get effective level by treating verbosity and quietness as separate entities.
 
@@ -195,13 +214,19 @@ class VQSepExclusive[T](VQSepConfigurator[T]):
             level = default_level
         else:
             if verbosity:
-                level = self.level_or_default_handler.level_or_default(verbosity,
-                                                                       'verbosity', default_level,
-                                                                       list(self.vq_level_map.keys()))
+                level = self.level_or_default_handler.level_or_default(
+                    verbosity,
+                    "verbosity",
+                    default_level,
+                    list(self.vq_level_map.keys()),
+                )
             elif quietness:
-                level = self.level_or_default_handler.level_or_default(quietness,
-                                                                       'quietness', default_level,
-                                                                       list(self.vq_level_map.keys()))
+                level = self.level_or_default_handler.level_or_default(
+                    quietness,
+                    "quietness",
+                    default_level,
+                    list(self.vq_level_map.keys()),
+                )
             else:
                 level = default_level
         return level

@@ -6,7 +6,7 @@
 Global constants for the logician.
 """
 
-LGCN_ALL_LOG_ENV_VAR = 'LGCN_ALL_LOG'
+LGCN_ALL_LOG_ENV_VAR = "LGCN_ALL_LOG"
 """
 LGCN_ALL_LOG_ENV_VAR -> Logician All Log Env Var.
 

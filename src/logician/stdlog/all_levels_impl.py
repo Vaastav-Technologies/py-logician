@@ -4,15 +4,23 @@
 """
 Classes w.r.t implementation inheritance are defined here.
 """
+
 import warnings
 from abc import abstractmethod
 from logging import Logger
 from typing import override, Protocol
 
 from logician.delegating import AllLevelLoggerImplABC
-from logician.stdlog import TRACE_LOG_LEVEL, \
-    NOTICE_LOG_LEVEL, SUCCESS_LOG_LEVEL, StdLogProtocol, INDIRECTION_STACK_LEVEL, FATAL_LOG_LEVEL, CMD_LOG_LEVEL, \
-    CMD_LOG_STR
+from logician.stdlog import (
+    TRACE_LOG_LEVEL,
+    NOTICE_LOG_LEVEL,
+    SUCCESS_LOG_LEVEL,
+    StdLogProtocol,
+    INDIRECTION_STACK_LEVEL,
+    FATAL_LOG_LEVEL,
+    CMD_LOG_LEVEL,
+    CMD_LOG_STR,
+)
 from logician.stdlog.utils import TempSetLevelName
 
 
@@ -48,12 +56,11 @@ class BaseDirectStdAllLevelLoggerImpl(StdProtocolAllLevelLoggerImpl, Protocol):
     @override
     @property
     @abstractmethod
-    def underlying_logger(self) -> Logger: # noqa
+    def underlying_logger(self) -> Logger:  # noqa
         pass
 
 
 class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
-
     def __init__(self, underlying_logger: Logger, stack_level=INDIRECTION_STACK_LEVEL):
         """
         Basic logger that implements all the logging levels of python standard logging and simply delegates method
@@ -68,12 +75,14 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
 
     @override
     @property
-    def underlying_logger(self) -> Logger: # noqa
+    def underlying_logger(self) -> Logger:  # noqa
         return self._underlying_logger
 
     @override
     def trace(self, msg, *args, **kwargs) -> None:
-        self.underlying_logger.log(TRACE_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
+        self.underlying_logger.log(
+            TRACE_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs
+        )
 
     @override
     def debug(self, msg, *args, **kwargs) -> None:
@@ -85,21 +94,29 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
 
     @override
     def success(self, msg, *args, **kwargs) -> None:
-        self.underlying_logger.log(SUCCESS_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
+        self.underlying_logger.log(
+            SUCCESS_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs
+        )
 
     @override
     def notice(self, msg, *args, **kwargs) -> None:
-        self.underlying_logger.log(NOTICE_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
+        self.underlying_logger.log(
+            NOTICE_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs
+        )
 
     @override
     def cmd(self, msg, cmd_name: str | None = None, *args, **kwargs) -> None:
         if self.underlying_logger.isEnabledFor(CMD_LOG_LEVEL):
             with TempSetCmdLvlName(cmd_name):
-                self.underlying_logger.log(CMD_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
+                self.underlying_logger.log(
+                    CMD_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs
+                )
 
     @override
     def warning(self, msg, *args, **kwargs) -> None:
-        self.underlying_logger.warning(msg, *args, stacklevel=self.stack_level, **kwargs)
+        self.underlying_logger.warning(
+            msg, *args, stacklevel=self.stack_level, **kwargs
+        )
 
     @override
     def error(self, msg, *args, **kwargs) -> None:
@@ -107,19 +124,27 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
 
     @override
     def critical(self, msg, *args, **kwargs) -> None:
-        self.underlying_logger.critical(msg, *args, stacklevel=self.stack_level, **kwargs)
+        self.underlying_logger.critical(
+            msg, *args, stacklevel=self.stack_level, **kwargs
+        )
 
     @override
     def fatal(self, msg, *args, **kwargs) -> None:
-        self.underlying_logger.log(FATAL_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs)
+        self.underlying_logger.log(
+            FATAL_LOG_LEVEL, msg, *args, stacklevel=self.stack_level, **kwargs
+        )
 
     @override
     def exception(self, msg, *args, **kwargs) -> None:
-        self.underlying_logger.exception(msg, *args, exc_info=True, stacklevel=self.stack_level, **kwargs)
+        self.underlying_logger.exception(
+            msg, *args, exc_info=True, stacklevel=self.stack_level, **kwargs
+        )
 
     @override
     def log(self, level: int, msg: str, *args, **kwargs) -> None:
-        self.underlying_logger.log(level, msg, *args, stacklevel=self.stack_level, **kwargs)
+        self.underlying_logger.log(
+            level, msg, *args, stacklevel=self.stack_level, **kwargs
+        )
 
 
 class TempSetCmdLvlName(TempSetLevelName):
@@ -135,4 +160,6 @@ class TempSetCmdLvlName(TempSetLevelName):
 
     @override
     def _warn_user(self):
-        warnings.warn(f"Supplied log level name for command log level {self.level} is empty.")
+        warnings.warn(
+            f"Supplied log level name for command log level {self.level} is empty."
+        )

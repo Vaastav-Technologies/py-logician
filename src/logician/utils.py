@@ -5,6 +5,7 @@
 Utility functions for logging related library.
 """
 
+
 def command_or_file(command_name: str, file_name: str) -> str:
     """
     Useful in instances where a file may be either run as a library or a command. In such a case, mostly loggers must
@@ -29,4 +30,4 @@ def command_or_file(command_name: str, file_name: str) -> str:
     :param file_name:
     :return: ``file_name`` if ``file_name`` is not ``__main__`` else ``command_name``.
     """
-    return command_name if file_name == '__main__' else file_name
+    return command_name if file_name == "__main__" else file_name

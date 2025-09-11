@@ -3,6 +3,7 @@
 """
 Tests related to logician.stdlog.hndlr_cfgr
 """
+
 import logging
 import sys
 
@@ -24,14 +25,18 @@ class TestSimpleHandlerFormatter:
         log to a stream.
         """
         lgr1 = logging.getLogger(request.node.name)
-        assert len(lgr1.handlers) >= 0  # there are handlers already configured when logger gets created else logging.lastResort is picked up.
+        assert (
+            len(lgr1.handlers) >= 0
+        )  # there are handlers already configured when logger gets created else logging.lastResort is picked up.
         SimpleHandlerConfigurator().configure(
             None,  # type: ignore[arg-type] expected int, supplied None
             lgr1,
-            {}  # empty stream_fmt_map to remove any handlers from lgr
+            {},  # empty stream_fmt_map to remove any handlers from lgr
         )
         assert len(lgr1.handlers) == 1  # only NullHandler remains
-        assert isinstance(lgr1.handlers[0], logging.NullHandler)  # only NullHandler remains
+        assert isinstance(
+            lgr1.handlers[0], logging.NullHandler
+        )  # only NullHandler remains
 
     def test_handler_added_if_no_handler_configured(self, request):
         """
@@ -44,10 +49,14 @@ class TestSimpleHandlerFormatter:
         lgr2 = logging.getLogger(request.node.name)
         str_hn_map = form_stream_handlers_map(lgr2)
         assert sys.stdout not in str_hn_map  # no handlers configured for STDOUT stream
-        SimpleHandlerConfigurator().configure(logging.DEBUG, lgr2,
-            {sys.stdout: StdLogAllLevelSameFmt()}   # fmt added for STDOUT stream
+        SimpleHandlerConfigurator().configure(
+            logging.DEBUG,
+            lgr2,
+            {sys.stdout: StdLogAllLevelSameFmt()},  # fmt added for STDOUT stream
         )
-        str_hn_map = form_stream_handlers_map(lgr2)  # for the new stream->list[handlers] map
+        str_hn_map = form_stream_handlers_map(
+            lgr2
+        )  # for the new stream->list[handlers] map
         assert sys.stdout in str_hn_map  # handler introduced for the STDOUT stream
 
     class TestHandlersUpdatedToHaveRightFmt:
@@ -69,32 +78,43 @@ class TestSimpleHandlerFormatter:
             """
             lgr3 = logging.getLogger(request.node.name)
             stdout_handler1 = logging.StreamHandler(sys.stdout)
-            stdout_handler1.setFormatter(logging.Formatter(SHORTER_LOG_FMT))    # handler1 has a formatter configured
+            stdout_handler1.setFormatter(
+                logging.Formatter(SHORTER_LOG_FMT)
+            )  # handler1 has a formatter configured
             lgr3.addHandler(stdout_handler1)
             stdout_handler2 = logging.StreamHandler(sys.stdout)
-            lgr3.addHandler(stdout_handler2)  # add another handler for STDOUT stream, this handler has no formatter
+            lgr3.addHandler(
+                stdout_handler2
+            )  # add another handler for STDOUT stream, this handler has no formatter
             stdout_handler3 = logging.StreamHandler(sys.stdout)
             stdout_handler3.setFormatter(logging.Formatter(SHORTER_LOG_FMT))
-            lgr3.addHandler(stdout_handler3)    # handler1 has a formatter configured
+            lgr3.addHandler(stdout_handler3)  # handler1 has a formatter configured
             return lgr3
 
         class TestFixtures:
             """
             Just test all the fixtures provided by this class.
             """
-            def test_stdout_3_handlr_logger_has_3_stdout_handlers(self, stdout_3_handlr_logger):
+
+            def test_stdout_3_handlr_logger_has_3_stdout_handlers(
+                self, stdout_3_handlr_logger
+            ):
                 lgr = stdout_3_handlr_logger
-                assert len(lgr.handlers) == 3 # three handlers in total
+                assert len(lgr.handlers) == 3  # three handlers in total
 
             def test_str_hn_map_has_3_stdout_handlers(self, stdout_3_handlr_logger):
                 lgr = stdout_3_handlr_logger
                 str_hn_map = form_stream_handlers_map(lgr)
-                assert len(str_hn_map[sys.stdout]) == 3  # now, we have three handlers for STDOUT stream
+                assert (
+                    len(str_hn_map[sys.stdout]) == 3
+                )  # now, we have three handlers for STDOUT stream
 
             def test_doesnt_change_number_of_handlers(self, stdout_3_handlr_logger):
                 lgr = stdout_3_handlr_logger
                 str_hn_map = form_stream_handlers_map(lgr)
-                assert len(str_hn_map[sys.stdout]) == 3  # number of handlers didn't change
+                assert (
+                    len(str_hn_map[sys.stdout]) == 3
+                )  # number of handlers didn't change
 
         def test_first_handler_updated(self, stdout_3_handlr_logger):
             """
@@ -103,7 +123,9 @@ class TestSimpleHandlerFormatter:
             * now, configuring handler for stdout stream must only affect the first (0th index) attached handler.
             """
             lgr = stdout_3_handlr_logger
-            SimpleHandlerConfigurator().configure(logging.DEBUG, lgr, {sys.stdout: StdLogAllLevelSameFmt("%(name)s")})
+            SimpleHandlerConfigurator().configure(
+                logging.DEBUG, lgr, {sys.stdout: StdLogAllLevelSameFmt("%(name)s")}
+            )
             str_hn_map = form_stream_handlers_map(lgr)
             assert "%(name)s" == str_hn_map[sys.stdout][0].formatter._fmt  # type: ignore[attr-defined] 0th handler reconfigured to include the supplied format.
 
@@ -114,10 +136,15 @@ class TestSimpleHandlerFormatter:
             * now, configuring handler for stdout stream must not affect any attached handler other than the 0th.
             """
             lgr = stdout_3_handlr_logger
-            SimpleHandlerConfigurator().configure(logging.DEBUG, lgr, {sys.stdout: StdLogAllLevelSameFmt("%(name)s")})
+            SimpleHandlerConfigurator().configure(
+                logging.DEBUG, lgr, {sys.stdout: StdLogAllLevelSameFmt("%(name)s")}
+            )
             str_hn_map = form_stream_handlers_map(lgr)
             assert all(
-                "%(name)s" != hn.formatter._fmt for hn in str_hn_map[sys.stdout][1:] if hn.formatter)  # type: ignore[attr-defined]
+                "%(name)s" != hn.formatter._fmt
+                for hn in str_hn_map[sys.stdout][1:]
+                if hn.formatter
+            )  # type: ignore[attr-defined]
 
     def test_logger_has_handler_added_but_fmtr_not_configured(self, request):
         """
@@ -129,16 +156,22 @@ class TestSimpleHandlerFormatter:
         * add a handler for the STDERR stream but do not set any formatter for it.
         * now, ``SimpleHandlerConfigurator().configure`` adds a formatter for the handler of that stream.
         """
-        handler = logging.StreamHandler()   # stderr handler
-        assert not handler.formatter    # handler has no formatter set
+        handler = logging.StreamHandler()  # stderr handler
+        assert not handler.formatter  # handler has no formatter set
         lgr4 = logging.getLogger(request.node.name)
-        assert not lgr4.handlers    # logger has no handlers for any stream
-        lgr4.addHandler(handler)    # add our stderr handler to lgr4, still the handler has no formatter set
-        assert handler in lgr4.handlers # our added handler in lgr4's handlers
-        assert len(lgr4.handlers) == 1 # only our handler present
+        assert not lgr4.handlers  # logger has no handlers for any stream
+        lgr4.addHandler(
+            handler
+        )  # add our stderr handler to lgr4, still the handler has no formatter set
+        assert handler in lgr4.handlers  # our added handler in lgr4's handlers
+        assert len(lgr4.handlers) == 1  # only our handler present
         assert not lgr4.handlers[0].formatter  # the present handler has no formatter
-        SimpleHandlerConfigurator().configure(logging.DEBUG, lgr4, {sys.stderr: StdLogAllLevelSameFmt("%(name)s")})
-        assert handler in lgr4.handlers # our added handler in lgr4's handlers
-        assert len(lgr4.handlers) == 1 # only our handler present
+        SimpleHandlerConfigurator().configure(
+            logging.DEBUG, lgr4, {sys.stderr: StdLogAllLevelSameFmt("%(name)s")}
+        )
+        assert handler in lgr4.handlers  # our added handler in lgr4's handlers
+        assert len(lgr4.handlers) == 1  # only our handler present
         assert lgr4.handlers[0].formatter  # the present handler has a formatter now
-        assert lgr4.handlers[0].formatter._fmt == "%(name)s"    # our supplied format is configured for the formatter
+        assert (
+            lgr4.handlers[0].formatter._fmt == "%(name)s"
+        )  # our supplied format is configured for the formatter

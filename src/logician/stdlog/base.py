@@ -4,15 +4,27 @@
 """
 Logging interfaces for the standard logging library of python.
 """
+
 import logging
 from abc import abstractmethod
 from typing import Protocol, Any, Mapping, override
 
 from logician import MinLogProtocol, AllLevelLogger
 from logician.base import FatalLogProtocol, ExceptionLogProtocol, HasUnderlyingLogger
-from logician.stdlog import TRACE_LOG_LEVEL, TRACE_LOG_STR, SUCCESS_LOG_LEVEL, SUCCESS_LOG_STR, \
-    NOTICE_LOG_LEVEL, NOTICE_LOG_STR, EXCEPTION_TRACEBACK_LOG_LEVEL, EXCEPTION_TRACEBACK_LOG_STR, FATAL_LOG_LEVEL, \
-    FATAL_LOG_STR, CMD_LOG_LEVEL, CMD_LOG_STR
+from logician.stdlog import (
+    TRACE_LOG_LEVEL,
+    TRACE_LOG_STR,
+    SUCCESS_LOG_LEVEL,
+    SUCCESS_LOG_STR,
+    NOTICE_LOG_LEVEL,
+    NOTICE_LOG_STR,
+    EXCEPTION_TRACEBACK_LOG_LEVEL,
+    EXCEPTION_TRACEBACK_LOG_STR,
+    FATAL_LOG_LEVEL,
+    FATAL_LOG_STR,
+    CMD_LOG_LEVEL,
+    CMD_LOG_STR,
+)
 from logician.stdlog.utils import level_name_mapping
 
 
@@ -31,22 +43,34 @@ class StdLogProtocol(MinLogProtocol, Protocol):
         - level
         - disabled
     """
+
     name: str
     level: int
     disabled: bool
 
-    def fatal(self, msg: str, *args, **kwargs) -> None:
-        ...
+    def fatal(self, msg: str, *args, **kwargs) -> None: ...
 
     # noinspection SpellCheckingInspection
     # required for the param stack-level because this method signature from the protocol needs to correctly match that
     # of the std logging method signature.
-    def exception(self, msg: object, *args: object, exc_info: Any = ..., stack_info: bool = ...,
-                  stacklevel: int = ..., extra: Mapping[str, object] | None = ...) -> None:
-        ...
+    def exception(
+        self,
+        msg: object,
+        *args: object,
+        exc_info: Any = ...,
+        stack_info: bool = ...,
+        stacklevel: int = ...,
+        extra: Mapping[str, object] | None = ...,
+    ) -> None: ...
 
 
-class StdLevelLogger(MinLogProtocol, FatalLogProtocol, ExceptionLogProtocol, HasUnderlyingLogger, Protocol):
+class StdLevelLogger(
+    MinLogProtocol,
+    FatalLogProtocol,
+    ExceptionLogProtocol,
+    HasUnderlyingLogger,
+    Protocol,
+):
     """
     Logger that implements python standard logging methods::
 
@@ -58,6 +82,7 @@ class StdLevelLogger(MinLogProtocol, FatalLogProtocol, ExceptionLogProtocol, Has
         - fatal
         - exception
     """
+
     pass
 
 
@@ -65,12 +90,15 @@ class DirectStdAllLevelLogger(AllLevelLogger, Protocol):
     """
     All logging levels as provided by the python std logging.
     """
-    DEFAULT_LEVEL_MAP: dict[int, str] = {TRACE_LOG_LEVEL: TRACE_LOG_STR,
-                                         SUCCESS_LOG_LEVEL: SUCCESS_LOG_STR,
-                                         NOTICE_LOG_LEVEL: NOTICE_LOG_STR,
-                                         CMD_LOG_LEVEL: CMD_LOG_STR,
-                                         EXCEPTION_TRACEBACK_LOG_LEVEL: EXCEPTION_TRACEBACK_LOG_STR,
-                                         FATAL_LOG_LEVEL: FATAL_LOG_STR}
+
+    DEFAULT_LEVEL_MAP: dict[int, str] = {
+        TRACE_LOG_LEVEL: TRACE_LOG_STR,
+        SUCCESS_LOG_LEVEL: SUCCESS_LOG_STR,
+        NOTICE_LOG_LEVEL: NOTICE_LOG_STR,
+        CMD_LOG_LEVEL: CMD_LOG_STR,
+        EXCEPTION_TRACEBACK_LOG_LEVEL: EXCEPTION_TRACEBACK_LOG_STR,
+        FATAL_LOG_LEVEL: FATAL_LOG_STR,
+    }
     """
     All log levels in accordance with the python std log. Ordered in such a fashion::
     
@@ -129,7 +157,9 @@ class DirectStdAllLevelLogger(AllLevelLogger, Protocol):
         """
         if level_name_map:
             DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP.update(level_name_map)
-        DirectStdAllLevelLogger.__register_all_levels(DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP)
+        DirectStdAllLevelLogger.__register_all_levels(
+            DirectStdAllLevelLogger.DEFAULT_LEVEL_MAP
+        )
         return level_name_mapping()
 
     @staticmethod
@@ -140,5 +170,5 @@ class DirectStdAllLevelLogger(AllLevelLogger, Protocol):
     @override
     @property
     @abstractmethod
-    def underlying_logger(self) -> logging.Logger: # noqa
+    def underlying_logger(self) -> logging.Logger:  # noqa
         pass
