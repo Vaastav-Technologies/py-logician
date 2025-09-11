@@ -14,7 +14,7 @@ from logician.stdlog import TIMED_DETAIL_LOG_FMT, TRACE_LOG_LEVEL, DETAIL_LOG_FM
     SHORTER_LOG_FMT
 
 
-class StdLogAllLevelSameFmt(AllLevelSameFmt):
+class StdLogAllLevelSameFmt(AllLevelSameFmt[int, str]):
 
     def __init__(self, fmt: str = SHORTER_LOG_FMT):
         """
@@ -29,7 +29,7 @@ class StdLogAllLevelSameFmt(AllLevelSameFmt):
         return self._fmt
 
 
-class StdLogAllLevelDiffFmt(DiffLevelDiffFmt):
+class StdLogAllLevelDiffFmt(DiffLevelDiffFmt[int, str]):
     DEFAULT_LOGGER_DICT: dict[int, str] = {
         TRACE_LOG_LEVEL: TIMED_DETAIL_LOG_FMT,
         logging.DEBUG: DETAIL_LOG_FMT,
@@ -86,12 +86,12 @@ class StdLogAllLevelDiffFmt(DiffLevelDiffFmt):
         return max_level
 
 
-STDERR_ALL_LVL_SAME_FMT: dict[TextIO, LogLevelFmt] = {sys.stderr: StdLogAllLevelSameFmt()}
+STDERR_ALL_LVL_SAME_FMT: dict[TextIO, LogLevelFmt[int, str]] = {sys.stderr: StdLogAllLevelSameFmt()}
 """
 Maps ``sys.stderr`` to same logging format for all levels.
 """
 
-STDERR_ALL_LVL_DIFF_FMT: dict[TextIO, LogLevelFmt] = {sys.stderr: StdLogAllLevelDiffFmt()}
+STDERR_ALL_LVL_DIFF_FMT: dict[TextIO, LogLevelFmt[int, str]] = {sys.stderr: StdLogAllLevelDiffFmt()}
 """
 Maps ``sys.stderr`` to different logging format for all levels.
 """
