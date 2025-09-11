@@ -1,5 +1,6 @@
 # logician
 
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/logician)
 ![PyPI - Types](https://img.shields.io/pypi/types/logician)
 ![GitHub License](https://img.shields.io/github/license/Vaastav-Technologies/py-logician)
 [![🔧 test](https://github.com/Vaastav-Technologies/py-logician/actions/workflows/test.yml/badge.svg)](https://github.com/Vaastav-Technologies/py-logician/actions/workflows/test.yml)
