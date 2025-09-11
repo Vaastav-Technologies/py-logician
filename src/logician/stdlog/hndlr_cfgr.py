@@ -37,6 +37,17 @@ class HandlerConfigurator(Protocol):
 
 
 class SimpleHandlerConfigurator(HandlerConfigurator):
+    """
+    Handler configurator that configures loggers' handlers using following rules:
+
+    * Only have ``NullHandler`` in the logger if the supplied ``stream_fmt_map`` is empty. Supplying an empty
+      ``stream_fmt_map`` shows the intent of the user to not log to any stream.
+    * Add a ``StreamHandler`` for the stream that is provided in ``stream_fmt_map`` but is not present in the logger's
+      handlers.
+    * If handlers are already present and configured for a stream in logger then simply configure the first handler to
+      conform to the supplied stream in the ``stream_fmt_map``.
+    """
+
     @override
     def configure(
         self, level: int, logger: logging.Logger, stream_fmt_map: dict[IO, LogLevelFmt]
