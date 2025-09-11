@@ -17,7 +17,7 @@ from logician.configurators import (
     HasUnderlyingConfigurator,
     LevelLoggerConfigurator,
 )
-from logician.stdlog.utils import get_first_non_none
+from vt.utils.commons.commons.collections import get_first_non_none
 
 
 class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
