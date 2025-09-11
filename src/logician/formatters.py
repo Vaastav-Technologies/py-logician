@@ -6,12 +6,11 @@
 Logger interfaces for Logger formatters.
 """
 
-
 from abc import abstractmethod
 from typing import Protocol
 
 
-class LogLevelFmt(Protocol):
+class LogLevelFmt[T, F](Protocol):
     """
     Interface to specify how log levels should impact the logging formats.
 
@@ -25,10 +24,14 @@ class LogLevelFmt(Protocol):
     see ``DiffLevelDiffFmt`` for behavior on different log format for different logging levels.
 
     or the format remains same throughout all logging levels, see ``AllLevelSameFmt``.
+
+    T - type of ``level`` of the logger, e.g. ``int`` for python std log.
+
+    F – type of the returned format, e.g. ``str`` for python std log.
     """
 
     @abstractmethod
-    def fmt(self, level: int) -> str:
+    def fmt(self, level: T) -> F:
         """
         :param level: ``level`` for which the log ``format`` is to be queried.
         :return: format for the queried ``level``.
@@ -36,7 +39,7 @@ class LogLevelFmt(Protocol):
         pass
 
 
-class AllLevelSameFmt(LogLevelFmt, Protocol):
+class AllLevelSameFmt[T, F](LogLevelFmt[T, F], Protocol):
     """
     Interface to specify how different log levels infer the same logging formats.
 
@@ -54,10 +57,11 @@ class AllLevelSameFmt(LogLevelFmt, Protocol):
         - most verbose TRACE level.
         TRACE: some trace info
     """
+
     pass
 
 
-class DiffLevelDiffFmt(LogLevelFmt, Protocol):
+class DiffLevelDiffFmt[T, F](LogLevelFmt[T, F], Protocol):
     """
     Interface to specify how different log levels should impact the logging formats.
 
@@ -77,7 +81,7 @@ class DiffLevelDiffFmt(LogLevelFmt, Protocol):
     """
 
     @abstractmethod
-    def next_approx_level(self, missing_level: int) -> int:
+    def next_approx_level(self, missing_level: T) -> T:
         """
         :param missing_level: A level that was not registered in the logger.
         :return: next approx level if a ``missing_level`` is queried which wasn't already registered in the logger.

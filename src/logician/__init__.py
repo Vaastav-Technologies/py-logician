@@ -16,7 +16,6 @@ at the time of logician logger configurator creation and hence client can config
 supplying the logger class to perform delegation onto by this library.
 """
 
-
 from logging import Logger
 
 

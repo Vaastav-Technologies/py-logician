@@ -6,6 +6,7 @@ All logging interface implementation by the standard logging library of python.
 
 All level of logging are supported by these loggers using delegation and indirection
 """
+
 from abc import ABC, abstractmethod
 from logging import Logger
 from typing import override, cast, Protocol
@@ -14,8 +15,10 @@ from logician import AllLevelLogger
 from logician.delegating import DelegatingLogger
 from logician.stdlog import StdLogProtocol
 from logician.stdlog.base import DirectStdAllLevelLogger
-from logician.stdlog.all_levels_impl import StdProtocolAllLevelLoggerImpl, \
-    BaseDirectStdAllLevelLoggerImpl
+from logician.stdlog.all_levels_impl import (
+    StdProtocolAllLevelLoggerImpl,
+    BaseDirectStdAllLevelLoggerImpl,
+)
 
 
 class StdProtocolAllLevelLogger(AllLevelLogger, DelegatingLogger, Protocol):
@@ -26,14 +29,12 @@ class StdProtocolAllLevelLogger(AllLevelLogger, DelegatingLogger, Protocol):
     @override
     @property
     @abstractmethod
-    def logger_impl(self) -> StdProtocolAllLevelLoggerImpl:
-        ...
+    def logger_impl(self) -> StdProtocolAllLevelLoggerImpl: ...
 
     @override
     @property
     @abstractmethod
-    def underlying_logger(self) -> StdLogProtocol:
-        ...
+    def underlying_logger(self) -> StdLogProtocol: ...
 
 
 class BaseStdProtocolAllLevelLogger(StdProtocolAllLevelLogger, ABC):
@@ -118,10 +119,15 @@ class BaseStdProtocolAllLevelLogger(StdProtocolAllLevelLogger, ABC):
         self.logger_impl.log(level, msg, *args, **kwargs)
 
 
-class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, DirectStdAllLevelLogger, ABC):
-
-    def __init__(self, logger_impl: BaseDirectStdAllLevelLoggerImpl,
-                 level_name_map: dict[int, str] | None = None, cmd_name: str | None = None):
+class BaseDirectStdAllLevelLogger(
+    BaseStdProtocolAllLevelLogger, DirectStdAllLevelLogger, ABC
+):
+    def __init__(
+        self,
+        logger_impl: BaseDirectStdAllLevelLoggerImpl,
+        level_name_map: dict[int, str] | None = None,
+        cmd_name: str | None = None,
+    ):
         """
         Implementation for a std protocol logger which provides all logging levels by the protocol implementation.
 
@@ -153,7 +159,7 @@ class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, DirectStdAllLev
 
     @override
     @property
-    def underlying_logger(self) -> Logger: # noqa
+    def underlying_logger(self) -> Logger:  # noqa
         return cast(Logger, self._underlying_logger)
 
     @override
@@ -172,9 +178,12 @@ class BaseDirectStdAllLevelLogger(BaseStdProtocolAllLevelLogger, DirectStdAllLev
 
 
 class DirectAllLevelLogger(BaseDirectStdAllLevelLogger, AllLevelLogger):
-
-    def __init__(self, logger_impl: BaseDirectStdAllLevelLoggerImpl,
-                 level_name_map: dict[int, str] | None = None, cmd_name: str | None = None):
+    def __init__(
+        self,
+        logger_impl: BaseDirectStdAllLevelLoggerImpl,
+        level_name_map: dict[int, str] | None = None,
+        cmd_name: str | None = None,
+    ):
         """
         Std protocol logger which provides all logging levels by the protocol implementation.
 

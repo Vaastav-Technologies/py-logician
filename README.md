@@ -226,54 +226,7 @@ You can override these or pass in your own formatting configuration.
 
 ---
 
-## 🛠️ Advanced Configuration
-
-```python
-from logician import configure
-
-configure(
-    logger_names=["sqlalchemy", "uvicorn"],
-    level="INFO",
-    env_prefix="MYAPP_",
-    verbosity=1
-)
-```
-
-### Keyword Arguments
-
-| Param          | Type       | Description                                          |
-|----------------|------------|------------------------------------------------------|
-| `logger_names` | list\[str] | Additional logger names to configure aside from root |
-| `level`        | str / int  | Default log level (e.g., "INFO", 20)                 |
-| `verbosity`    | int        | Verbosity count to decrease log level (`-v`)         |
-| `quietness`    | int        | Quietness count to increase log level (`-q`)         |
-| `env_prefix`   | str        | Prefix for reading env-based logger overrides        |
-
----
-
-## 🧪 Example Doctest
-
-All public APIs include doctests. Example:
-
-```python
->> > from logician import derive_level
->> > derive_level(base="INFO", verbosity=1)
-10
->> > derive_level(base="INFO", verbosity=0, quietness=1)
-30
-```
-
----
-
 ## 🛠 Real-World Usage
-
-### FastAPI + Uvicorn + Environment config
-
-```python
-from logician import configure
-
-configure(logger_names=["uvicorn", "sqlalchemy"], env_prefix="API_")
-```
 
 ### CLI Tools
 

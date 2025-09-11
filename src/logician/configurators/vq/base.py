@@ -5,6 +5,7 @@
 """
 Base interfaces for verbosity (V) and quietness (Q) configurators.
 """
+
 from abc import abstractmethod
 from typing import Protocol, Literal, Any, override, overload
 
@@ -36,9 +37,13 @@ class VQLevelOrDefault[T](VQConfigurator[T], Protocol):
     Interface to facilitate getting a logging level from VQConfigurator.
     """
 
-    def level_or_default(self, ver_qui: V_LITERAL | Q_LITERAL | None,
-                         emphasis: Literal['verbosity', 'quietness', 'verbosity or quietness'],
-                         default_level: T, choices: list[Any]) -> T:
+    def level_or_default(
+        self,
+        ver_qui: V_LITERAL | Q_LITERAL | None,
+        emphasis: Literal["verbosity", "quietness", "verbosity or quietness"],
+        default_level: T,
+        choices: list[Any],
+    ) -> T:
         """
         :param ver_qui: verbosity or quietness.
         :param emphasis: strings '`verbosity`' or '`quietness`'.
@@ -52,31 +57,39 @@ class VQLevelOrDefault[T](VQConfigurator[T], Protocol):
             try:
                 return self.vq_level_map[ver_qui]
             except KeyError as e:
-                return self.key_error_handler.handle_key_error(e, default_level, emphasis, choices)
+                return self.key_error_handler.handle_key_error(
+                    e, default_level, emphasis, choices
+                )
         else:
             return default_level
 
     @property
     @abstractmethod
-    def key_error_handler(self) -> DefaultOrError[T]:
-        ...
+    def key_error_handler(self) -> DefaultOrError[T]: ...
 
 
 class SimpleWarningVQLevelOrDefault[T](VQLevelOrDefault[T], Warner):
     @overload
-    def __init__(self, vq_level_map: VQ_DICT_LITERAL[T]):
-        ...
+    def __init__(self, vq_level_map: VQ_DICT_LITERAL[T]): ...
 
     @overload
-    def __init__(self, vq_level_map: VQ_DICT_LITERAL[T], *, warn_only: bool):
-        ...
+    def __init__(self, vq_level_map: VQ_DICT_LITERAL[T], *, warn_only: bool): ...
 
     @overload
-    def __init__(self, vq_level_map: VQ_DICT_LITERAL[T], *, key_error_handler: WarningWithDefault[T]):
-        ...
+    def __init__(
+        self,
+        vq_level_map: VQ_DICT_LITERAL[T],
+        *,
+        key_error_handler: WarningWithDefault[T],
+    ): ...
 
-    def __init__(self, vq_level_map: VQ_DICT_LITERAL[T], *, warn_only: bool | None = None,
-                 key_error_handler: WarningWithDefault[T] | None = None):
+    def __init__(
+        self,
+        vq_level_map: VQ_DICT_LITERAL[T],
+        *,
+        warn_only: bool | None = None,
+        key_error_handler: WarningWithDefault[T] | None = None,
+    ):
         """
         Simple implementation for ``VQLevelOrDefault``. It can decided by the ``key_error_handler`` on how to handle
         ``KeyError``.
@@ -107,7 +120,9 @@ class SimpleWarningVQLevelOrDefault[T](VQLevelOrDefault[T], Warner):
         :param key_error_handler: A custom ``KeyError`` to handle key errors.
         """
         if warn_only is not None and key_error_handler is not None:
-            raise ValueError(errmsg_creator.not_allowed_together('warn_only', 'key_error_handler'))
+            raise ValueError(
+                errmsg_creator.not_allowed_together("warn_only", "key_error_handler")
+            )
         self._vq_level_map = vq_level_map
         if key_error_handler:
             self._key_error_handler = key_error_handler

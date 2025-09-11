@@ -17,8 +17,13 @@ Here the value for a simple environment variable maybe vv or qq and hence can ar
 from abc import abstractmethod
 from typing import Protocol, override
 
-from logician.configurators.vq import VQConfigurator, V_LITERAL, Q_LITERAL, VQ_DICT_LITERAL, \
-    VQLevelOrDefault
+from logician.configurators.vq import (
+    VQConfigurator,
+    V_LITERAL,
+    Q_LITERAL,
+    VQ_DICT_LITERAL,
+    VQLevelOrDefault,
+)
 from logician.configurators.vq.base import SimpleWarningVQLevelOrDefault
 
 
@@ -39,7 +44,9 @@ class VQCommConfigurator[T](VQConfigurator[T], Protocol):
         ...
 
     @abstractmethod
-    def get_effective_level(self, ver_qui: V_LITERAL | Q_LITERAL | None, default_level: T) -> T:
+    def get_effective_level(
+        self, ver_qui: V_LITERAL | Q_LITERAL | None, default_level: T
+    ) -> T:
         """
         Get the effective level for supplied verbosity or quietness.
 
@@ -54,8 +61,12 @@ class VQCommConfigurator[T](VQConfigurator[T], Protocol):
 
 
 class VQCommon[T](VQCommConfigurator[T]):
-    def __init__(self, vq_level_map: VQ_DICT_LITERAL[T], warn_only: bool = False,
-                 level_or_default_handler: VQLevelOrDefault[T] | None = None):
+    def __init__(
+        self,
+        vq_level_map: VQ_DICT_LITERAL[T],
+        warn_only: bool = False,
+        level_or_default_handler: VQLevelOrDefault[T] | None = None,
+    ):
         """
         Treats verbosity and quietness as one inclusive argument.
 
@@ -72,7 +83,9 @@ class VQCommon[T](VQCommConfigurator[T]):
         if level_or_default_handler:
             self.level_or_default_handler = level_or_default_handler
         else:
-            self.level_or_default_handler = SimpleWarningVQLevelOrDefault(vq_level_map, warn_only=warn_only)
+            self.level_or_default_handler = SimpleWarningVQLevelOrDefault(
+                vq_level_map, warn_only=warn_only
+            )
 
     @override
     @property
@@ -108,7 +121,9 @@ class VQCommon[T](VQCommConfigurator[T]):
         return False
 
     @override
-    def get_effective_level(self, ver_qui: V_LITERAL | Q_LITERAL | None, default_level: T) -> T:
+    def get_effective_level(
+        self, ver_qui: V_LITERAL | Q_LITERAL | None, default_level: T
+    ) -> T:
         """
         Get effective level by treating verbosity and quietness as single argument.
 
@@ -148,9 +163,12 @@ class VQCommon[T](VQCommConfigurator[T]):
         :raise KeyError: if verbosity and quietness are absent in ``vq_level_map`` and ``warn_only`` is ``False``.
         """
         if ver_qui:
-            level = self.level_or_default_handler.level_or_default(ver_qui,
-                                                                   'verbosity or quietness', default_level,
-                                                                   list(self.vq_level_map.keys()))
+            level = self.level_or_default_handler.level_or_default(
+                ver_qui,
+                "verbosity or quietness",
+                default_level,
+                list(self.vq_level_map.keys()),
+            )
         else:
             level = default_level
         return level

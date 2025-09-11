@@ -13,42 +13,43 @@ class LogLogProtocol(Protocol):
     """
     Protocol supporting the log method.
     """
+
     @abstractmethod
-    def log(self, level: int, msg, *args, **kwargs) -> None:
-        ...
+    def log(self, level: int, msg, *args, **kwargs) -> None: ...
 
 
 class TraceLogProtocol(Protocol):
     """
     Protocol supporting the trace method.
     """
+
     @abstractmethod
-    def trace(self, msg, *args, **kwargs) -> None:
-        ...
+    def trace(self, msg, *args, **kwargs) -> None: ...
 
 
 class DebugLogProtocol(Protocol):
     """
     Protocol supporting the debug method.
     """
+
     @abstractmethod
-    def debug(self, msg, *args, **kwargs) -> None:
-        ...
+    def debug(self, msg, *args, **kwargs) -> None: ...
 
 
 class InfoLogProtocol(Protocol):
     """
     Protocol supporting the info method.
     """
+
     @abstractmethod
-    def info(self, msg, *args, **kwargs) -> None:
-        ...
+    def info(self, msg, *args, **kwargs) -> None: ...
 
 
 class SuccessLogProtocol(Protocol):
     """
     Protocol supporting the success method.
     """
+
     @abstractmethod
     def success(self, msg, *args, **kwargs) -> None:
         pass
@@ -58,6 +59,7 @@ class NoticeLogProtocol(Protocol):
     """
     Protocol supporting the notice method.
     """
+
     @abstractmethod
     def notice(self, msg, *args, **kwargs) -> None:
         pass
@@ -67,6 +69,7 @@ class CommandLogProtocol(Protocol):
     """
     Protocol supporting the command logging. This can be used to log a command's stderr into the logger itself.
     """
+
     @abstractmethod
     def cmd(self, msg, cmd_name: str | None = None, *args, **kwargs) -> None:
         """
@@ -83,24 +86,25 @@ class WarningLogProtocol(Protocol):
     """
     Protocol supporting the warning method.
     """
+
     @abstractmethod
-    def warning(self, msg, *args, **kwargs) -> None:
-        ...
+    def warning(self, msg, *args, **kwargs) -> None: ...
 
 
 class ErrorLogProtocol(Protocol):
     """
     Protocol supporting the error method.
     """
+
     @abstractmethod
-    def error(self, msg, *args, **kwargs) -> None:
-        ...
+    def error(self, msg, *args, **kwargs) -> None: ...
 
 
 class ExceptionLogProtocol(Protocol):
     """
     Protocol supporting the exception method.
     """
+
     @abstractmethod
     def exception(self, msg, *args, **kwargs) -> None:
         pass
@@ -110,22 +114,30 @@ class CriticalLogProtocol(Protocol):
     """
     Protocol supporting the critical method.
     """
+
     @abstractmethod
-    def critical(self, msg, *args, **kwargs) -> None:
-        ...
+    def critical(self, msg, *args, **kwargs) -> None: ...
 
 
 class FatalLogProtocol(Protocol):
     """
     Protocol supporting the critical method.
     """
+
     @abstractmethod
     def fatal(self, msg, *args, **kwargs) -> None:
         pass
 
 
-class _MinLogProtocol(LogLogProtocol, DebugLogProtocol, InfoLogProtocol, WarningLogProtocol, ErrorLogProtocol,
-                      CriticalLogProtocol, Protocol):
+class _MinLogProtocol(
+    LogLogProtocol,
+    DebugLogProtocol,
+    InfoLogProtocol,
+    WarningLogProtocol,
+    ErrorLogProtocol,
+    CriticalLogProtocol,
+    Protocol,
+):
     """
     This logger protocol is designed for extension but not direct implementation.
 
@@ -146,6 +158,7 @@ class _MinLogProtocol(LogLogProtocol, DebugLogProtocol, InfoLogProtocol, Warning
         - ERROR
         - CRITICAL
     """
+
     pass
 
 
@@ -159,11 +172,20 @@ class MinLogProtocol(_MinLogProtocol, Protocol):
         - ERROR
         - CRITICAL
     """
+
     pass
 
 
-class AllLogProtocol(TraceLogProtocol, _MinLogProtocol, SuccessLogProtocol, NoticeLogProtocol, CommandLogProtocol,
-                     FatalLogProtocol, ExceptionLogProtocol, Protocol):
+class AllLogProtocol(
+    TraceLogProtocol,
+    _MinLogProtocol,
+    SuccessLogProtocol,
+    NoticeLogProtocol,
+    CommandLogProtocol,
+    FatalLogProtocol,
+    ExceptionLogProtocol,
+    Protocol,
+):
     """
     Logger protocol which supports all the common Logging levels, i.e.::
 
@@ -182,6 +204,7 @@ class AllLogProtocol(TraceLogProtocol, _MinLogProtocol, SuccessLogProtocol, Noti
         - FATAL
         - EXCEPTION
     """
+
     pass
 
 
@@ -191,6 +214,7 @@ class HasUnderlyingLogger(Protocol):
 
     Can return the contained underlying logger for the client class to perform actions in the future if needed.
     """
+
     @property
     @abstractmethod
     def underlying_logger(self) -> MinLogProtocol:
@@ -225,4 +249,5 @@ class AllLevelLogger(AllLogProtocol, HasUnderlyingLogger, Protocol):
 
     And delegates the actual logging to an ``underlying_logger``, see ``HasUnderlyingLogger``.
     """
+
     pass

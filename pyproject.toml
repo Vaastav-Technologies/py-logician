@@ -75,3 +75,14 @@ legacy_tox_ini = """
     commands =
       sphinx-build -q -b html docs/source docs/build/html
 """
+
+[tool.pytest.ini_options]
+addopts = ["--doctest-modules", # Test all the doctests
+    "--doctest-glob=*.md"] # Test doctests included as examples in the md files.
+
+[tool.coverage.run]
+    omit = [
+        "sample.py",
+        "src/double_log_check.py",
+        "src/logician/try_main.py"
+    ]

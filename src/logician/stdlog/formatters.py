@@ -5,17 +5,22 @@
 """
 Logger interfaces for standard Logger formatters.
 """
+
 import logging
 import sys
-from typing import TextIO, override
+from typing import override, IO
 
 from logician.formatters import AllLevelSameFmt, DiffLevelDiffFmt, LogLevelFmt
-from logician.stdlog import TIMED_DETAIL_LOG_FMT, TRACE_LOG_LEVEL, DETAIL_LOG_FMT, SHORT_LOG_FMT, \
-    SHORTER_LOG_FMT
+from logician.stdlog import (
+    TIMED_DETAIL_LOG_FMT,
+    TRACE_LOG_LEVEL,
+    DETAIL_LOG_FMT,
+    SHORT_LOG_FMT,
+    SHORTER_LOG_FMT,
+)
 
 
-class StdLogAllLevelSameFmt(AllLevelSameFmt):
-
+class StdLogAllLevelSameFmt(AllLevelSameFmt[int, str]):
     def __init__(self, fmt: str = SHORTER_LOG_FMT):
         """
         Same std log format for all levels.
@@ -29,12 +34,12 @@ class StdLogAllLevelSameFmt(AllLevelSameFmt):
         return self._fmt
 
 
-class StdLogAllLevelDiffFmt(DiffLevelDiffFmt):
+class StdLogAllLevelDiffFmt(DiffLevelDiffFmt[int, str]):
     DEFAULT_LOGGER_DICT: dict[int, str] = {
         TRACE_LOG_LEVEL: TIMED_DETAIL_LOG_FMT,
         logging.DEBUG: DETAIL_LOG_FMT,
         logging.INFO: SHORT_LOG_FMT,
-        logging.WARN: SHORTER_LOG_FMT
+        logging.WARN: SHORTER_LOG_FMT,
     }
     """
     Different log formats for different log levels.
@@ -63,11 +68,15 @@ class StdLogAllLevelDiffFmt(DiffLevelDiffFmt):
         :param fmt_dict: level -> format dictionary. Defaults to
             ``StdLogAllLevelDiffFmt.DEFAULT_LOGGER_DICT`` when ``None`` or an empty dict is provided.
         """
-        self._fmt_dict = fmt_dict if fmt_dict else StdLogAllLevelDiffFmt.DEFAULT_LOGGER_DICT
+        self._fmt_dict = (
+            fmt_dict if fmt_dict else StdLogAllLevelDiffFmt.DEFAULT_LOGGER_DICT
+        )
 
     @override
     def fmt(self, level: int) -> str:
-        final_level = level if level in self._fmt_dict else self.next_approx_level(level)
+        final_level = (
+            level if level in self._fmt_dict else self.next_approx_level(level)
+        )
         return self._fmt_dict[final_level]
 
     @override
@@ -86,12 +95,16 @@ class StdLogAllLevelDiffFmt(DiffLevelDiffFmt):
         return max_level
 
 
-STDERR_ALL_LVL_SAME_FMT: dict[TextIO, LogLevelFmt] = {sys.stderr: StdLogAllLevelSameFmt()}
+STDERR_ALL_LVL_SAME_FMT: dict[IO, LogLevelFmt[int, str]] = {
+    sys.stderr: StdLogAllLevelSameFmt()
+}
 """
 Maps ``sys.stderr`` to same logging format for all levels.
 """
 
-STDERR_ALL_LVL_DIFF_FMT: dict[TextIO, LogLevelFmt] = {sys.stderr: StdLogAllLevelDiffFmt()}
+STDERR_ALL_LVL_DIFF_FMT: dict[IO, LogLevelFmt[int, str]] = {
+    sys.stderr: StdLogAllLevelDiffFmt()
+}
 """
 Maps ``sys.stderr`` to different logging format for all levels.
 """

@@ -5,14 +5,15 @@
 """
 Constants for verbosity (V) and quietness (Q) configurators.
 """
+
 from typing import Literal
 
-V_LITERAL = Literal['v', 'vv', 'vvv']
+V_LITERAL = Literal["v", "vv", "vvv"]
 """
 Verbosity literal. Progressively denotes more and more verbosity.
 """
 
-Q_LITERAL = Literal['q', 'qq', 'qqq']
+Q_LITERAL = Literal["q", "qq", "qqq"]
 """
 Quietness literal. Progressively denotes more and more quietness.
 """

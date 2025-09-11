@@ -7,20 +7,28 @@ Configure loggers as per level supplied by a list.
 
 First non-None level in this supplied list is picked up by default.
 """
+
 import logging
 from typing import override
 
 from logician import DirectStdAllLevelLogger
-from logician.configurators import LoggerConfigurator, HasUnderlyingConfigurator, \
-    LevelLoggerConfigurator
+from logician.configurators import (
+    LoggerConfigurator,
+    HasUnderlyingConfigurator,
+    LevelLoggerConfigurator,
+)
 from logician.stdlog.utils import get_first_non_none
 
 
 class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
     DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = get_first_non_none
 
-    def __init__(self, level_list: list[T | None], configurator: LevelLoggerConfigurator[T],
-                 level_pickup_strategy=DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE):
+    def __init__(
+        self,
+        level_list: list[T | None],
+        configurator: LevelLoggerConfigurator[T],
+        level_pickup_strategy=DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE,
+    ):
         """
         Picks up the first non ``None`` level from the supplied ``level_list`` to configure the logger underneath.
 
@@ -46,7 +54,9 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
         self.level_pickup_strategy = level_pickup_strategy
 
     def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
-        final_level = self.level_pickup_strategy(self.level_list, self.underlying_configurator.level)
+        final_level = self.level_pickup_strategy(
+            self.level_list, self.underlying_configurator.level
+        )
         self.underlying_configurator.set_level(final_level)
         return self.underlying_configurator.configure(logger)
 
@@ -60,7 +70,7 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
         return self._level_list
 
     @override
-    def clone_with(self, **kwargs) -> 'ListLoggerConfigurator[T]':
+    def clone_with(self, **kwargs) -> "ListLoggerConfigurator[T]":
         """
         kwargs:
             ``level_list`` - list of log levels which may contain ``None``. First non-``None`` value is picked-up by
@@ -72,7 +82,11 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
             Default is to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
         :return: a new ``ListLoggerConfigurator``.
         """
-        level_list = kwargs.pop('level_list', self.level_list.copy())
-        configurator = kwargs.pop('configurator', self.configurator)
-        level_pickup_strategy = kwargs.pop('level_pickup_strategy', self.level_pickup_strategy)
-        return ListLoggerConfigurator[T](level_list, configurator, level_pickup_strategy)
+        level_list = kwargs.pop("level_list", self.level_list.copy())
+        configurator = kwargs.pop("configurator", self.configurator)
+        level_pickup_strategy = kwargs.pop(
+            "level_pickup_strategy", self.level_pickup_strategy
+        )
+        return ListLoggerConfigurator[T](
+            level_list, configurator, level_pickup_strategy
+        )

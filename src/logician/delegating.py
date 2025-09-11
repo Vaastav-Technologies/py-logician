@@ -23,10 +23,13 @@ class ProtocolMinLevelLoggerImplBase(_MinLogProtocol, Protocol):
         - ERROR
         - CRITICAL.
     """
+
     pass
 
 
-class ProtocolMinLevelLoggerImplABC(ProtocolMinLevelLoggerImplBase, MinLogProtocol, Protocol):
+class ProtocolMinLevelLoggerImplABC(
+    ProtocolMinLevelLoggerImplBase, MinLogProtocol, Protocol
+):
     """
     Bridge implementation base for extension by Min Log level loggers, i.e. loggers which support these operations::
 
@@ -36,6 +39,7 @@ class ProtocolMinLevelLoggerImplABC(ProtocolMinLevelLoggerImplBase, MinLogProtoc
         - ERROR
         - CRITICAL
     """
+
     pass
 
 
@@ -58,6 +62,7 @@ class AllLevelLoggerImplABC(ProtocolMinLevelLoggerImplBase, AllLevelLogger, Prot
         - FATAL
         - EXCEPTION
     """
+
     pass
 
 
@@ -65,6 +70,7 @@ class DelegatingLogger(Protocol):
     """
     A logger which delegates its logging capabilities to another logger implementation to facilitate a bridge.
     """
+
     @property
     @abstractmethod
     def logger_impl(self) -> ProtocolMinLevelLoggerImplBase:

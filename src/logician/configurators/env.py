@@ -5,6 +5,7 @@
 """
 Logger configurators that configure log levels using environment variables.
 """
+
 import os
 from typing import override, cast
 
@@ -14,10 +15,16 @@ from logician.configurators.list_lc import ListLoggerConfigurator
 
 
 class EnvListLC[T](ListLoggerConfigurator[T]):
-    DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = ListLoggerConfigurator[T].DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE
+    DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = ListLoggerConfigurator[
+        T
+    ].DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE
 
-    def __init__(self, env_list: list[str], configurator: LevelLoggerConfigurator[T],
-                 level_pickup_strategy=DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE):
+    def __init__(
+        self,
+        env_list: list[str],
+        configurator: LevelLoggerConfigurator[T],
+        level_pickup_strategy=DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE,
+    ):
         """
         This logger configurator can be used to configure log level using values supplied from environment variables.
         Default behavior is to pick up the first passed environment variable value. Designed to process log level from
@@ -42,7 +49,7 @@ class EnvListLC[T](ListLoggerConfigurator[T]):
         return [cast(T | None, os.getenv(e)) for e in self.env_list]
 
     @override
-    def clone_with(self, **kwargs) -> 'EnvListLC[T]':
+    def clone_with(self, **kwargs) -> "EnvListLC[T]":
         """
         kwargs:
             ``env_list`` - list of environment variables. Default behavior is to take precedence in decreasing order.
@@ -53,12 +60,16 @@ class EnvListLC[T](ListLoggerConfigurator[T]):
             to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
         :return: a new ``EnvListLC``.
         """
-        env_list = kwargs.pop('env_list', self.env_list.copy())
-        configurator = kwargs.pop('configurator', self.configurator)
-        level_pickup_strategy = kwargs.pop('level_pickup_strategy', self.level_pickup_strategy)
+        env_list = kwargs.pop("env_list", self.env_list.copy())
+        configurator = kwargs.pop("configurator", self.configurator)
+        level_pickup_strategy = kwargs.pop(
+            "level_pickup_strategy", self.level_pickup_strategy
+        )
         return EnvListLC[T](env_list, configurator, level_pickup_strategy)
 
-    def clone_with_envs(self, env: str, *envs: str, low_precedence: bool = False) -> 'EnvListLC[T]':
+    def clone_with_envs(
+        self, env: str, *envs: str, low_precedence: bool = False
+    ) -> "EnvListLC[T]":
         """
         Clone the current environment list level logger configurator with some extra environment variables. May be used
         in scenarios when a certain module needs a Logger configurator dependent on the environment variables of another
@@ -119,10 +130,17 @@ class EnvListLC[T](ListLoggerConfigurator[T]):
 
 
 class LgcnEnvListLC[T](EnvListLC[T]):
-    DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = EnvListLC[T].DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE
+    DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE = EnvListLC[
+        T
+    ].DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE
 
-    def __init__(self, env_list: list[str], configurator: LevelLoggerConfigurator[T],
-                 level_pickup_strategy=DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE, all_log_env_var: str = LGCN_ALL_LOG_ENV_VAR):
+    def __init__(
+        self,
+        env_list: list[str],
+        configurator: LevelLoggerConfigurator[T],
+        level_pickup_strategy=DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE,
+        all_log_env_var: str = LGCN_ALL_LOG_ENV_VAR,
+    ):
         """
         LgcnEnvListLC -> Logician Env List Logger Configurator.
 
@@ -143,7 +161,7 @@ class LgcnEnvListLC[T](EnvListLC[T]):
         super().__init__(env_list, configurator, level_pickup_strategy)
 
     @override
-    def clone_with(self, **kwargs) -> 'LgcnEnvListLC[T]':
+    def clone_with(self, **kwargs) -> "LgcnEnvListLC[T]":
         """
         kwargs:
             ``env_list`` - list of environment variables. Default behavior is to take precedence in decreasing order.
@@ -154,7 +172,9 @@ class LgcnEnvListLC[T](EnvListLC[T]):
             to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
         :return: a new ``LgcnEnvListLC``.
         """
-        level_list = kwargs.pop('env_list', self.env_list.copy())
-        configurator = kwargs.pop('configurator', self.configurator)
-        level_pickup_strategy = kwargs.pop('level_pickup_strategy', self.level_pickup_strategy)
+        level_list = kwargs.pop("env_list", self.env_list.copy())
+        configurator = kwargs.pop("configurator", self.configurator)
+        level_pickup_strategy = kwargs.pop(
+            "level_pickup_strategy", self.level_pickup_strategy
+        )
         return LgcnEnvListLC[T](level_list, configurator, level_pickup_strategy)

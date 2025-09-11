@@ -5,7 +5,6 @@
 Constants related to logging implementation by the python standard logging.
 """
 
-
 import logging
 
 DEFAULT_STACK_LEVEL = 2
@@ -49,16 +48,16 @@ see DEFAULT_STACK_LEVEL for more details on this.
 """
 
 TRACE_LOG_LEVEL = logging.DEBUG - 5
-TRACE_LOG_STR = 'TRACE'
+TRACE_LOG_STR = "TRACE"
 
-SUCCESS_LOG_LEVEL = logging.INFO + 3 # 23
-SUCCESS_LOG_STR = 'SUCCESS'
+SUCCESS_LOG_LEVEL = logging.INFO + 3  # 23
+SUCCESS_LOG_STR = "SUCCESS"
 
-NOTICE_LOG_LEVEL = SUCCESS_LOG_LEVEL + 3 # 26
-NOTICE_LOG_STR = 'NOTICE'
+NOTICE_LOG_LEVEL = SUCCESS_LOG_LEVEL + 3  # 26
+NOTICE_LOG_STR = "NOTICE"
 
-CMD_LOG_LEVEL = NOTICE_LOG_LEVEL + 2 # 28, next level at 30 -> WARNING
-CMD_LOG_STR = 'COMMAND'
+CMD_LOG_LEVEL = NOTICE_LOG_LEVEL + 2  # 28, next level at 30 -> WARNING
+CMD_LOG_STR = "COMMAND"
 
 EXCEPTION_TRACEBACK_LOG_LEVEL = TRACE_LOG_LEVEL - 2
 """
@@ -68,12 +67,16 @@ very low log level
 EXCEPTION_TRACEBACK_LOG_STR = "TRACEBACK"
 
 FATAL_LOG_LEVEL = logging.CRITICAL + 10
-FATAL_LOG_STR = 'FATAL'
-SHORTER_LOG_FMT = '%(levelname)s: %(message)s'
-SHORT_LOG_FMT = '%(name)s: %(levelname)s: %(message)s'
-DETAIL_LOG_FMT = '%(name)s: %(levelname)s: [%(filename)s - %(funcName)10s() ]: %(message)s'
-TIMED_DETAIL_LOG_FMT = '%(asctime)s: %(name)s: %(levelname)s: [%(filename)s:%(lineno)d - ' \
-                       '%(funcName)10s() ]: %(message)s'
+FATAL_LOG_STR = "FATAL"
+SHORTER_LOG_FMT = "%(levelname)s: %(message)s"
+SHORT_LOG_FMT = "%(name)s: %(levelname)s: %(message)s"
+DETAIL_LOG_FMT = (
+    "%(name)s: %(levelname)s: [%(filename)s - %(funcName)10s() ]: %(message)s"
+)
+TIMED_DETAIL_LOG_FMT = (
+    "%(asctime)s: %(name)s: %(levelname)s: [%(filename)s:%(lineno)d - "
+    "%(funcName)10s() ]: %(message)s"
+)
 
 WARNING_LEVEL: int = logging.WARNING
 """
