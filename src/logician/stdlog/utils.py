@@ -135,7 +135,7 @@ def simple_handlr_cfgr(level: int, logger: logging.Logger, stream_fmt_map: dict[
     :param stream_fmt_map: the stream-format-handler-map that will configure the supplied logger's handlers.
     """
 
-    def new_formatter(_logger, _stream, _fmt, add_handler=True):
+    def add_new_formatter(_logger, _stream, _fmt, add_handler=True):
         _handlr = logging.StreamHandler(stream=_stream)  # type: ignore[arg-type]
         _handlr.setFormatter(logging.Formatter(fmt=_fmt))
         if add_handler:
@@ -161,7 +161,7 @@ def simple_handlr_cfgr(level: int, logger: logging.Logger, stream_fmt_map: dict[
                     else:   # no formatter configured for the handler
                         handlr.setFormatter(logging.Formatter(fmt=fmt)) # configure formatter for this handler
                 else:   # no handler configured for the required stream, as stream -> [], empty handler list or no handlers
-                    new_formatter(logger, stream, fmt)
+                    add_new_formatter(logger, stream, fmt)
             else:   # handlers not present for the current stream, as no stream->list[handlers] mapping present in the logger
                 # introduce a new handler
-                new_formatter(logger, stream, fmt)
+                add_new_formatter(logger, stream, fmt)
