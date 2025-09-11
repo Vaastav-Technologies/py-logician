@@ -96,6 +96,24 @@ def form_stream_handlers_map(logger: logging.Logger) -> dict[IO, list[Handler]]:
     return stream_handler_map
 
 
+def add_new_formatter(stream: IO, fmt: str) -> logging.StreamHandler:
+    """
+    Get a handler for ``stream`` with formatter conforming ``fmt`` param.
+
+    Examples:
+
+    >>> h = add_new_formatter(sys.stdout, "%(name)s")
+    >>> assert h.formatter._fmt == "%(name)s"   # type: ignore[attr-defined]
+
+    :param stream: A new ``logging.StreamHandler`` will be created for this stream.
+    :param fmt: A formatter conforming to ``fmt`` will be set for ``stream``.
+    :return: a new handler with the formatter set to ``fmt``.
+    """
+    _handlr = logging.StreamHandler(stream=stream)  # type: ignore[arg-type]
+    _handlr.setFormatter(logging.Formatter(fmt=fmt))
+    return _handlr
+
+
 def simple_handlr_cfgr(level: int, logger: logging.Logger, stream_fmt_map: dict[TextIO, LogLevelFmt]) -> None:
     """
     Logger handler's configurator.
@@ -134,14 +152,6 @@ def simple_handlr_cfgr(level: int, logger: logging.Logger, stream_fmt_map: dict[
     :param logger: the logger to configure.
     :param stream_fmt_map: the stream-format-handler-map that will configure the supplied logger's handlers.
     """
-
-    def add_new_formatter(_logger, _stream, _fmt, add_handler=True):
-        _handlr = logging.StreamHandler(stream=_stream)  # type: ignore[arg-type]
-        _handlr.setFormatter(logging.Formatter(fmt=_fmt))
-        if add_handler:
-            _logger.addHandler(_handlr)
-        return _handlr
-
     if not stream_fmt_map:
         # empty user-supplied stream->formatter map
         # specifies the user's intent to not log anywhere hence, clear all existing handlers
@@ -161,7 +171,7 @@ def simple_handlr_cfgr(level: int, logger: logging.Logger, stream_fmt_map: dict[
                     else:   # no formatter configured for the handler
                         handlr.setFormatter(logging.Formatter(fmt=fmt)) # configure formatter for this handler
                 else:   # no handler configured for the required stream, as stream -> [], empty handler list or no handlers
-                    add_new_formatter(logger, stream, fmt)
+                    logger.addHandler(add_new_formatter(stream, fmt))
             else:   # handlers not present for the current stream, as no stream->list[handlers] mapping present in the logger
                 # introduce a new handler
-                add_new_formatter(logger, stream, fmt)
+                logger.addHandler(add_new_formatter(stream, fmt))
