@@ -19,7 +19,7 @@ from logician.stdlog import (
     INDIRECTION_STACK_LEVEL,
     FATAL_LOG_LEVEL,
     CMD_LOG_LEVEL,
-    CMD_LOG_STR,
+    CMD_LOG_STR, EXCEPTION_TRACEBACK_LOG_LEVEL,
 )
 from logician.stdlog.utils import TempSetLevelName
 
@@ -77,6 +77,11 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
     @property
     def underlying_logger(self) -> Logger:  # noqa
         return self._underlying_logger
+
+    @override
+    @property
+    def traceback_enabled(self) -> bool:
+        return self.underlying_logger.level <= EXCEPTION_TRACEBACK_LOG_LEVEL
 
     @override
     def trace(self, msg, *args, **kwargs) -> None:
