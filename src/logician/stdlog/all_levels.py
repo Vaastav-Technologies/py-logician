@@ -177,7 +177,7 @@ class BaseDirectStdAllLevelLogger(
         self.logger_impl.cmd(msg, final_cmd_name, *args, **kwargs)
 
 
-class DirectAllLevelLogger(BaseDirectStdAllLevelLogger, AllLevelLogger):
+class DirectAllLevelLogger(BaseDirectStdAllLevelLogger):
     def __init__(
         self,
         logger_impl: BaseDirectStdAllLevelLoggerImpl,
