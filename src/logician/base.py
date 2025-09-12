@@ -234,7 +234,7 @@ class HasUnderlyingLogger[L](Protocol):
         pass  # pragma: no cover
 
 
-class AllLevelLogger[L](AllLogProtocol[L], HasUnderlyingLogger, Protocol):
+class AllLevelLogger[L](AllLogProtocol[L], HasUnderlyingLogger[L], Protocol):
     """
     Logger which supports all the common Logging levels, i.e.::
 
