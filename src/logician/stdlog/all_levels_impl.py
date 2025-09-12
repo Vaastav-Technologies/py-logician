@@ -24,7 +24,7 @@ from logician.stdlog import (
 from logician.stdlog.utils import TempSetLevelName
 
 
-class StdProtocolAllLevelLoggerImpl(AllLevelLoggerImplABC, Protocol):
+class StdProtocolAllLevelLoggerImpl(AllLevelLoggerImplABC[int], Protocol):
     """
     Interface for all logging levels provided by the standard logging protocol.
     """

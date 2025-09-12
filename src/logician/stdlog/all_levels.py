@@ -21,7 +21,7 @@ from logician.stdlog.all_levels_impl import (
 )
 
 
-class StdProtocolAllLevelLogger(AllLevelLogger, DelegatingLogger, Protocol):
+class StdProtocolAllLevelLogger(AllLevelLogger[int], DelegatingLogger[int], Protocol):
     """
     Interface for a std protocol logger which provides all logging levels by the protocol implementation.
     """

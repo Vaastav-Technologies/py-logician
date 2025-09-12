@@ -9,13 +9,15 @@ from abc import abstractmethod
 from typing import Protocol
 
 
-class LogLogProtocol(Protocol):
+class LogLogProtocol[L](Protocol):
     """
     Protocol supporting the log method.
+
+    L - Level type, for e.g. ``int`` for python std logging.
     """
 
     @abstractmethod
-    def log(self, level: int, msg, *args, **kwargs) -> None: ...
+    def log(self, level: L, msg, *args, **kwargs) -> None: ...
 
 
 class TraceLogProtocol(Protocol):
@@ -125,8 +127,8 @@ class FatalLogProtocol(Protocol):
     def fatal(self, msg, *args, **kwargs) -> None: ...
 
 
-class _MinLogProtocol(
-    LogLogProtocol,
+class _MinLogProtocol[L](
+    LogLogProtocol[L],
     DebugLogProtocol,
     InfoLogProtocol,
     WarningLogProtocol,
@@ -139,6 +141,8 @@ class _MinLogProtocol(
 
     Useful when ``is-a`` relationship cannot be established between the interfaces that have most of the methods of
     each-other but conceptually do not behave in an ``is-a`` relationship.
+
+    L - Level type, for e.g. ``int`` for python std logging.
 
     e.g.::
 
@@ -158,7 +162,7 @@ class _MinLogProtocol(
     pass
 
 
-class MinLogProtocol(_MinLogProtocol, Protocol):
+class MinLogProtocol[L](_MinLogProtocol[L], Protocol):
     """
     Logger protocol that has all the basic logging levels common to most (nearly all) loggers, i.e.::
 
@@ -167,14 +171,16 @@ class MinLogProtocol(_MinLogProtocol, Protocol):
         - WARNING
         - ERROR
         - CRITICAL
+
+    L - Level type, for e.g. ``int`` for python std logging.
     """
 
     pass
 
 
-class AllLogProtocol(
+class AllLogProtocol[L](
     TraceLogProtocol,
-    _MinLogProtocol,
+    _MinLogProtocol[L],
     SuccessLogProtocol,
     NoticeLogProtocol,
     CommandLogProtocol,
@@ -199,21 +205,25 @@ class AllLogProtocol(
         - COMMAND
         - FATAL
         - EXCEPTION
+
+    L - Level type, for e.g. ``int`` for python std logging.
     """
 
     pass
 
 
-class HasUnderlyingLogger(Protocol):
+class HasUnderlyingLogger[L](Protocol):
     """
     Insists that an underlying logger is contained in the class implementing this interface.
 
     Can return the contained underlying logger for the client class to perform actions in the future if needed.
+
+    L - Level type, for e.g. ``int`` for python std logging.
     """
 
     @property
     @abstractmethod
-    def underlying_logger(self) -> MinLogProtocol:
+    def underlying_logger(self) -> MinLogProtocol[L]:
         """
         It may not be a good idea to directly call this method to obtain underlying logger after class is
         initialised and its use is started. That is the case because that obtained underlying logger may tie the
@@ -224,7 +234,7 @@ class HasUnderlyingLogger(Protocol):
         pass
 
 
-class AllLevelLogger(AllLogProtocol, HasUnderlyingLogger, Protocol):
+class AllLevelLogger[L](AllLogProtocol[L], HasUnderlyingLogger, Protocol):
     """
     Logger which supports all the common Logging levels, i.e.::
 
@@ -244,6 +254,8 @@ class AllLevelLogger(AllLogProtocol, HasUnderlyingLogger, Protocol):
         - EXCEPTION
 
     And delegates the actual logging to an ``underlying_logger``, see ``HasUnderlyingLogger``.
+
+    L - Level type, for e.g. ``int`` for python std logging.
     """
 
     pass

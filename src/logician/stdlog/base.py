@@ -28,7 +28,7 @@ from logician.stdlog import (
 from logician.stdlog.utils import level_name_mapping
 
 
-class StdLogProtocol(MinLogProtocol, Protocol):
+class StdLogProtocol(MinLogProtocol[int], Protocol):
     """
     Logger protocol that is followed (for methods) by the python std logging.
 
@@ -65,10 +65,10 @@ class StdLogProtocol(MinLogProtocol, Protocol):
 
 
 class StdLevelLogger(
-    MinLogProtocol,
+    MinLogProtocol[int],
     FatalLogProtocol,
     ExceptionLogProtocol,
-    HasUnderlyingLogger,
+    HasUnderlyingLogger[int],
     Protocol,
 ):
     """
@@ -86,7 +86,7 @@ class StdLevelLogger(
     pass
 
 
-class DirectStdAllLevelLogger(AllLevelLogger, Protocol):
+class DirectStdAllLevelLogger(AllLevelLogger[int], Protocol):
     """
     All logging levels as provided by the python std logging.
     """
