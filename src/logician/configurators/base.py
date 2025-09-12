@@ -52,21 +52,23 @@ class HasUnderlyingConfigurator(Protocol):
         ...
 
 
-class LevelTarget[T](Protocol):
+class LevelTarget[L](Protocol):
     """
     Permits levels to be set.
+
+    L - Level type, for e.g. ``int`` for python std logging.
     """
 
     @property
     @abstractmethod
-    def level(self) -> T:
+    def level(self) -> L:
         """
         :return: current level.
         """
         ...
 
     @abstractmethod
-    def set_level(self, new_level: T) -> T:
+    def set_level(self, new_level: L) -> L:
         """
         Sets new level.
 
@@ -76,9 +78,11 @@ class LevelTarget[T](Protocol):
         ...
 
 
-class LevelLoggerConfigurator[T](LevelTarget[T], LoggerConfigurator, Protocol):
+class LevelLoggerConfigurator[L](LevelTarget[L], LoggerConfigurator, Protocol):
     """
     A logger configurator which allows setting levels from outside of it.
+
+    L - Level type, for e.g. ``int`` for python std logging.
     """
 
     pass
