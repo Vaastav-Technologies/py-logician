@@ -21,7 +21,7 @@ from logician.stdlog.all_levels_impl import (
 )
 
 
-class StdProtocolAllLevelLogger(AllLevelLogger, DelegatingLogger, Protocol):
+class StdProtocolAllLevelLogger(AllLevelLogger[int], DelegatingLogger[int], Protocol):
     """
     Interface for a std protocol logger which provides all logging levels by the protocol implementation.
     """
@@ -177,7 +177,7 @@ class BaseDirectStdAllLevelLogger(
         self.logger_impl.cmd(msg, final_cmd_name, *args, **kwargs)
 
 
-class DirectAllLevelLogger(BaseDirectStdAllLevelLogger, AllLevelLogger):
+class DirectAllLevelLogger(BaseDirectStdAllLevelLogger):
     def __init__(
         self,
         logger_impl: BaseDirectStdAllLevelLoggerImpl,
