@@ -29,7 +29,7 @@ class VQConfigurator[T](Protocol):
         """
         :return: A dictionary containing verbosity|quietness -> logging.level mapping.
         """
-        ... # pragma: no cover
+        ...  # pragma: no cover
 
 
 class VQLevelOrDefault[T](VQConfigurator[T], Protocol):

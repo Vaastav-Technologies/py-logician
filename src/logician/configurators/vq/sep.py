@@ -41,7 +41,7 @@ class VQSepConfigurator[T](VQConfigurator[T], Protocol):
         :param quietness: quietness.
         :return: ``True`` if inputs are valid, ``False`` otherwise.
         """
-        ... # pragma: no cover
+        ...  # pragma: no cover
 
     @abstractmethod
     def get_effective_level(
@@ -56,7 +56,7 @@ class VQSepConfigurator[T](VQConfigurator[T], Protocol):
         :return: computed level for verbosity and quietness or ``default_level`` if both verbosity and quietness
             are ``None``.
         """
-        ... # pragma: no cover
+        ...  # pragma: no cover
 
 
 class VQSepExclusive[T](VQSepConfigurator[T]):

@@ -19,7 +19,9 @@ from logician.configurators import (
 
 class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
     def __init__(
-        self, level_supplier: Callable[[], T | None], configurator: LevelLoggerConfigurator[T]
+        self,
+        level_supplier: Callable[[], T | None],
+        configurator: LevelLoggerConfigurator[T],
     ):
         """
         Configurator that configures loggers as per the level supplied by the ``level_supplier``.
@@ -80,7 +82,7 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurato
     @override
     @property
     def underlying_configurator(self) -> LevelLoggerConfigurator[T]:
-        return self.configurator    # pragma: no cover
+        return self.configurator  # pragma: no cover
 
     @override
     def clone_with(self, **kwargs) -> "SupplierLoggerConfigurator":
