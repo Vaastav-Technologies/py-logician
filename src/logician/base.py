@@ -51,8 +51,7 @@ class SuccessLogProtocol(Protocol):
     """
 
     @abstractmethod
-    def success(self, msg, *args, **kwargs) -> None:
-        pass
+    def success(self, msg, *args, **kwargs) -> None: ...
 
 
 class NoticeLogProtocol(Protocol):
@@ -61,8 +60,7 @@ class NoticeLogProtocol(Protocol):
     """
 
     @abstractmethod
-    def notice(self, msg, *args, **kwargs) -> None:
-        pass
+    def notice(self, msg, *args, **kwargs) -> None: ...
 
 
 class CommandLogProtocol(Protocol):
@@ -106,8 +104,7 @@ class ExceptionLogProtocol(Protocol):
     """
 
     @abstractmethod
-    def exception(self, msg, *args, **kwargs) -> None:
-        pass
+    def exception(self, msg, *args, **kwargs) -> None: ...
 
 
 class CriticalLogProtocol(Protocol):
@@ -125,8 +122,7 @@ class FatalLogProtocol(Protocol):
     """
 
     @abstractmethod
-    def fatal(self, msg, *args, **kwargs) -> None:
-        pass
+    def fatal(self, msg, *args, **kwargs) -> None: ...
 
 
 class _MinLogProtocol(
