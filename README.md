@@ -1,4 +1,4 @@
-# logician
+# Logician
 
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/logician)
 ![PyPI - Types](https://img.shields.io/pypi/types/logician)
