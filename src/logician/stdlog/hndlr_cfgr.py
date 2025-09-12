@@ -33,7 +33,7 @@ class HandlerConfigurator(Protocol):
         :param logger: the logger to configure.
         :param stream_fmt_map: the stream-format-handler-map that will configure the supplied logger's handlers.
         """
-        pass
+        pass    # pragma: no cover
 
 
 class SimpleHandlerConfigurator(HandlerConfigurator):

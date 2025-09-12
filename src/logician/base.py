@@ -17,7 +17,7 @@ class LogLogProtocol[L](Protocol):
     """
 
     @abstractmethod
-    def log(self, level: L, msg, *args, **kwargs) -> None: ...
+    def log(self, level: L, msg, *args, **kwargs) -> None: ...  # pragma: no cover
 
 
 class TraceLogProtocol(Protocol):
@@ -26,7 +26,7 @@ class TraceLogProtocol(Protocol):
     """
 
     @abstractmethod
-    def trace(self, msg, *args, **kwargs) -> None: ...
+    def trace(self, msg, *args, **kwargs) -> None: ...  # pragma: no cover
 
 
 class DebugLogProtocol(Protocol):
@@ -35,7 +35,7 @@ class DebugLogProtocol(Protocol):
     """
 
     @abstractmethod
-    def debug(self, msg, *args, **kwargs) -> None: ...
+    def debug(self, msg, *args, **kwargs) -> None: ...  # pragma: no cover
 
 
 class InfoLogProtocol(Protocol):
@@ -44,7 +44,7 @@ class InfoLogProtocol(Protocol):
     """
 
     @abstractmethod
-    def info(self, msg, *args, **kwargs) -> None: ...
+    def info(self, msg, *args, **kwargs) -> None: ...   # pragma: no cover
 
 
 class SuccessLogProtocol(Protocol):
@@ -53,7 +53,7 @@ class SuccessLogProtocol(Protocol):
     """
 
     @abstractmethod
-    def success(self, msg, *args, **kwargs) -> None: ...
+    def success(self, msg, *args, **kwargs) -> None: ...    # pragma: no cover
 
 
 class NoticeLogProtocol(Protocol):
@@ -62,7 +62,7 @@ class NoticeLogProtocol(Protocol):
     """
 
     @abstractmethod
-    def notice(self, msg, *args, **kwargs) -> None: ...
+    def notice(self, msg, *args, **kwargs) -> None: ... # pragma: no cover
 
 
 class CommandLogProtocol(Protocol):
@@ -79,7 +79,7 @@ class CommandLogProtocol(Protocol):
         :param cmd_name: Which command name to register the command level to. If ``None`` then the default level-name
             is picked-up.
         """
-        ...
+        ... # pragma: no cover
 
 
 class WarningLogProtocol(Protocol):
@@ -88,7 +88,7 @@ class WarningLogProtocol(Protocol):
     """
 
     @abstractmethod
-    def warning(self, msg, *args, **kwargs) -> None: ...
+    def warning(self, msg, *args, **kwargs) -> None: ...    # pragma: no cover
 
 
 class ErrorLogProtocol(Protocol):
@@ -97,7 +97,7 @@ class ErrorLogProtocol(Protocol):
     """
 
     @abstractmethod
-    def error(self, msg, *args, **kwargs) -> None: ...
+    def error(self, msg, *args, **kwargs) -> None: ...  # pragma: no cover
 
 
 class ExceptionLogProtocol(Protocol):
@@ -106,7 +106,7 @@ class ExceptionLogProtocol(Protocol):
     """
 
     @abstractmethod
-    def exception(self, msg, *args, **kwargs) -> None: ...
+    def exception(self, msg, *args, **kwargs) -> None: ...  # pragma: no cover
 
 
 class CriticalLogProtocol(Protocol):
@@ -115,7 +115,7 @@ class CriticalLogProtocol(Protocol):
     """
 
     @abstractmethod
-    def critical(self, msg, *args, **kwargs) -> None: ...
+    def critical(self, msg, *args, **kwargs) -> None: ...   # pragma: no cover
 
 
 class FatalLogProtocol(Protocol):
@@ -124,7 +124,7 @@ class FatalLogProtocol(Protocol):
     """
 
     @abstractmethod
-    def fatal(self, msg, *args, **kwargs) -> None: ...
+    def fatal(self, msg, *args, **kwargs) -> None: ...  # pragma: no cover
 
 
 class _MinLogProtocol[L](
@@ -231,7 +231,7 @@ class HasUnderlyingLogger[L](Protocol):
 
         :return: the contained underlying logger.
         """
-        pass
+        pass    # pragma: no cover
 
 
 class AllLevelLogger[L](AllLogProtocol[L], HasUnderlyingLogger, Protocol):

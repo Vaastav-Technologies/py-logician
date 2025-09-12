@@ -522,7 +522,7 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
 
     @property
     def underlying_configurator(self) -> LoggerConfigurator:
-        return self._underlying_configurator
+        return self._underlying_configurator    # pragma: no cover
 
     @override
     def clone_with(self, **kwargs) -> "VQSepLoggerConfigurator":
@@ -668,7 +668,7 @@ class VQCommLoggerConfigurator(
     def underlying_configurator(
         self,
     ) -> LevelLoggerConfigurator[VQLoggerConfigurator.T]:
-        return self._underlying_configurator
+        return self._underlying_configurator    # pragma: no cover
 
     @override
     def set_level(
