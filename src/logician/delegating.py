@@ -47,7 +47,9 @@ class ProtocolMinLevelLoggerImplABC[L](
     pass
 
 
-class AllLevelLoggerImplABC[L](ProtocolMinLevelLoggerImplBase[L], AllLevelLogger[L], Protocol):
+class AllLevelLoggerImplABC[L](
+    ProtocolMinLevelLoggerImplBase[L], AllLevelLogger[L], Protocol
+):
     """
     Bridge implementation base for extension by loggers which supports all the common Logging levels, i.e.::
 
