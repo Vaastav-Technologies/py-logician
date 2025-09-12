@@ -82,6 +82,34 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
     @override
     @property
     def traceback_enabled(self) -> bool:
+        """
+        >>> import logging
+
+        Examples:
+
+          * Traceback enables when log level is equal to ``EXCEPTION_TRACEBACK_LOG_LEVEL``:
+
+            >>> lgr = logging.getLogger("tb-demo-1")
+            >>> lgr.setLevel(EXCEPTION_TRACEBACK_LOG_LEVEL)
+            >>> logger = DirectAllLevelLoggerImpl(lgr)
+            >>> assert logger.traceback_enabled
+
+          * Traceback enables when log level is less than ``EXCEPTION_TRACEBACK_LOG_LEVEL``:
+
+            >>> lgr = logging.getLogger("tb-demo-2")
+            >>> lgr.setLevel(EXCEPTION_TRACEBACK_LOG_LEVEL-1)
+            >>> logger = DirectAllLevelLoggerImpl(lgr)
+            >>> assert logger.traceback_enabled
+
+          * Traceback disables when log level is more than ``EXCEPTION_TRACEBACK_LOG_LEVEL``:
+
+            >>> lgr = logging.getLogger("tb-demo-2")
+            >>> lgr.setLevel(EXCEPTION_TRACEBACK_LOG_LEVEL+10)
+            >>> logger = DirectAllLevelLoggerImpl(lgr)
+            >>> assert not logger.traceback_enabled
+
+        :return: whether the traceback processing (in most cases, logging) is enabled.
+        """
         return self.underlying_logger.level <= EXCEPTION_TRACEBACK_LOG_LEVEL
 
     @override
