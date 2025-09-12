@@ -24,6 +24,18 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurato
         """
         Configurator that configures loggers as per the level supplied by the ``level_supplier``.
 
+        Examples:
+
+        >>> from logician.stdlog.configurator import StdLoggerConfigurator
+
+          * Typed:
+
+            >>> _ = SupplierLoggerConfigurator[int](lambda: logging.DEBUG, StdLoggerConfigurator())
+
+          * Untyped
+
+            >>> _ = SupplierLoggerConfigurator(lambda : logging.INFO, StdLoggerConfigurator())
+
         :param level_supplier: a supplier to supply level.
         :param configurator: underlying configurator.
         """
@@ -31,6 +43,31 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurato
         self.configurator = configurator
 
     def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
+        """
+        >>> from logician.stdlog.configurator import StdLoggerConfigurator
+        >>> from logician.stdlog import NOTICE_LOG_LEVEL
+
+        Examples:
+
+          * Level set by the supplier: ``INFO`` level
+
+            >>> _lgr = logging.getLogger("supplier-logger-demo-1")
+            >>> lc = SupplierLoggerConfigurator(lambda : logging.INFO, StdLoggerConfigurator())
+            >>> lgr = lc.configure(_lgr)
+            >>> assert lgr.underlying_logger.level == logging.INFO
+
+          * Supplier returns ``None`` hence, level is determined by the underlying configurator: ``NOTICE`` level
+
+            >>> _lgr = logging.getLogger("supplier-logger-demo-2")
+            >>> lc = StdLoggerConfigurator(level=NOTICE_LOG_LEVEL)
+            >>> assert lc.level == NOTICE_LOG_LEVEL
+            >>> lc = SupplierLoggerConfigurator(lambda : None, lc)
+            >>> lgr = lc.configure(_lgr)
+            >>> assert lgr.underlying_logger.level == NOTICE_LOG_LEVEL
+
+        :param logger: the logger to configure.
+        :return: configured logger with its logging level set by the ``level_supplier``.
+        """
         computed_level = self.level_supplier()
         final_level = (
             computed_level
@@ -43,7 +80,7 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurato
     @override
     @property
     def underlying_configurator(self) -> LevelLoggerConfigurator[T]:
-        return self.configurator
+        return self.configurator    # pragma: no cover
 
     @override
     def clone_with(self, **kwargs) -> "SupplierLoggerConfigurator":
@@ -52,6 +89,36 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurato
             ``level_supplier`` - a supplier to supply level.
 
             ``configurator`` - underlying configurator.
+
+        Examples:
+
+        >>> import logging
+        >>> from logician.stdlog.configurator import StdLoggerConfigurator
+
+          * Simple clone, no overrides:
+
+            >>> lc1 = SupplierLoggerConfigurator(lambda : logging.INFO, StdLoggerConfigurator())
+            >>> lc2 = lc1.clone_with()
+            >>> assert lc1.configurator == lc2.configurator and lc1.level_supplier == lc2.level_supplier
+
+          * Clone, override just ``level_supplier``:
+
+            >>> lc1 = SupplierLoggerConfigurator(lambda : logging.INFO, StdLoggerConfigurator())
+            >>> lc2 = lc1.clone_with(level_supplier=lambda : logging.DEBUG)
+            >>> assert lc1.configurator == lc2.configurator and lc1.level_supplier != lc2.level_supplier
+
+          * Clone, override just ``configurator``:
+
+            >>> lc1 = SupplierLoggerConfigurator(lambda : logging.INFO, StdLoggerConfigurator())
+            >>> lc2 = lc1.clone_with(configurator=StdLoggerConfigurator(level=logging.CRITICAL))
+            >>> assert lc1.configurator != lc2.configurator and lc1.level_supplier == lc2.level_supplier
+
+          * Clone, override all:
+
+            >>> lc1 = SupplierLoggerConfigurator(lambda : None, StdLoggerConfigurator())
+            >>> lc2 = lc1.clone_with(level_supplier=lambda : logging.WARNING, configurator=StdLoggerConfigurator(level=logging.CRITICAL))
+            >>> assert lc1.configurator != lc2.configurator and lc1.level_supplier != lc2.level_supplier
+
         :return: a new ``SupplierLoggerConfigurator``.
         """
         level_supplier = kwargs.pop("level_supplier", self.level_supplier)
