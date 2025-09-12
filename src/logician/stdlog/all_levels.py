@@ -60,12 +60,12 @@ class BaseStdProtocolAllLevelLogger(StdProtocolAllLevelLogger, ABC):
     @override
     @property
     def underlying_logger(self) -> StdLogProtocol:
-        return self._underlying_logger
+        return self._underlying_logger  # pragma: no cover
 
     @override
     @property
     def traceback_enabled(self) -> bool:
-        return self.logger_impl.traceback_enabled
+        return self.logger_impl.traceback_enabled  # pragma: no cover
 
     @override
     def trace(self, msg, *args, **kwargs) -> None:
