@@ -19,7 +19,8 @@ from logician.stdlog import (
     INDIRECTION_STACK_LEVEL,
     FATAL_LOG_LEVEL,
     CMD_LOG_LEVEL,
-    CMD_LOG_STR, EXCEPTION_TRACEBACK_LOG_LEVEL,
+    CMD_LOG_STR,
+    EXCEPTION_TRACEBACK_LOG_LEVEL,
 )
 from logician.stdlog.utils import TempSetLevelName
 

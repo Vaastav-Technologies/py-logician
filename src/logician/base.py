@@ -248,7 +248,9 @@ class SupportsTraceback(Protocol):
         ...
 
 
-class AllLevelLogger[L](AllLogProtocol[L], HasUnderlyingLogger[L], SupportsTraceback, Protocol):
+class AllLevelLogger[L](
+    AllLogProtocol[L], HasUnderlyingLogger[L], SupportsTraceback, Protocol
+):
     """
     Logger which supports all the common Logging levels, i.e.::
 
