@@ -234,7 +234,23 @@ class HasUnderlyingLogger[L](Protocol):
         pass  # pragma: no cover
 
 
-class AllLevelLogger[L](AllLogProtocol[L], HasUnderlyingLogger[L], Protocol):
+class SupportsTraceback(Protocol):
+    """
+    Can process (in most cases, log) the exception tracebacks.
+    """
+
+    @property
+    @abstractmethod
+    def traceback_enabled(self) -> bool:
+        """
+        :return: whether the traceback processing (in most cases, logging) is enabled.
+        """
+        ...
+
+
+class AllLevelLogger[L](
+    AllLogProtocol[L], HasUnderlyingLogger[L], SupportsTraceback, Protocol
+):
     """
     Logger which supports all the common Logging levels, i.e.::
 
