@@ -41,7 +41,7 @@ class VQCommConfigurator[T](VQConfigurator[T], Protocol):
         :return: ``True`` if inputs are valid, ``False`` otherwise.
         :raise ValueError: if values for ``ver_qui`` are invalid and subclass decides to raise the error.
         """
-        ...
+        ...  # pragma: no cover
 
     @abstractmethod
     def get_effective_level(
@@ -57,7 +57,7 @@ class VQCommConfigurator[T](VQConfigurator[T], Protocol):
         :raise KeyError: if the verbosity or quietness is not found in the ``vq_level_map`` and the subclass decides
             to raise error for this.
         """
-        ...
+        ...  # pragma: no cover
 
 
 class VQCommon[T](VQCommConfigurator[T]):

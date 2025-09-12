@@ -29,7 +29,7 @@ class VQConfigurator[T](Protocol):
         """
         :return: A dictionary containing verbosity|quietness -> logging.level mapping.
         """
-        ...
+        ...  # pragma: no cover
 
 
 class VQLevelOrDefault[T](VQConfigurator[T], Protocol):
@@ -141,7 +141,7 @@ class SimpleWarningVQLevelOrDefault[T](VQLevelOrDefault[T], Warner):
     @override
     @property
     def warn_only(self) -> bool:
-        return self._warn_only
+        return self._warn_only  # pragma: no cover
 
     @override
     @property

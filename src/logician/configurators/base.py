@@ -26,7 +26,7 @@ class LoggerConfigurator(Protocol):
         :param logger: std python logger
         :return: A configured All level logging std python logger.
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def clone_with(self, **kwargs) -> "LoggerConfigurator":
@@ -34,7 +34,7 @@ class LoggerConfigurator(Protocol):
         :param kwargs: overriding keyword args.
         :return: a new instance of the ``LoggerConfigurator`` with the provided overrides.
         """
-        ...
+        ...  # pragma: no cover
 
 
 class HasUnderlyingConfigurator(Protocol):
@@ -49,7 +49,7 @@ class HasUnderlyingConfigurator(Protocol):
         """
         :return: The underlying logger configurator which is decorated by this configurator.
         """
-        ...
+        ...  # pragma: no cover
 
 
 class LevelTarget[L](Protocol):
@@ -65,7 +65,7 @@ class LevelTarget[L](Protocol):
         """
         :return: current level.
         """
-        ...
+        ...  # pragma: no cover
 
     @abstractmethod
     def set_level(self, new_level: L) -> L:
@@ -75,7 +75,7 @@ class LevelTarget[L](Protocol):
         :param new_level: sets to this level.
         :return: the old level.
         """
-        ...
+        ...  # pragma: no cover
 
 
 class LevelLoggerConfigurator[L](LevelTarget[L], LoggerConfigurator, Protocol):
