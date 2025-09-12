@@ -19,7 +19,7 @@ from logician.configurators import (
 
 class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
     def __init__(
-        self, level_supplier: Callable[[], T], configurator: LevelLoggerConfigurator[T]
+        self, level_supplier: Callable[[], T | None], configurator: LevelLoggerConfigurator[T]
     ):
         """
         Configurator that configures loggers as per the level supplied by the ``level_supplier``.
