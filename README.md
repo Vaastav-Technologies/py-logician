@@ -322,9 +322,11 @@ cd py-logician
 [activate a venv](https://docs.python.org/3/library/venv.html), then run
 
 ```bash
-pip install -e .
-pytest --doctest-modules
-mypy -p logician
+pip install -e .[dev,test]  # install logician in local venv
+pytest --cov  # run pytest with coverage
+mypy -p logician  # check for static type safety
+ruff check  # check for lints
+ruff format # check for formats
 ```
 
 Please write tests and add doctests for public facing APIs.
