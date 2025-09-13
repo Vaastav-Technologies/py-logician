@@ -281,6 +281,8 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
             introduce formats on each stream. Check ``logician.stdlog.utils:simple_handlr_cfgr()`` for more info.
 
             ``no_warn`` - do not warn if a supplied level is not registered with the logging library.
+
+            ``propagate`` - propagate logger records to parent loggers.
         :return: new ``StdLoggerConfigurator``.
         """
         level = kwargs.pop("level", self.level)
@@ -299,6 +301,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         )
         level_name_map = kwargs.pop("level_name_map", self.level_name_map)
         no_warn = kwargs.pop("no_warn", self.no_warn)
+        propagate = kwargs.pop("propagate", StdLoggerConfigurator.PROPAGATE_FALSE)
         if stream_fmt_mapper is not None:
             return StdLoggerConfigurator(
                 level=level,
@@ -307,6 +310,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
                 level_name_map=level_name_map,
                 handlr_cfgr=handlr_cfgr,
                 no_warn=no_warn,
+                propagate=propagate,
             )
         else:
             return StdLoggerConfigurator(
@@ -317,6 +321,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
                 level_name_map=level_name_map,
                 handlr_cfgr=handlr_cfgr,
                 no_warn=no_warn,
+                propagate=propagate,
             )
 
     @staticmethod
