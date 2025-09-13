@@ -9,7 +9,7 @@ Logger configurators that configure log levels using environment variables.
 import os
 from typing import override, cast
 
-from logician import LGCN_ALL_LOG_ENV_VAR
+from logician.constants import LGCN_ALL_LOG_ENV_VAR
 from logician.configurators import LevelLoggerConfigurator
 from logician.configurators.list_lc import ListLoggerConfigurator
 
@@ -26,6 +26,8 @@ class EnvListLC[T](ListLoggerConfigurator[T]):
         level_pickup_strategy=DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE,
     ):
         """
+        Environment variable list logger configurator.
+
         This logger configurator can be used to configure log level using values supplied from environment variables.
         Default behavior is to pick up the first passed environment variable value. Designed to process log level from
         multiple environment variables and hence has a precedence order to the values form environment variables. The
@@ -142,7 +144,7 @@ class LgcnEnvListLC[T](EnvListLC[T]):
         all_log_env_var: str = LGCN_ALL_LOG_ENV_VAR,
     ):
         """
-        LgcnEnvListLC -> Logician Env List Logger Configurator.
+        LgcnEnvListLC -> Logician Env var List Logger Configurator.
 
         This logger configurator can be used to configure log level using values supplied from environment variables.
         Default behavior is to pick up the first passed environment variable value. Designed to process log level from
