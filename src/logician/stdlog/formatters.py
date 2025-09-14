@@ -95,9 +95,31 @@ class StdLogAllLevelDiffFmt(DiffLevelDiffFmt[int, str]):
         return max_level
 
 
-STDERR_ALL_LVL_SAME_FMT: dict[IO, LogLevelFmt[int, str]] = {
-    sys.stderr: StdLogAllLevelSameFmt()
-}
+def stderr_all_lvl_same_fmt(fmt: str | None = None) -> dict[IO, LogLevelFmt[int, str]]:
+    """
+    Examples:
+
+      * ``SHORTER_LOG_FMT`` is used when the ``fmt`` param is not supplied:
+
+        >>> fmt_dict = stderr_all_lvl_same_fmt()
+        >>> assert sys.stderr in fmt_dict
+        >>> assert fmt_dict[sys.stderr].fmt(logging.DEBUG) == SHORTER_LOG_FMT
+
+      * Supplied format is used when ``fmt`` is supplied:
+
+        >>> fmt_dict = stderr_all_lvl_same_fmt("%(name)s")
+        >>> assert sys.stderr in fmt_dict
+        >>> assert fmt_dict[sys.stderr].fmt(logging.FATAL) == "%(name)s"
+
+    :param fmt: the format required for all levels
+    :return: stderr->same-format-for-all-levels dict.
+    """
+    if fmt is not None:
+        return {sys.stderr: StdLogAllLevelSameFmt(fmt)}
+    return {sys.stderr: StdLogAllLevelSameFmt()}
+
+
+STDERR_ALL_LVL_SAME_FMT: dict[IO, LogLevelFmt[int, str]] = stderr_all_lvl_same_fmt()
 """
 Maps ``sys.stderr`` to same logging format for all levels.
 """
