@@ -58,7 +58,7 @@ class TestStdLoggerConfigurator:
             @pytest.mark.parametrize(
                 "stream_set", [{sys.stderr}, {sys.stderr, sys.stdout}]
             )
-            def test_with_stream_list(self, stream_set):
+            def test_with_stream_set(self, stream_set):
                 with pytest.raises(
                     ValueError,
                     match="stream_fmt_mapper and stream_set are not allowed together",
@@ -73,7 +73,7 @@ class TestStdLoggerConfigurator:
                 cfg = StdLoggerConfigurator()
                 assert cfg.stream_fmt_mapper == STDERR_ALL_LVL_DIFF_FMT
 
-            def test_none_stream_list_defaults_stream_formatter_list(self):
+            def test_none_stream_set_defaults_stream_formatter_set(self):
                 cfg = StdLoggerConfigurator(stream_set=None)
                 assert cfg.stream_fmt_mapper == STDERR_ALL_LVL_DIFF_FMT
 
@@ -85,7 +85,7 @@ class TestStdLoggerConfigurator:
                     (None, STDERR_ALL_LVL_DIFF_FMT),
                 ],
             )
-            def test_diff_stream_list_defaults_stream_formatter_list(
+            def test_diff_stream_set_defaults_stream_formatter_set(
                 self, diff, lvl_fmt
             ):
                 cfg = StdLoggerConfigurator(stream_set=None, same_fmt_per_level=diff)
@@ -106,7 +106,7 @@ class TestStdLoggerConfigurator:
                 cfg = StdLoggerConfigurator(stream_set=stream_set)
                 assert all(stream in cfg.stream_fmt_mapper for stream in stream_set)
 
-            def test_stream_list_from_stream_formatter_mapper_keys(self):
+            def test_stream_set_from_stream_formatter_mapper_keys(self):
                 stream_fmt_mapper = {
                     sys.stderr: StdLogAllLevelSameFmt(),
                     sys.stdout: StdLogAllLevelDiffFmt(),
@@ -118,8 +118,8 @@ class TestStdLoggerConfigurator:
                 )
                 assert TextIO not in cfg.stream_fmt_mapper
 
-            def test_empty_stream_list_results_in_empty_stream_fmt_mapper(self):
-                cfg = StdLoggerConfigurator(stream_set={})
+            def test_empty_stream_set_results_in_empty_stream_fmt_mapper(self):
+                cfg = StdLoggerConfigurator(stream_set=set())
                 assert cfg.stream_fmt_mapper is not None
                 assert len(cfg.stream_fmt_mapper) == 0
 

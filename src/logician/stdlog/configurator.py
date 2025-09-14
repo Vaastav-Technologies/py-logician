@@ -141,7 +141,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
             empty stream_set is accepted and specifies the user's intent of not logging to any stream.
         :return: a configured ``stream_fmt_mapper``.
         """
-        if stream_set is not None:  # accepts empty stream_list
+        if stream_set is not None:  # accepts empty stream_set
             if same_fmt_per_level:
                 return {stream: StdLogAllLevelSameFmt() for stream in stream_set}
             return {stream: StdLogAllLevelDiffFmt() for stream in stream_set}
@@ -264,7 +264,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
 
             ``stream_fmt_mapper`` - an output-stream -> log format mapper. Defaults to ``STDERR_ALL_LVL_DIFF_FMT`` if
             ``None`` is supplied. Cannot be used with ``same_fmt_per_level``
-            and ``stream_list``. Note that ``{}`` denoting an empty ``stream_fmt_mapper`` is accepted and specifies
+            and ``stream_set``. Note that ``{}`` denoting an empty ``stream_fmt_mapper`` is accepted and specifies
             the user's intent of not logging to any stream.
 
             ``diff_fmt_per_level`` - Use different log format per logging level. Cannot be provided with
