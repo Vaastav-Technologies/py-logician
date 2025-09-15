@@ -88,8 +88,8 @@ class TestStdStrFmtMprComputer:
             [
                 True,
                 "%(name)s",
-                1,      # not valid value, just for testing purpose
-                [1],    # not valid value, just for testing purpose
+                1,  # not valid value, just for testing purpose
+                [1],  # not valid value, just for testing purpose
             ],
         )
         class TestSameFmtPerLevelIsTruthy:
