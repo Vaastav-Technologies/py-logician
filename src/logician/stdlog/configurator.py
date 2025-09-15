@@ -56,7 +56,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         *,
         level: int | str = LOG_LEVEL_WARNING,
         cmd_name: str | None = CMD_NAME_NONE,
-        same_fmt_per_level: str | bool | None = FMT_PER_LEVEL_NONE,
+        same_fmt_per_lvl: str | bool | None = FMT_PER_LEVEL_NONE,
         stream_set: set[IO] | None = STREAM_SET_NONE,
         level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
@@ -85,7 +85,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         cmd_name: str | None = CMD_NAME_NONE,
         stream_fmt_mapper: dict[IO, LogLevelFmt[int, str]]
         | None = STREAM_FMT_MAPPER_NONE,
-        same_fmt_per_level: str | bool | None = FMT_PER_LEVEL_NONE,
+        same_fmt_per_lvl: str | bool | None = FMT_PER_LEVEL_NONE,
         stream_set: set[IO] | None = STREAM_SET_NONE,
         level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
@@ -99,10 +99,10 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         :param cmd_name: The command name to register the command logging level to. If ``None`` then the default
             ``COMMAND`` is picked-up and that will be shown on the ``log.cmd()`` call.
         :param stream_fmt_mapper: an output-stream -> log format mapper. Defaults to ``STDERR_ALL_LVL_DIFF_FMT`` if
-            ``None`` is supplied. Cannot be used with ``same_fmt_per_level``
+            ``None`` is supplied. Cannot be used with ``same_fmt_per_lvl``
             and ``stream_set``. Note that ``{}`` denoting an empty ``stream_fmt_mapper`` is accepted and specifies
             the user's intent of not logging to any stream.
-        :param same_fmt_per_level: Use same log format per logging level. A string argument can be passed to enforce
+        :param same_fmt_per_lvl: Use same log format per logging level. A string argument can be passed to enforce
             that format across all levels. Cannot be provided with ``stream_fmt_mapper``.
         :param stream_set: set of streams to apply level formatting logic to. Cannot be provided with
             ``stream_fmt_mapper``. Note that ``{}`` denoting an empty stream_set is accepted and specifies
@@ -114,7 +114,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         :param handlr_cfgr: The configurator for logger's handlers. Strategy to configure logger's handlers to
             introduce formats on each stream.
         """
-        self.validate_args(stream_fmt_mapper, stream_set, same_fmt_per_level)
+        self.validate_args(stream_fmt_mapper, stream_set, same_fmt_per_lvl)
 
         self._level = level
         self.cmd_name = cmd_name
@@ -126,31 +126,31 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
             self.stream_fmt_mapper = stream_fmt_mapper
         else:
             self.stream_fmt_mapper = self.compute_stream_fmt_mapper(
-                same_fmt_per_level, stream_set
+                same_fmt_per_lvl, stream_set
             )
 
     @staticmethod
     def compute_stream_fmt_mapper(
-        same_fmt_per_level: str | bool | None, stream_set: set[IO] | None
+        same_fmt_per_lvl: str | bool | None, stream_set: set[IO] | None
     ) -> dict[IO, LogLevelFmt[int, str]]:
         """
         Compute the stream format mapper form supplied arguments.
 
-        :param same_fmt_per_level: Want same format per logging level?
+        :param same_fmt_per_lvl: Want same format per logging level?
         :param stream_set: Set of streams this format configuration is to be applied to. Note that ``{}`` denoting an
             empty stream_set is accepted and specifies the user's intent of not logging to any stream.
         :return: a configured ``stream_fmt_mapper``.
         """
         if stream_set is not None:  # accepts empty stream_set
-            if same_fmt_per_level:
-                if isinstance(same_fmt_per_level, str):
-                    return {stream: StdLogAllLevelSameFmt(same_fmt_per_level) for stream in stream_set}
+            if same_fmt_per_lvl:
+                if isinstance(same_fmt_per_lvl, str):
+                    return {stream: StdLogAllLevelSameFmt(same_fmt_per_lvl) for stream in stream_set}
                 return {stream: StdLogAllLevelSameFmt() for stream in stream_set}
             return {stream: StdLogAllLevelDiffFmt() for stream in stream_set}
         else:
-            if same_fmt_per_level:
-                if isinstance(same_fmt_per_level, str):
-                    return {stream: StdLogAllLevelSameFmt(same_fmt_per_level) for stream in stream_set}
+            if same_fmt_per_lvl:
+                if isinstance(same_fmt_per_lvl, str):
+                    return {stream: StdLogAllLevelSameFmt(same_fmt_per_lvl) for stream in stream_set}
                 return STDERR_ALL_LVL_SAME_FMT
             return STDERR_ALL_LVL_DIFF_FMT
 
@@ -267,11 +267,11 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
             ``COMMAND`` is picked-up and that will be shown on the ``log.cmd()`` call.
 
             ``stream_fmt_mapper`` - an output-stream -> log format mapper. Defaults to ``STDERR_ALL_LVL_DIFF_FMT`` if
-            ``None`` is supplied. Cannot be used with ``same_fmt_per_level``
+            ``None`` is supplied. Cannot be used with ``same_fmt_per_lvl``
             and ``stream_set``. Note that ``{}`` denoting an empty ``stream_fmt_mapper`` is accepted and specifies
             the user's intent of not logging to any stream.
 
-            ``same_fmt_per_level`` - Use same log format per logging level. Cannot be provided with
+            ``same_fmt_per_lvl`` - Use same log format per logging level. Cannot be provided with
             ``stream_fmt_mapper``.
 
             ``stream_set`` - set of streams to apply level formatting logic to. Cannot be provided with
@@ -291,12 +291,12 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         """
         level = kwargs.pop("level", self.level)
         cmd_name = kwargs.pop("cmd_name", self.cmd_name)
-        same_fmt_per_level = kwargs.pop(
-            "same_fmt_per_level", StdLoggerConfigurator.FMT_PER_LEVEL_NONE
+        same_fmt_per_lvl = kwargs.pop(
+            "same_fmt_per_lvl", StdLoggerConfigurator.FMT_PER_LEVEL_NONE
         )
         stream_set = kwargs.pop("stream_set", StdLoggerConfigurator.STREAM_SET_NONE)
         stream_fmt_mapper = kwargs.pop("stream_fmt_mapper", None)
-        self.validate_args(stream_fmt_mapper, stream_set, same_fmt_per_level)
+        self.validate_args(stream_fmt_mapper, stream_set, same_fmt_per_lvl)
         stream_fmt_mapper = (
             stream_fmt_mapper
             if stream_fmt_mapper is not None
@@ -321,7 +321,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
                 level=level,
                 cmd_name=cmd_name,
                 stream_set=stream_set,
-                same_fmt_per_level=same_fmt_per_level,
+                same_fmt_per_lvl=same_fmt_per_lvl,
                 level_name_map=level_name_map,
                 no_warn=no_warn,
                 propagate=propagate,
@@ -332,20 +332,20 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
     def validate_args(
         stream_fmt_mapper: dict[IO, LogLevelFmt[int, str]] | None,
         stream_set: set[IO] | None,
-        same_fmt_per_level: bool | None,
+        same_fmt_per_lvl: bool | None,
     ):
         """
         :raises ValueError: if  ``stream_fmt_mapper`` is given with ``stream_set`` or
-            if  ``stream_fmt_mapper`` is given with ``same_fmt_per_level``.
+            if  ``stream_fmt_mapper`` is given with ``same_fmt_per_lvl``.
         """
         if stream_fmt_mapper is not None and stream_set is not None:
             raise ValueError(
                 errmsg_creator.not_allowed_together("stream_fmt_mapper", "stream_set")
             )
-        if stream_fmt_mapper is not None and same_fmt_per_level is not None:
+        if stream_fmt_mapper is not None and same_fmt_per_lvl is not None:
             raise ValueError(
                 errmsg_creator.not_allowed_together(
-                    "stream_fmt_mapper", "same_fmt_per_level"
+                    "stream_fmt_mapper", "same_fmt_per_lvl"
                 )
             )
 
