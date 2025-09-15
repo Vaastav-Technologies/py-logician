@@ -8,7 +8,7 @@ Logger interfaces for standard Logger formatters.
 
 import logging
 import sys
-from typing import override, IO
+from typing import override, IO, Protocol
 
 from logician.formatters import AllLevelSameFmt, DiffLevelDiffFmt, LogLevelFmt
 from logician.stdlog import (
@@ -20,7 +20,15 @@ from logician.stdlog import (
 )
 
 
-class StdLogAllLevelSameFmt(AllLevelSameFmt[int, str]):
+class StdLogLevelFmt(LogLevelFmt[int, str], Protocol):
+    """
+    Base interface for all the level-format mappers for stdlog.
+    """
+
+    pass
+
+
+class StdLogAllLevelSameFmt(StdLogLevelFmt, AllLevelSameFmt[int, str]):
     def __init__(self, fmt: str = SHORTER_LOG_FMT):
         """
         Same std log format for all levels.
@@ -34,7 +42,7 @@ class StdLogAllLevelSameFmt(AllLevelSameFmt[int, str]):
         return self._fmt
 
 
-class StdLogAllLevelDiffFmt(DiffLevelDiffFmt[int, str]):
+class StdLogAllLevelDiffFmt(StdLogLevelFmt, DiffLevelDiffFmt[int, str]):
     DEFAULT_LOGGER_DICT: dict[int, str] = {
         TRACE_LOG_LEVEL: TIMED_DETAIL_LOG_FMT,
         logging.DEBUG: DETAIL_LOG_FMT,
@@ -95,7 +103,7 @@ class StdLogAllLevelDiffFmt(DiffLevelDiffFmt[int, str]):
         return max_level
 
 
-def stderr_all_lvl_same_fmt(fmt: str | None = None) -> dict[IO, LogLevelFmt[int, str]]:
+def stderr_all_lvl_same_fmt(fmt: str | None = None) -> dict[IO, StdLogLevelFmt]:
     """
     Examples:
 
@@ -119,12 +127,12 @@ def stderr_all_lvl_same_fmt(fmt: str | None = None) -> dict[IO, LogLevelFmt[int,
     return {sys.stderr: StdLogAllLevelSameFmt()}
 
 
-STDERR_ALL_LVL_SAME_FMT: dict[IO, LogLevelFmt[int, str]] = stderr_all_lvl_same_fmt()
+STDERR_ALL_LVL_SAME_FMT: dict[IO, StdLogLevelFmt] = stderr_all_lvl_same_fmt()
 """
 Maps ``sys.stderr`` to same logging format for all levels.
 """
 
-STDERR_ALL_LVL_DIFF_FMT: dict[IO, LogLevelFmt[int, str]] = {
+STDERR_ALL_LVL_DIFF_FMT: dict[IO, StdLogLevelFmt] = {
     sys.stderr: StdLogAllLevelDiffFmt()
 }
 """
