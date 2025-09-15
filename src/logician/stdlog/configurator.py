@@ -28,16 +28,11 @@ from logician.configurators.vq import (
 )
 from logician.configurators.vq.comm import VQCommon
 from logician.configurators.vq.sep import VQSepExclusive
+from logician.format_mappers import StreamFormatMapperComputer
 from logician.formatters import LogLevelFmt
 from logician.stdlog import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL, WARNING_LEVEL
 from logician.stdlog.all_levels_impl import DirectAllLevelLoggerImpl
-from logician.stdlog.formatters import (
-    StdLogAllLevelDiffFmt,
-    StdLogAllLevelSameFmt,
-    STDERR_ALL_LVL_SAME_FMT,
-    STDERR_ALL_LVL_DIFF_FMT,
-    stderr_all_lvl_same_fmt,
-)
+from logician.stdlog.format_mappers import StdStrFmtMprComputer
 from logician.stdlog.hndlr_cfgr import HandlerConfigurator, SimpleHandlerConfigurator
 
 
@@ -63,6 +58,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
         handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
+        stream_fmt_mapper_computer: StreamFormatMapperComputer[int, str] = StdStrFmtMprComputer(),
     ): ...
 
     @overload
@@ -77,6 +73,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
         handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
+        stream_fmt_mapper_computer: StreamFormatMapperComputer[int, str] = StdStrFmtMprComputer(),
     ): ...
 
     def __init__(
@@ -92,6 +89,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
         handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
+        stream_fmt_mapper_computer: StreamFormatMapperComputer[int, str] = StdStrFmtMprComputer(),
     ):
         """
         Perform logger configuration using the python's std logger calls.
@@ -114,6 +112,8 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         :param propagate: propagate logger records to parent loggers.
         :param handlr_cfgr: The configurator for logger's handlers. Strategy to configure logger's handlers to
             introduce formats on each stream.
+        :param stream_fmt_mapper_computer: A computer that computes resulting ``stream_fmt_mapper`` from the supplied
+            ``same_fmt_per_lvl`` and ``stream_set`` args.
         """
         self.validate_args(stream_fmt_mapper, stream_set, same_fmt_per_lvl)
 
@@ -123,40 +123,13 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         self.handlr_cfgr = handlr_cfgr
         self.no_warn = no_warn
         self.propagate = propagate
+        self.stream_fmt_mapper_computer = stream_fmt_mapper_computer
         if stream_fmt_mapper is not None:  # accepts empty i.e. falsy stream_fmt_mapper
             self.stream_fmt_mapper = stream_fmt_mapper
         else:
-            self.stream_fmt_mapper = self.compute_stream_fmt_mapper(
+            self.stream_fmt_mapper = self.stream_fmt_mapper_computer.compute(
                 same_fmt_per_lvl, stream_set
             )
-
-    @staticmethod
-    def compute_stream_fmt_mapper(
-        same_fmt_per_lvl: str | bool | None, stream_set: set[IO] | None
-    ) -> dict[IO, LogLevelFmt[int, str]]:
-        """
-        Compute the stream format mapper form supplied arguments.
-
-        :param same_fmt_per_lvl: Want same format per logging level?
-        :param stream_set: Set of streams this format configuration is to be applied to. Note that ``{}`` denoting an
-            empty stream_set is accepted and specifies the user's intent of not logging to any stream.
-        :return: a configured ``stream_fmt_mapper``.
-        """
-        if stream_set is not None:  # accepts empty stream_set
-            if same_fmt_per_lvl:
-                if isinstance(same_fmt_per_lvl, str):
-                    return {
-                        stream: StdLogAllLevelSameFmt(same_fmt_per_lvl)
-                        for stream in stream_set
-                    }
-                return {stream: StdLogAllLevelSameFmt() for stream in stream_set}
-            return {stream: StdLogAllLevelDiffFmt() for stream in stream_set}
-        else:
-            if same_fmt_per_lvl:
-                if isinstance(same_fmt_per_lvl, str):
-                    return stderr_all_lvl_same_fmt(same_fmt_per_lvl)
-                return STDERR_ALL_LVL_SAME_FMT
-            return STDERR_ALL_LVL_DIFF_FMT
 
     @override
     def configure(self, logger: logging.Logger) -> DirectAllLevelLogger:
@@ -291,6 +264,9 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
 
             ``handlr_cfgr`` - The configurator for logger's handlers. Strategy to configure logger's handlers to
             introduce formats on each stream. Check ``logician.stdlog.utils:simple_handlr_cfgr()`` for more info.
+
+            ``stream_fmt_mapper_computer`` - A computer that computes resulting ``stream_fmt_mapper`` from the supplied
+            ``same_fmt_per_lvl`` and ``stream_set`` args.
         :return: new ``StdLoggerConfigurator`` with supplied overrides.
         """
         level = kwargs.pop("level", self.level)
@@ -310,6 +286,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         no_warn = kwargs.pop("no_warn", self.no_warn)
         propagate = kwargs.pop("propagate", StdLoggerConfigurator.PROPAGATE_FALSE)
         handlr_cfgr = kwargs.pop("handlr_cfgr", self.handlr_cfgr)
+        stream_fmt_mapper_computer = kwargs.pop("stream_fmt_mapper_computer", self.stream_fmt_mapper_computer)
         if stream_fmt_mapper is not None:
             return StdLoggerConfigurator(
                 level=level,
@@ -319,6 +296,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
                 no_warn=no_warn,
                 propagate=propagate,
                 handlr_cfgr=handlr_cfgr,
+                stream_fmt_mapper_computer=stream_fmt_mapper_computer,
             )
         else:
             return StdLoggerConfigurator(
@@ -330,6 +308,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
                 no_warn=no_warn,
                 propagate=propagate,
                 handlr_cfgr=handlr_cfgr,
+                stream_fmt_mapper_computer=stream_fmt_mapper_computer,
             )
 
     @staticmethod
