@@ -58,7 +58,9 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
         handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
-        stream_fmt_mapper_computer: StreamFormatMapperComputer[int, str] = StdStrFmtMprComputer(),
+        stream_fmt_mapper_computer: StreamFormatMapperComputer[
+            int, str
+        ] = StdStrFmtMprComputer(),
     ): ...
 
     @overload
@@ -73,7 +75,9 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
         handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
-        stream_fmt_mapper_computer: StreamFormatMapperComputer[int, str] = StdStrFmtMprComputer(),
+        stream_fmt_mapper_computer: StreamFormatMapperComputer[
+            int, str
+        ] = StdStrFmtMprComputer(),
     ): ...
 
     def __init__(
@@ -89,7 +93,9 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
         handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
-        stream_fmt_mapper_computer: StreamFormatMapperComputer[int, str] = StdStrFmtMprComputer(),
+        stream_fmt_mapper_computer: StreamFormatMapperComputer[
+            int, str
+        ] = StdStrFmtMprComputer(),
     ):
         """
         Perform logger configuration using the python's std logger calls.
@@ -286,7 +292,9 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         no_warn = kwargs.pop("no_warn", self.no_warn)
         propagate = kwargs.pop("propagate", StdLoggerConfigurator.PROPAGATE_FALSE)
         handlr_cfgr = kwargs.pop("handlr_cfgr", self.handlr_cfgr)
-        stream_fmt_mapper_computer = kwargs.pop("stream_fmt_mapper_computer", self.stream_fmt_mapper_computer)
+        stream_fmt_mapper_computer = kwargs.pop(
+            "stream_fmt_mapper_computer", self.stream_fmt_mapper_computer
+        )
         if stream_fmt_mapper is not None:
             return StdLoggerConfigurator(
                 level=level,

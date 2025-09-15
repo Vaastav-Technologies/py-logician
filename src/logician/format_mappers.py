@@ -9,6 +9,7 @@ IO-streams -> log-level-format
 
 refer ``logician.formatters.LogLevelFmt`` for log-level-format.
 """
+
 from abc import abstractmethod
 from typing import Protocol, IO
 
@@ -27,7 +28,9 @@ class StreamFormatMapperComputer[L, F](Protocol):
     """
 
     @abstractmethod
-    def compute(self, same_fmt_per_lvl: F | bool | None, stream_set: set[IO] | None) -> dict[IO, LogLevelFmt[L, F]]:
+    def compute(
+        self, same_fmt_per_lvl: F | bool | None, stream_set: set[IO] | None
+    ) -> dict[IO, LogLevelFmt[L, F]]:
         """
         Compute the stream format mapper from supplied arguments.
 
@@ -37,4 +40,4 @@ class StreamFormatMapperComputer[L, F](Protocol):
         :return: a dictionary of stream->log-level-format.
         """
 
-        pass    # pragma: no cover
+        pass  # pragma: no cover

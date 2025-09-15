@@ -9,12 +9,19 @@ IO-streams -> log-level-format
 
 refer ``logician.stdlog.formatters.StdLogLevelFmt`` for log-level-format.
 """
+
 from abc import abstractmethod
 from typing import Protocol, IO, override
 
 from logician.format_mappers import StreamFormatMapperComputer
-from logician.stdlog.formatters import StdLogLevelFmt, StdLogAllLevelSameFmt, StdLogAllLevelDiffFmt, \
-    STDERR_ALL_LVL_SAME_FMT, STDERR_ALL_LVL_DIFF_FMT, stderr_all_lvl_same_fmt
+from logician.stdlog.formatters import (
+    StdLogLevelFmt,
+    StdLogAllLevelSameFmt,
+    StdLogAllLevelDiffFmt,
+    STDERR_ALL_LVL_SAME_FMT,
+    STDERR_ALL_LVL_DIFF_FMT,
+    stderr_all_lvl_same_fmt,
+)
 
 
 class StdStreamFormatMapperComputer(StreamFormatMapperComputer[int, str], Protocol):
@@ -27,8 +34,10 @@ class StdStreamFormatMapperComputer(StreamFormatMapperComputer[int, str], Protoc
 
     @override
     @abstractmethod
-    def compute(self, same_fmt_per_lvl: str | bool | None, stream_set: set[IO] | None) -> dict[IO, StdLogLevelFmt]:
-        pass    # pragma: no cover
+    def compute(
+        self, same_fmt_per_lvl: str | bool | None, stream_set: set[IO] | None
+    ) -> dict[IO, StdLogLevelFmt]:
+        pass  # pragma: no cover
 
 
 class StdStrFmtMprComputer(StdStreamFormatMapperComputer):
@@ -43,9 +52,9 @@ class StdStrFmtMprComputer(StdStreamFormatMapperComputer):
       * Empty ``stream_set``, like, ``{}`` returns an empty dict:
 
         >>> assert sut.compute(True, set()) == {}
-        
+
       * ``same_fmt_per_level`` can set same format for all logging levels.
-        
+
         >>> ret_dict = sut.compute(True, {sys.stderr})
         >>> assert isinstance(ret_dict[sys.stderr], StdLogAllLevelSameFmt)
 
@@ -70,8 +79,9 @@ class StdStrFmtMprComputer(StdStreamFormatMapperComputer):
     """
 
     @override
-    def compute(self, same_fmt_per_lvl: str | bool | None, stream_set: set[IO] | None) -> dict[IO, StdLogLevelFmt]:
-
+    def compute(
+        self, same_fmt_per_lvl: str | bool | None, stream_set: set[IO] | None
+    ) -> dict[IO, StdLogLevelFmt]:
         if stream_set is not None:  # accepts empty stream_set
             if same_fmt_per_lvl:
                 if isinstance(same_fmt_per_lvl, str):
