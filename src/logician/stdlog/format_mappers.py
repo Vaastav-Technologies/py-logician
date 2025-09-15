@@ -28,7 +28,7 @@ class StdStreamFormatMapperComputer(StreamFormatMapperComputer[int, str], Protoc
     @override
     @abstractmethod
     def compute(self, same_fmt_per_lvl: str | bool | None, stream_set: set[IO] | None) -> dict[IO, StdLogLevelFmt]:
-        pass
+        pass    # pragma: no cover
 
 
 class StdStrFmtMprComputer(StdStreamFormatMapperComputer):
@@ -59,6 +59,13 @@ class StdStrFmtMprComputer(StdStreamFormatMapperComputer):
 
         >>> ret_dict = sut.compute(False, {sys.stdout, sys.stderr})
         >>> assert isinstance(ret_dict[sys.stderr], StdLogAllLevelDiffFmt)
+        >>> assert isinstance(ret_dict[sys.stderr], StdLogAllLevelDiffFmt)
+
+      * ``None`` ``stream_set`` and ``same_fmt_per_level`` enforces different-format-per-log-level on the stderr stream.
+
+        >>> ret_dict = sut.compute(None, None)
+        >>> assert len(ret_dict) == 1
+        >>> assert sys.stderr in ret_dict   # only one entry of stderr stream present
         >>> assert isinstance(ret_dict[sys.stderr], StdLogAllLevelDiffFmt)
     """
 

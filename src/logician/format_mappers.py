@@ -37,4 +37,4 @@ class StreamFormatMapperComputer[L, F](Protocol):
         :return: a dictionary of stream->log-level-format.
         """
 
-        pass
+        pass    # pragma: no cover
