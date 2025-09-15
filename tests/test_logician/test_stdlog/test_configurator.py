@@ -85,9 +85,7 @@ class TestStdLoggerConfigurator:
                     (None, STDERR_ALL_LVL_DIFF_FMT),
                 ],
             )
-            def test_diff_stream_set_defaults_stream_formatter_set(
-                self, diff, lvl_fmt
-            ):
+            def test_diff_stream_set_defaults_stream_formatter_set(self, diff, lvl_fmt):
                 cfg = StdLoggerConfigurator(stream_set=None, same_fmt_per_lvl=diff)
                 assert cfg.stream_fmt_mapper == lvl_fmt
 

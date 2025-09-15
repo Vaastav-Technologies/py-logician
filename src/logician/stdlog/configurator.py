@@ -145,7 +145,10 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         if stream_set is not None:  # accepts empty stream_set
             if same_fmt_per_lvl:
                 if isinstance(same_fmt_per_lvl, str):
-                    return {stream: StdLogAllLevelSameFmt(same_fmt_per_lvl) for stream in stream_set}
+                    return {
+                        stream: StdLogAllLevelSameFmt(same_fmt_per_lvl)
+                        for stream in stream_set
+                    }
                 return {stream: StdLogAllLevelSameFmt() for stream in stream_set}
             return {stream: StdLogAllLevelDiffFmt() for stream in stream_set}
         else:
