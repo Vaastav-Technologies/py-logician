@@ -58,10 +58,10 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         cmd_name: str | None = CMD_NAME_NONE,
         same_fmt_per_level: str | bool | None = FMT_PER_LEVEL_NONE,
         stream_set: set[IO] | None = STREAM_SET_NONE,
-        handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
         level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
+        handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
     ): ...
 
     @overload
@@ -72,10 +72,10 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         cmd_name: str | None = CMD_NAME_NONE,
         stream_fmt_mapper: dict[IO, LogLevelFmt[int, str]]
         | None = STREAM_FMT_MAPPER_NONE,
-        handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
         level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
+        handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
     ): ...
 
     def __init__(
@@ -87,10 +87,10 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         | None = STREAM_FMT_MAPPER_NONE,
         same_fmt_per_level: str | bool | None = FMT_PER_LEVEL_NONE,
         stream_set: set[IO] | None = STREAM_SET_NONE,
-        handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
         level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
+        handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
     ):
         """
         Perform logger configuration using the python's std logger calls.
@@ -107,12 +107,12 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         :param stream_set: set of streams to apply level formatting logic to. Cannot be provided with
             ``stream_fmt_mapper``. Note that ``{}`` denoting an empty stream_set is accepted and specifies
             the user's intent of not logging to any stream.
-        :param handlr_cfgr: The configurator for logger's handlers. Strategy to configure logger's handlers to
-            introduce formats on each stream.
         :param level_name_map: log level - name mapping. This mapping updates the std python logging library's
             registered log levels . Check ``DirectAllLevelLogger.register_levels()`` for more info.
         :param no_warn: do not warn if a supplied level is not registered with the logging library.
         :param propagate: propagate logger records to parent loggers.
+        :param handlr_cfgr: The configurator for logger's handlers. Strategy to configure logger's handlers to
+            introduce formats on each stream.
         """
         self.validate_args(stream_fmt_mapper, stream_set, same_fmt_per_level)
 
@@ -281,12 +281,12 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
             ``level_name_map`` - log level - name mapping. This mapping updates the std python logging library's
             registered log levels . Check ``DirectAllLevelLogger.register_levels()`` for more info.
 
-            ``handlr_cfgr`` - The configurator for logger's handlers. Strategy to configure logger's handlers to
-            introduce formats on each stream. Check ``logician.stdlog.utils:simple_handlr_cfgr()`` for more info.
-
             ``no_warn`` - do not warn if a supplied level is not registered with the logging library.
 
             ``propagate`` - propagate logger records to parent loggers.
+
+            ``handlr_cfgr`` - The configurator for logger's handlers. Strategy to configure logger's handlers to
+            introduce formats on each stream. Check ``logician.stdlog.utils:simple_handlr_cfgr()`` for more info.
         :return: new ``StdLoggerConfigurator`` with supplied overrides.
         """
         level = kwargs.pop("level", self.level)
@@ -296,7 +296,6 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         )
         stream_set = kwargs.pop("stream_set", StdLoggerConfigurator.STREAM_SET_NONE)
         stream_fmt_mapper = kwargs.pop("stream_fmt_mapper", None)
-        handlr_cfgr = kwargs.pop("handlr_cfgr", self.handlr_cfgr)
         self.validate_args(stream_fmt_mapper, stream_set, same_fmt_per_level)
         stream_fmt_mapper = (
             stream_fmt_mapper
@@ -306,15 +305,16 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         level_name_map = kwargs.pop("level_name_map", self.level_name_map)
         no_warn = kwargs.pop("no_warn", self.no_warn)
         propagate = kwargs.pop("propagate", StdLoggerConfigurator.PROPAGATE_FALSE)
+        handlr_cfgr = kwargs.pop("handlr_cfgr", self.handlr_cfgr)
         if stream_fmt_mapper is not None:
             return StdLoggerConfigurator(
                 level=level,
                 cmd_name=cmd_name,
                 stream_fmt_mapper=stream_fmt_mapper,
                 level_name_map=level_name_map,
-                handlr_cfgr=handlr_cfgr,
                 no_warn=no_warn,
                 propagate=propagate,
+                handlr_cfgr=handlr_cfgr,
             )
         else:
             return StdLoggerConfigurator(
@@ -323,9 +323,9 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
                 stream_set=stream_set,
                 same_fmt_per_level=same_fmt_per_level,
                 level_name_map=level_name_map,
-                handlr_cfgr=handlr_cfgr,
                 no_warn=no_warn,
                 propagate=propagate,
+                handlr_cfgr=handlr_cfgr,
             )
 
     @staticmethod
