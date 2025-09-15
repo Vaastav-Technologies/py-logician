@@ -36,6 +36,7 @@ from logician.stdlog.formatters import (
     StdLogAllLevelSameFmt,
     STDERR_ALL_LVL_SAME_FMT,
     STDERR_ALL_LVL_DIFF_FMT,
+    stderr_all_lvl_same_fmt,
 )
 from logician.stdlog.hndlr_cfgr import HandlerConfigurator, SimpleHandlerConfigurator
 
@@ -150,7 +151,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         else:
             if same_fmt_per_lvl:
                 if isinstance(same_fmt_per_lvl, str):
-                    return {stream: StdLogAllLevelSameFmt(same_fmt_per_lvl) for stream in stream_set}
+                    return stderr_all_lvl_same_fmt(same_fmt_per_lvl)
                 return STDERR_ALL_LVL_SAME_FMT
             return STDERR_ALL_LVL_DIFF_FMT
 
@@ -332,7 +333,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
     def validate_args(
         stream_fmt_mapper: dict[IO, LogLevelFmt[int, str]] | None,
         stream_set: set[IO] | None,
-        same_fmt_per_lvl: bool | None,
+        same_fmt_per_lvl: str | bool | None,
     ):
         """
         :raises ValueError: if  ``stream_fmt_mapper`` is given with ``stream_set`` or
