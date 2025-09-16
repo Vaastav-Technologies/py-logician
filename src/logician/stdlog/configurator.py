@@ -35,8 +35,12 @@ from logician.stdlog.all_levels_impl import DirectAllLevelLoggerImpl
 from logician.stdlog.format_mappers import StdStrFmtMprComputer
 from logician.stdlog.hndlr_cfgr import HandlerConfigurator, SimpleHandlerConfigurator
 
+type L = int | str
+"""
+Type for python standard logger logging level.
+"""
 
-class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
+class StdLoggerConfigurator(LevelLoggerConfigurator[L]):
     LOG_LEVEL_WARNING = WARNING_LEVEL
     CMD_NAME_NONE = None
     STREAM_FMT_MAPPER_NONE = None
@@ -50,7 +54,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
     def __init__(
         self,
         *,
-        level: int | str = LOG_LEVEL_WARNING,
+        level: L = LOG_LEVEL_WARNING,
         cmd_name: str | None = CMD_NAME_NONE,
         same_fmt_per_lvl: str | bool | None = FMT_PER_LEVEL_NONE,
         stream_set: set[IO] | None = STREAM_SET_NONE,
@@ -67,7 +71,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
     def __init__(
         self,
         *,
-        level: int | str = LOG_LEVEL_WARNING,
+        level: L = LOG_LEVEL_WARNING,
         cmd_name: str | None = CMD_NAME_NONE,
         stream_fmt_mapper: dict[IO, LogLevelFmt[int, str]]
         | None = STREAM_FMT_MAPPER_NONE,
@@ -83,7 +87,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
     def __init__(
         self,
         *,
-        level: int | str = LOG_LEVEL_WARNING,
+        level: L = LOG_LEVEL_WARNING,
         cmd_name: str | None = CMD_NAME_NONE,
         stream_fmt_mapper: dict[IO, LogLevelFmt[int, str]]
         | None = STREAM_FMT_MAPPER_NONE,
@@ -230,14 +234,14 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         )
 
     @override
-    def set_level(self, new_level: int | str) -> int | str:
+    def set_level(self, new_level: L) -> L:
         orig_level = self.level
         self._level = new_level
         return orig_level
 
     @override
     @property
-    def level(self) -> int | str:
+    def level(self) -> L:
         return self._level
 
     @override
@@ -342,18 +346,14 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
 
 
 class VQLoggerConfigurator(
-    LoggerConfigurator, VQConfigurator[int | str], HasUnderlyingConfigurator, Protocol
+    LoggerConfigurator, VQConfigurator[L], HasUnderlyingConfigurator, Protocol
 ):
     """
     Logger configurator that can decorate other configurators to set their underlying logger levels. This log level is
     to be set according to the supplied verbosity and quietness values.
     """
 
-    type T = int | str
-    """
-    Type for python standard logger logging level.
-    """
-    VQ_LEVEL_MAP: VQ_DICT_LITERAL[T] = dict(
+    VQ_LEVEL_MAP: VQ_DICT_LITERAL[L] = dict(
         v=logging.INFO,
         vv=logging.DEBUG,
         vvv=TRACE_LOG_LEVEL,
@@ -364,7 +364,7 @@ class VQLoggerConfigurator(
     """
     Default {``verbosity-quietness -> logging-level``} mapping.
     """
-    LOG_LEVEL_WARNING: T = WARNING_LEVEL
+    LOG_LEVEL_WARNING: L = WARNING_LEVEL
 
 
 class VQSepLoggerConfigurator(VQLoggerConfigurator):
@@ -375,39 +375,39 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
     @overload
     def __init__(
         self,
-        configurator: LevelLoggerConfigurator[VQLoggerConfigurator.T],
+        configurator: LevelLoggerConfigurator[L],
         verbosity: int | None,
         quietness: int | None,
-        vq_level_map: VQ_DICT_LITERAL[VQLoggerConfigurator.T]
+        vq_level_map: VQ_DICT_LITERAL[L]
         | None = VQ_LEVEL_MAP_NONE,
-        vq_sep_configurator: VQSepConfigurator[VQLoggerConfigurator.T]
+        vq_sep_configurator: VQSepConfigurator[L]
         | None = VQ_SEP_CONF_NONE,
-        default_log_level: VQLoggerConfigurator.T = LOG_LEVEL_WARNING,
+        default_log_level: L = LOG_LEVEL_WARNING,
     ): ...
 
     @overload
     def __init__(
         self,
-        configurator: LevelLoggerConfigurator[VQLoggerConfigurator.T],
+        configurator: LevelLoggerConfigurator[L],
         verbosity: V_LITERAL | None,
         quietness: Q_LITERAL | None,
-        vq_level_map: VQ_DICT_LITERAL[VQLoggerConfigurator.T]
+        vq_level_map: VQ_DICT_LITERAL[L]
         | None = VQ_LEVEL_MAP_NONE,
-        vq_sep_configurator: VQSepConfigurator[VQLoggerConfigurator.T]
+        vq_sep_configurator: VQSepConfigurator[L]
         | None = VQ_SEP_CONF_NONE,
-        default_log_level: VQLoggerConfigurator.T = LOG_LEVEL_WARNING,
+        default_log_level: L = LOG_LEVEL_WARNING,
     ): ...
 
     def __init__(
         self,
-        configurator: LevelLoggerConfigurator[VQLoggerConfigurator.T],
+        configurator: LevelLoggerConfigurator[L],
         verbosity: V_LITERAL | int | None,
         quietness: Q_LITERAL | int | None,
-        vq_level_map: VQ_DICT_LITERAL[VQLoggerConfigurator.T]
+        vq_level_map: VQ_DICT_LITERAL[L]
         | None = VQ_LEVEL_MAP_NONE,
-        vq_sep_configurator: VQSepConfigurator[VQLoggerConfigurator.T]
+        vq_sep_configurator: VQSepConfigurator[L]
         | None = VQ_SEP_CONF_NONE,
-        default_log_level: VQLoggerConfigurator.T = LOG_LEVEL_WARNING,
+        default_log_level: L = LOG_LEVEL_WARNING,
     ):
         """
         A logger configurator that can decorate another logger configurator to accept and infer logging level based on
@@ -517,7 +517,7 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         return self.configurator.configure(logger)
 
     @property
-    def vq_level_map(self) -> VQ_DICT_LITERAL[VQLoggerConfigurator.T]:
+    def vq_level_map(self) -> VQ_DICT_LITERAL[L]:
         return self._vq_level_map
 
     @property
@@ -599,12 +599,12 @@ class VQCommLoggerConfigurator(
     def __init__(
         self,
         ver_qui: V_LITERAL | Q_LITERAL | None,
-        configurator: LevelLoggerConfigurator[VQLoggerConfigurator.T],
-        vq_level_map: VQ_DICT_LITERAL[VQLoggerConfigurator.T]
+        configurator: LevelLoggerConfigurator[L],
+        vq_level_map: VQ_DICT_LITERAL[L]
         | None = VQ_LEVEL_MAP_NONE,
-        vq_comm_configurator: VQCommConfigurator[VQLoggerConfigurator.T]
+        vq_comm_configurator: VQCommConfigurator[L]
         | None = VQ_COMM_CONF_NONE,
-        default_log_level: VQLoggerConfigurator.T = LOG_LEVEL_WARNING,
+        default_log_level: L = LOG_LEVEL_WARNING,
     ):
         """
         A logger configurator that can decorate another logger configurator to accept and infer logging level based on
@@ -661,13 +661,13 @@ class VQCommLoggerConfigurator(
         return self.configurator.configure(logger)
 
     @property
-    def vq_level_map(self) -> VQ_DICT_LITERAL[VQLoggerConfigurator.T]:
+    def vq_level_map(self) -> VQ_DICT_LITERAL[L]:
         return self._vq_level_map
 
     @property
     def underlying_configurator(
         self,
-    ) -> LevelLoggerConfigurator[VQLoggerConfigurator.T]:
+    ) -> LevelLoggerConfigurator[L]:
         return self._underlying_configurator  # pragma: no cover
 
     @override
