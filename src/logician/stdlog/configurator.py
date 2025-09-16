@@ -30,7 +30,7 @@ from logician.configurators.vq.comm import VQCommon
 from logician.configurators.vq.sep import VQSepExclusive
 from logician.format_mappers import StreamFormatMapperComputer
 from logician.formatters import LogLevelFmt
-from logician.stdlog import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL, WARNING_LEVEL, L
+from logician.stdlog import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL, WARNING_LEVEL, LOG_LVL as L
 from logician.stdlog.all_levels_impl import DirectAllLevelLoggerImpl
 from logician.stdlog.format_mappers import StdStrFmtMprComputer
 from logician.stdlog.hndlr_cfgr import HandlerConfigurator, SimpleHandlerConfigurator
