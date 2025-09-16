@@ -44,7 +44,7 @@ class TestStdLoggerConfigurator:
     class TestArgs:
         class TestStreamMapperNotAllowed:
             @pytest.mark.parametrize("diff", [True, False])
-            def test_with_Same_fmt(self, diff):
+            def test_with_same_fmt(self, diff):
                 with pytest.raises(
                     ValueError,
                     match="stream_fmt_mapper and same_fmt_per_lvl are not allowed "
