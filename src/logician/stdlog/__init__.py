@@ -47,7 +47,12 @@ from logician.stdlog.all_levels import (
 from logician.stdlog.all_levels import DirectAllLevelLogger as DirectAllLevelLogger
 # endregion
 
-type EX_LOG_LVL = int | str
+type LOG_LVL = int
+"""
+Python stdlog level type.
+"""
+
+type EX_LOG_LVL = LOG_LVL | str
 """
 Extended log level type.
 
