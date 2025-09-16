@@ -19,6 +19,11 @@ Extended log level type.
 Extended Type Var for python standard logger logging level.
 """
 
+type LOG_FMT = str
+"""
+Python stdlog logger format type.
+"""
+
 DEFAULT_STACK_LEVEL = 2
 """
 ``2`` chosen as value because the classes that use this constant actually delegate logging to a user supplied 
