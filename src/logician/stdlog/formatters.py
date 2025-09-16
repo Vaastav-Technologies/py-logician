@@ -18,9 +18,9 @@ from logician.stdlog import (
     SHORT_LOG_FMT,
     SHORTER_LOG_FMT,
 )
-from logician.stdlog.constants import LOG_LVL as L
+from logician.stdlog.constants import LOG_LVL as L, LOG_FMT as F
 
-class StdLogLevelFmt(LogLevelFmt[L, str], Protocol):
+class StdLogLevelFmt(LogLevelFmt[L, F], Protocol):
     """
     Base interface for all the level-format mappers for stdlog.
     """
@@ -28,8 +28,8 @@ class StdLogLevelFmt(LogLevelFmt[L, str], Protocol):
     pass
 
 
-class StdLogAllLevelSameFmt(StdLogLevelFmt, AllLevelSameFmt[L, str]):
-    def __init__(self, fmt: str = SHORTER_LOG_FMT):
+class StdLogAllLevelSameFmt(StdLogLevelFmt, AllLevelSameFmt[L, F]):
+    def __init__(self, fmt: F = SHORTER_LOG_FMT):
         """
         Same std log format for all levels.
 
@@ -38,12 +38,12 @@ class StdLogAllLevelSameFmt(StdLogLevelFmt, AllLevelSameFmt[L, str]):
         self._fmt = fmt
 
     @override
-    def fmt(self, level: L) -> str:
+    def fmt(self, level: L) -> F:
         return self._fmt
 
 
-class StdLogAllLevelDiffFmt(StdLogLevelFmt, DiffLevelDiffFmt[L, str]):
-    DEFAULT_LOGGER_DICT: dict[L, str] = {
+class StdLogAllLevelDiffFmt(StdLogLevelFmt, DiffLevelDiffFmt[L, F]):
+    DEFAULT_LOGGER_DICT: dict[L, F] = {
         TRACE_LOG_LEVEL: TIMED_DETAIL_LOG_FMT,
         logging.DEBUG: DETAIL_LOG_FMT,
         logging.INFO: SHORT_LOG_FMT,
@@ -53,7 +53,7 @@ class StdLogAllLevelDiffFmt(StdLogLevelFmt, DiffLevelDiffFmt[L, str]):
     Different log formats for different log levels.
     """
 
-    def __init__(self, fmt_dict: dict[L, str] | None = None):
+    def __init__(self, fmt_dict: dict[L, F] | None = None):
         """
         Specify how different log levels should impact the logging formats.
 
@@ -81,7 +81,7 @@ class StdLogAllLevelDiffFmt(StdLogLevelFmt, DiffLevelDiffFmt[L, str]):
         )
 
     @override
-    def fmt(self, level: L) -> str:
+    def fmt(self, level: L) -> F:
         final_level = (
             level if level in self._fmt_dict else self.next_approx_level(level)
         )
@@ -103,7 +103,7 @@ class StdLogAllLevelDiffFmt(StdLogLevelFmt, DiffLevelDiffFmt[L, str]):
         return max_level
 
 
-def stderr_all_lvl_same_fmt(fmt: str | None = None) -> dict[IO, StdLogLevelFmt]:
+def stderr_all_lvl_same_fmt(fmt: F | None = None) -> dict[IO, StdLogLevelFmt]:
     """
     Examples:
 

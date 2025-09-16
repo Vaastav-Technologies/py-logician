@@ -7,21 +7,34 @@ Constants related to logging implementation by the python standard logging.
 
 import logging
 
-type LOG_LVL = int
+LOG_LVL = int
 """
 Python stdlog level type.
+
+E.g. 10 or logging.DEBUG
 """
 
-type EX_LOG_LVL = LOG_LVL | str
+LOG_STR_LVL = str
+"""
+Python stdlog str level type.
+
+E.g. "WARNING"
+"""
+
+type EX_LOG_LVL = LOG_LVL | LOG_STR_LVL
 """
 Extended log level type.
 
 Extended Type Var for python standard logger logging level.
+
+E.g. logging.DEBUG->"DEBUG"
 """
 
-type LOG_FMT = str
+LOG_FMT = str
 """
 Python stdlog logger format type.
+
+E.g. "%(name)s -- %(message)s"
 """
 
 DEFAULT_STACK_LEVEL = 2

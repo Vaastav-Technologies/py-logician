@@ -26,7 +26,7 @@ from logician.stdlog import (
     CMD_LOG_STR,
 )
 from logician.stdlog.utils import level_name_mapping
-from logician.stdlog.constants import LOG_LVL as L
+from logician.stdlog.constants import LOG_LVL as L, LOG_STR_LVL as S
 
 
 class StdLogProtocol(MinLogProtocol[L], Protocol):
@@ -45,7 +45,7 @@ class StdLogProtocol(MinLogProtocol[L], Protocol):
         - disabled
     """
 
-    name: str
+    name: S
     level: L
     disabled: bool
 
@@ -92,7 +92,7 @@ class DirectStdAllLevelLogger(AllLevelLogger[L], Protocol):
     All logging levels as provided by the python std logging.
     """
 
-    DEFAULT_LEVEL_MAP: dict[L, str] = {
+    DEFAULT_LEVEL_MAP: dict[L, S] = {
         TRACE_LOG_LEVEL: TRACE_LOG_STR,
         SUCCESS_LOG_LEVEL: SUCCESS_LOG_STR,
         NOTICE_LOG_LEVEL: NOTICE_LOG_STR,
@@ -117,7 +117,7 @@ class DirectStdAllLevelLogger(AllLevelLogger[L], Protocol):
     """
 
     @staticmethod
-    def register_levels(level_name_map: dict[L, str] | None = None) -> dict[L, str]:
+    def register_levels(level_name_map: dict[L, S] | None = None) -> dict[L, S]:
         """
         Register levels in the python std logger.
 
@@ -164,7 +164,7 @@ class DirectStdAllLevelLogger(AllLevelLogger[L], Protocol):
         return level_name_mapping()
 
     @staticmethod
-    def __register_all_levels(level_name_map: dict[L, str]):
+    def __register_all_levels(level_name_map: dict[L, S]):
         for level in level_name_map:
             logging.addLevelName(level, level_name_map[level])
 

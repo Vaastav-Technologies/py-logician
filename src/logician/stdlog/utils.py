@@ -11,10 +11,10 @@ from typing import IO
 from collections import defaultdict
 
 from vt.utils.errors.warnings import vt_warn
-from logician.stdlog.constants import LOG_LVL as L
+from logician.stdlog.constants import LOG_LVL as L, LOG_FMT as F, LOG_STR_LVL as S
 
 
-def level_name_mapping() -> dict[L, str]:
+def level_name_mapping() -> dict[L, S]:
     """
     :return: level -> name mapping from std lib.
     """
@@ -28,8 +28,8 @@ class TempSetLevelName:
     def __init__(
         self,
         level: L,
-        level_name: str | None,
-        reverting_lvl_name: str,
+        level_name: S | None,
+        reverting_lvl_name: S,
         no_warn: bool = False,
     ):
         """
@@ -88,7 +88,7 @@ def form_stream_handlers_map(logger: logging.Logger) -> dict[IO, list[Handler]]:
     return stream_handler_map
 
 
-def add_new_formatter(stream: IO, fmt: str) -> logging.StreamHandler:
+def add_new_formatter(stream: IO, fmt: F) -> logging.StreamHandler:
     """
     Get a handler for ``stream`` with formatter conforming ``fmt`` param.
 

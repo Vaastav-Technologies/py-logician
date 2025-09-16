@@ -22,10 +22,10 @@ from logician.stdlog.formatters import (
     STDERR_ALL_LVL_DIFF_FMT,
     stderr_all_lvl_same_fmt,
 )
-from logician.stdlog.constants import LOG_LVL as L
+from logician.stdlog.constants import LOG_LVL as L, LOG_FMT as F
 
 
-class StdStreamFormatMapperComputer(StreamFormatMapperComputer[L, str], Protocol):
+class StdStreamFormatMapperComputer(StreamFormatMapperComputer[L, F], Protocol):
     """
     Interface for the strategies that can compute and then generate mappings of stream -> level-format-mapper for
     python stdlog.
@@ -36,7 +36,7 @@ class StdStreamFormatMapperComputer(StreamFormatMapperComputer[L, str], Protocol
     @override
     @abstractmethod
     def compute(
-        self, same_fmt_per_lvl: str | bool | None, stream_set: set[IO] | None
+        self, same_fmt_per_lvl: F | bool | None, stream_set: set[IO] | None
     ) -> dict[IO, StdLogLevelFmt]:
         pass  # pragma: no cover
 
@@ -81,11 +81,11 @@ class StdStrFmtMprComputer(StdStreamFormatMapperComputer):
 
     @override
     def compute(
-        self, same_fmt_per_lvl: str | bool | None, stream_set: set[IO] | None
+        self, same_fmt_per_lvl: F | bool | None, stream_set: set[IO] | None
     ) -> dict[IO, StdLogLevelFmt]:
         if stream_set is not None:  # accepts empty stream_set
             if same_fmt_per_lvl:
-                if isinstance(same_fmt_per_lvl, str):
+                if isinstance(same_fmt_per_lvl, F):
                     return {
                         stream: StdLogAllLevelSameFmt(same_fmt_per_lvl)
                         for stream in stream_set
@@ -94,7 +94,7 @@ class StdStrFmtMprComputer(StdStreamFormatMapperComputer):
             return {stream: StdLogAllLevelDiffFmt() for stream in stream_set}
         else:
             if same_fmt_per_lvl:
-                if isinstance(same_fmt_per_lvl, str):
+                if isinstance(same_fmt_per_lvl, F):
                     return stderr_all_lvl_same_fmt(same_fmt_per_lvl)
                 return STDERR_ALL_LVL_SAME_FMT
             return STDERR_ALL_LVL_DIFF_FMT

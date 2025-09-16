@@ -34,7 +34,7 @@ from logician.stdlog import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL, WARNING_LEVEL
 from logician.stdlog.all_levels_impl import DirectAllLevelLoggerImpl
 from logician.stdlog.format_mappers import StdStrFmtMprComputer
 from logician.stdlog.hndlr_cfgr import HandlerConfigurator, SimpleHandlerConfigurator
-from logician.stdlog.constants import EX_LOG_LVL as E, LOG_LVL as L
+from logician.stdlog.constants import EX_LOG_LVL as E, LOG_LVL as L, LOG_FMT as F, LOG_STR_LVL as S
 
 
 class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
@@ -53,14 +53,14 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
         *,
         level: E = LOG_LEVEL_WARNING,
         cmd_name: str | None = CMD_NAME_NONE,
-        same_fmt_per_lvl: str | bool | None = FMT_PER_LEVEL_NONE,
+        same_fmt_per_lvl: F | bool | None = FMT_PER_LEVEL_NONE,
         stream_set: set[IO] | None = STREAM_SET_NONE,
-        level_name_map: dict[L, str] | None = LEVEL_NAME_MAP_NONE,
+        level_name_map: dict[L, S] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
         handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
         stream_fmt_mapper_computer: StreamFormatMapperComputer[
-            L, str
+            L, F
         ] = StdStrFmtMprComputer(),
     ): ...
 
@@ -70,14 +70,14 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
         *,
         level: E = LOG_LEVEL_WARNING,
         cmd_name: str | None = CMD_NAME_NONE,
-        stream_fmt_mapper: dict[IO, LogLevelFmt[L, str]]
+        stream_fmt_mapper: dict[IO, LogLevelFmt[L, F]]
         | None = STREAM_FMT_MAPPER_NONE,
-        level_name_map: dict[L, str] | None = LEVEL_NAME_MAP_NONE,
+        level_name_map: dict[L, S] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
         handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
         stream_fmt_mapper_computer: StreamFormatMapperComputer[
-            L, str
+            L, F
         ] = StdStrFmtMprComputer(),
     ): ...
 
@@ -86,22 +86,28 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
         *,
         level: E = LOG_LEVEL_WARNING,
         cmd_name: str | None = CMD_NAME_NONE,
-        stream_fmt_mapper: dict[IO, LogLevelFmt[L, str]]
+        stream_fmt_mapper: dict[IO, LogLevelFmt[L, F]]
         | None = STREAM_FMT_MAPPER_NONE,
-        same_fmt_per_lvl: str | bool | None = FMT_PER_LEVEL_NONE,
+        same_fmt_per_lvl: F | bool | None = FMT_PER_LEVEL_NONE,
         stream_set: set[IO] | None = STREAM_SET_NONE,
-        level_name_map: dict[L, str] | None = LEVEL_NAME_MAP_NONE,
+        level_name_map: dict[L, S] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
         handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
         stream_fmt_mapper_computer: StreamFormatMapperComputer[
-            L, str
+            L, F
         ] = StdStrFmtMprComputer(),
     ):
         """
         Perform logger configuration using the python's std logger calls.
 
+        ``L`` - python std log logging level type, typically ``int``.
+
+        ``S`` - python std log logging level name type, typically ``str``.
+
         ``E`` - python std log extended logging level type, typically ``int | str``.
+
+        ``F`` - python std log logging format type, typically ``str``.
 
         :param level: active logging level.
         :param cmd_name: The command name to register the command logging level to. If ``None`` then the default
@@ -194,16 +200,16 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
         """
         stream_fmt_map = self.stream_fmt_mapper
         level = self.level
-        levels_to_choose_from: dict[L, str] = DirectAllLevelLogger.register_levels(
+        levels_to_choose_from: dict[L, S] = DirectAllLevelLogger.register_levels(
             self.level_name_map
         )
         try:
             match level:
-                case int():
+                case L():   # typically int
                     int_level = level
-                case str():
+                case S():   # typically str
                     int_level = (
-                        int(level)
+                        L(level)
                         if level.isdigit()
                         else logging.getLevelNamesMapping()[level]
                     )
@@ -324,9 +330,9 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
 
     @staticmethod
     def validate_args(
-        stream_fmt_mapper: dict[IO, LogLevelFmt[L, str]] | None,
+        stream_fmt_mapper: dict[IO, LogLevelFmt[L, F]] | None,
         stream_set: set[IO] | None,
-        same_fmt_per_lvl: str | bool | None,
+        same_fmt_per_lvl: F | bool | None,
     ):
         """
         :raises ValueError: if  ``stream_fmt_mapper`` is given with ``stream_set`` or
@@ -351,7 +357,13 @@ class VQLoggerConfigurator(
     Logger configurator that can decorate other configurators to set their underlying logger levels. This log level is
     to be set according to the supplied verbosity and quietness values.
 
-    ``E`` - python std log extended logging level type, typically ``int | str``.
+        ``L`` - python std log logging level type, typically ``int``.
+
+        ``S`` - python std log logging level name type, typically ``str``.
+
+        ``E`` - python std log extended logging level type, typically ``int | str``.
+
+        ``F`` - python std log logging format type, typically ``str``.
     """
 
     VQ_LEVEL_MAP: VQ_DICT_LITERAL[E] = dict(
@@ -414,7 +426,13 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         A logger configurator that can decorate another logger configurator to accept and infer logging level based on
         ``verbosity`` and ``quietness`` values.
 
+        ``L`` - python std log logging level type, typically ``int``.
+
+        ``S`` - python std log logging level name type, typically ``str``.
+
         ``E`` - python std log extended logging level type, typically ``int | str``.
+
+        ``F`` - python std log logging format type, typically ``str``.
 
         Default behavior is::
 
@@ -613,7 +631,13 @@ class VQCommLoggerConfigurator(
         A logger configurator that can decorate another logger configurator to accept and infer logging level based on
         ``verbosity`` or ``quietness`` values.
 
+        ``L`` - python std log logging level type, typically ``int``.
+
+        ``S`` - python std log logging level name type, typically ``str``.
+
         ``E`` - python std log extended logging level type, typically ``int | str``.
+
+        ``F`` - python std log logging format type, typically ``str``.
 
         Default behavior is::
 

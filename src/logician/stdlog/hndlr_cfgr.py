@@ -10,7 +10,7 @@ from typing import Protocol, IO, override
 
 from logician.formatters import LogLevelFmt
 from logician.stdlog.utils import form_stream_handlers_map, add_new_formatter
-from logician.stdlog.constants import LOG_LVL as L
+from logician.stdlog.constants import LOG_LVL as L, LOG_FMT as F
 
 
 class HandlerConfigurator(Protocol):
@@ -23,7 +23,7 @@ class HandlerConfigurator(Protocol):
         self,
         level: L,
         logger: logging.Logger,
-        stream_fmt_map: dict[IO, LogLevelFmt[L, str]],
+        stream_fmt_map: dict[IO, LogLevelFmt[L, F]],
     ) -> None:
         """
         Logger handler's configurator.
