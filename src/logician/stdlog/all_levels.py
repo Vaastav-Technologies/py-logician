@@ -19,9 +19,10 @@ from logician.stdlog.all_levels_impl import (
     StdProtocolAllLevelLoggerImpl,
     BaseDirectStdAllLevelLoggerImpl,
 )
+from logician.stdlog.constants import LOG_LVL as L
 
 
-class StdProtocolAllLevelLogger(AllLevelLogger[int], DelegatingLogger[int], Protocol):
+class StdProtocolAllLevelLogger(AllLevelLogger[L], DelegatingLogger[L], Protocol):
     """
     Interface for a std protocol logger which provides all logging levels by the protocol implementation.
     """
@@ -120,7 +121,7 @@ class BaseStdProtocolAllLevelLogger(StdProtocolAllLevelLogger, ABC):
         self.logger_impl.exception(msg, *args, **kwargs)
 
     @override
-    def log(self, level: int, msg: str, *args, **kwargs) -> None:
+    def log(self, level: L, msg: str, *args, **kwargs) -> None:
         self.logger_impl.log(level, msg, *args, **kwargs)
 
 
@@ -130,7 +131,7 @@ class BaseDirectStdAllLevelLogger(
     def __init__(
         self,
         logger_impl: BaseDirectStdAllLevelLoggerImpl,
-        level_name_map: dict[int, str] | None = None,
+        level_name_map: dict[L, str] | None = None,
         cmd_name: str | None = None,
     ):
         """
@@ -186,7 +187,7 @@ class DirectAllLevelLogger(BaseDirectStdAllLevelLogger):
     def __init__(
         self,
         logger_impl: BaseDirectStdAllLevelLoggerImpl,
-        level_name_map: dict[int, str] | None = None,
+        level_name_map: dict[L, str] | None = None,
         cmd_name: str | None = None,
     ):
         """

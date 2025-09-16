@@ -18,9 +18,9 @@ from logician.stdlog import (
     SHORT_LOG_FMT,
     SHORTER_LOG_FMT,
 )
+from logician.stdlog.constants import LOG_LVL as L
 
-
-class StdLogLevelFmt(LogLevelFmt[int, str], Protocol):
+class StdLogLevelFmt(LogLevelFmt[L, str], Protocol):
     """
     Base interface for all the level-format mappers for stdlog.
     """
@@ -28,7 +28,7 @@ class StdLogLevelFmt(LogLevelFmt[int, str], Protocol):
     pass
 
 
-class StdLogAllLevelSameFmt(StdLogLevelFmt, AllLevelSameFmt[int, str]):
+class StdLogAllLevelSameFmt(StdLogLevelFmt, AllLevelSameFmt[L, str]):
     def __init__(self, fmt: str = SHORTER_LOG_FMT):
         """
         Same std log format for all levels.
@@ -38,12 +38,12 @@ class StdLogAllLevelSameFmt(StdLogLevelFmt, AllLevelSameFmt[int, str]):
         self._fmt = fmt
 
     @override
-    def fmt(self, level: int) -> str:
+    def fmt(self, level: L) -> str:
         return self._fmt
 
 
-class StdLogAllLevelDiffFmt(StdLogLevelFmt, DiffLevelDiffFmt[int, str]):
-    DEFAULT_LOGGER_DICT: dict[int, str] = {
+class StdLogAllLevelDiffFmt(StdLogLevelFmt, DiffLevelDiffFmt[L, str]):
+    DEFAULT_LOGGER_DICT: dict[L, str] = {
         TRACE_LOG_LEVEL: TIMED_DETAIL_LOG_FMT,
         logging.DEBUG: DETAIL_LOG_FMT,
         logging.INFO: SHORT_LOG_FMT,
@@ -53,7 +53,7 @@ class StdLogAllLevelDiffFmt(StdLogLevelFmt, DiffLevelDiffFmt[int, str]):
     Different log formats for different log levels.
     """
 
-    def __init__(self, fmt_dict: dict[int, str] | None = None):
+    def __init__(self, fmt_dict: dict[L, str] | None = None):
         """
         Specify how different log levels should impact the logging formats.
 
@@ -81,14 +81,14 @@ class StdLogAllLevelDiffFmt(StdLogLevelFmt, DiffLevelDiffFmt[int, str]):
         )
 
     @override
-    def fmt(self, level: int) -> str:
+    def fmt(self, level: L) -> str:
         final_level = (
             level if level in self._fmt_dict else self.next_approx_level(level)
         )
         return self._fmt_dict[final_level]
 
     @override
-    def next_approx_level(self, missing_level: int) -> int:
+    def next_approx_level(self, missing_level: L) -> L:
         """
         :param missing_level: A level that was not registered in the logger.
         :return: immediately-upper registered level if a ``missing_level`` is queried.

@@ -7,6 +7,18 @@ Constants related to logging implementation by the python standard logging.
 
 import logging
 
+type LOG_LVL = int
+"""
+Python stdlog level type.
+"""
+
+type EX_LOG_LVL = LOG_LVL | str
+"""
+Extended log level type.
+
+Extended Type Var for python standard logger logging level.
+"""
+
 DEFAULT_STACK_LEVEL = 2
 """
 ``2`` chosen as value because the classes that use this constant actually delegate logging to a user supplied 
@@ -78,7 +90,7 @@ TIMED_DETAIL_LOG_FMT = (
     "%(funcName)10s() ]: %(message)s"
 )
 
-WARNING_LEVEL: int = logging.WARNING
+WARNING_LEVEL: LOG_LVL = logging.WARNING
 """
 Default logging level for the python std lib.
 """

@@ -11,9 +11,10 @@ from typing import IO
 from collections import defaultdict
 
 from vt.utils.errors.warnings import vt_warn
+from logician.stdlog.constants import LOG_LVL as L
 
 
-def level_name_mapping() -> dict[int, str]:
+def level_name_mapping() -> dict[L, str]:
     """
     :return: level -> name mapping from std lib.
     """
@@ -26,7 +27,7 @@ def level_name_mapping() -> dict[int, str]:
 class TempSetLevelName:
     def __init__(
         self,
-        level: int,
+        level: L,
         level_name: str | None,
         reverting_lvl_name: str,
         no_warn: bool = False,

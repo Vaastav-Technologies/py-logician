@@ -30,10 +30,11 @@ from logician.configurators.vq.comm import VQCommon
 from logician.configurators.vq.sep import VQSepExclusive
 from logician.format_mappers import StreamFormatMapperComputer
 from logician.formatters import LogLevelFmt
-from logician.stdlog import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL, WARNING_LEVEL, EX_LOG_LVL as E
+from logician.stdlog import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL, WARNING_LEVEL
 from logician.stdlog.all_levels_impl import DirectAllLevelLoggerImpl
 from logician.stdlog.format_mappers import StdStrFmtMprComputer
 from logician.stdlog.hndlr_cfgr import HandlerConfigurator, SimpleHandlerConfigurator
+from logician.stdlog.constants import EX_LOG_LVL as E, LOG_LVL as L
 
 
 class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
@@ -54,12 +55,12 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
         cmd_name: str | None = CMD_NAME_NONE,
         same_fmt_per_lvl: str | bool | None = FMT_PER_LEVEL_NONE,
         stream_set: set[IO] | None = STREAM_SET_NONE,
-        level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
+        level_name_map: dict[L, str] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
         handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
         stream_fmt_mapper_computer: StreamFormatMapperComputer[
-            int, str
+            L, str
         ] = StdStrFmtMprComputer(),
     ): ...
 
@@ -69,14 +70,14 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
         *,
         level: E = LOG_LEVEL_WARNING,
         cmd_name: str | None = CMD_NAME_NONE,
-        stream_fmt_mapper: dict[IO, LogLevelFmt[int, str]]
+        stream_fmt_mapper: dict[IO, LogLevelFmt[L, str]]
         | None = STREAM_FMT_MAPPER_NONE,
-        level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
+        level_name_map: dict[L, str] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
         handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
         stream_fmt_mapper_computer: StreamFormatMapperComputer[
-            int, str
+            L, str
         ] = StdStrFmtMprComputer(),
     ): ...
 
@@ -85,16 +86,16 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
         *,
         level: E = LOG_LEVEL_WARNING,
         cmd_name: str | None = CMD_NAME_NONE,
-        stream_fmt_mapper: dict[IO, LogLevelFmt[int, str]]
+        stream_fmt_mapper: dict[IO, LogLevelFmt[L, str]]
         | None = STREAM_FMT_MAPPER_NONE,
         same_fmt_per_lvl: str | bool | None = FMT_PER_LEVEL_NONE,
         stream_set: set[IO] | None = STREAM_SET_NONE,
-        level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
+        level_name_map: dict[L, str] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
         handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
         stream_fmt_mapper_computer: StreamFormatMapperComputer[
-            int, str
+            L, str
         ] = StdStrFmtMprComputer(),
     ):
         """
@@ -193,7 +194,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
         """
         stream_fmt_map = self.stream_fmt_mapper
         level = self.level
-        levels_to_choose_from: dict[int, str] = DirectAllLevelLogger.register_levels(
+        levels_to_choose_from: dict[L, str] = DirectAllLevelLogger.register_levels(
             self.level_name_map
         )
         try:
@@ -323,7 +324,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
 
     @staticmethod
     def validate_args(
-        stream_fmt_mapper: dict[IO, LogLevelFmt[int, str]] | None,
+        stream_fmt_mapper: dict[IO, LogLevelFmt[L, str]] | None,
         stream_set: set[IO] | None,
         same_fmt_per_lvl: str | bool | None,
     ):

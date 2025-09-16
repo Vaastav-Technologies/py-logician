@@ -22,9 +22,10 @@ from logician.stdlog.formatters import (
     STDERR_ALL_LVL_DIFF_FMT,
     stderr_all_lvl_same_fmt,
 )
+from logician.stdlog.constants import LOG_LVL as L
 
 
-class StdStreamFormatMapperComputer(StreamFormatMapperComputer[int, str], Protocol):
+class StdStreamFormatMapperComputer(StreamFormatMapperComputer[L, str], Protocol):
     """
     Interface for the strategies that can compute and then generate mappings of stream -> level-format-mapper for
     python stdlog.

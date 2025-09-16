@@ -26,9 +26,10 @@ from logician.stdlog import (
     CMD_LOG_STR,
 )
 from logician.stdlog.utils import level_name_mapping
+from logician.stdlog.constants import LOG_LVL as L
 
 
-class StdLogProtocol(MinLogProtocol[int], Protocol):
+class StdLogProtocol(MinLogProtocol[L], Protocol):
     """
     Logger protocol that is followed (for methods) by the python std logging.
 
@@ -45,7 +46,7 @@ class StdLogProtocol(MinLogProtocol[int], Protocol):
     """
 
     name: str
-    level: int
+    level: L
     disabled: bool
 
     def fatal(self, msg: str, *args, **kwargs) -> None: ...
@@ -59,16 +60,16 @@ class StdLogProtocol(MinLogProtocol[int], Protocol):
         *args: object,
         exc_info: Any = ...,
         stack_info: bool = ...,
-        stacklevel: int = ...,
+        stacklevel: L = ...,
         extra: Mapping[str, object] | None = ...,
     ) -> None: ...
 
 
 class StdLevelLogger(
-    MinLogProtocol[int],
+    MinLogProtocol[L],
     FatalLogProtocol,
     ExceptionLogProtocol,
-    HasUnderlyingLogger[int],
+    HasUnderlyingLogger[L],
     Protocol,
 ):
     """
@@ -86,12 +87,12 @@ class StdLevelLogger(
     pass
 
 
-class DirectStdAllLevelLogger(AllLevelLogger[int], Protocol):
+class DirectStdAllLevelLogger(AllLevelLogger[L], Protocol):
     """
     All logging levels as provided by the python std logging.
     """
 
-    DEFAULT_LEVEL_MAP: dict[int, str] = {
+    DEFAULT_LEVEL_MAP: dict[L, str] = {
         TRACE_LOG_LEVEL: TRACE_LOG_STR,
         SUCCESS_LOG_LEVEL: SUCCESS_LOG_STR,
         NOTICE_LOG_LEVEL: NOTICE_LOG_STR,
@@ -116,7 +117,7 @@ class DirectStdAllLevelLogger(AllLevelLogger[int], Protocol):
     """
 
     @staticmethod
-    def register_levels(level_name_map: dict[int, str] | None = None) -> dict[int, str]:
+    def register_levels(level_name_map: dict[L, str] | None = None) -> dict[L, str]:
         """
         Register levels in the python std logger.
 
@@ -163,7 +164,7 @@ class DirectStdAllLevelLogger(AllLevelLogger[int], Protocol):
         return level_name_mapping()
 
     @staticmethod
-    def __register_all_levels(level_name_map: dict[int, str]):
+    def __register_all_levels(level_name_map: dict[L, str]):
         for level in level_name_map:
             logging.addLevelName(level, level_name_map[level])
 
