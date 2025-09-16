@@ -171,7 +171,7 @@ class TestStdLoggerConfigurator:
         @pytest.mark.parametrize(
             "cfg",
             [
-                StdLoggerConfigurator(stream_set={}),
+                StdLoggerConfigurator(stream_set=set()),
                 StdLoggerConfigurator(stream_fmt_mapper={}),
             ],
         )
@@ -326,12 +326,13 @@ class TestStdLoggerConfigurator:
                 )
                 logger_name = request.node.name
                 log = logging.getLogger(logger_name)
-                if no_warn:
-                    logger = cfg.configure(log)
-                else:
+
+                if not no_warn:
                     with pytest.warns():
-                        logger = cfg.configure(log)
+                        lgr = cfg.configure(log)
+                else:
+                    lgr = cfg.configure(log)
                 assert (
-                    logger.underlying_logger.level
+                    lgr.underlying_logger.level
                     == StdLoggerConfigurator.LOG_LEVEL_WARNING
                 )
