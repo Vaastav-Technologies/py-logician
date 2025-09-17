@@ -34,9 +34,9 @@ class LoggerConfigurator(Protocol):
         pass  # pragma: no cover
 
     @abstractmethod
-    def clone_with(self, **kwargs) -> "LoggerConfigurator":
+    def clone(self, **overrides) -> "LoggerConfigurator":
         """
-        :param kwargs: overriding keyword args.
+        :param overrides: overriding keyword args.
         :return: a new instance of the ``LoggerConfigurator`` with the provided overrides.
         """
         ...  # pragma: no cover

@@ -253,9 +253,9 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
         return self._level
 
     @override
-    def clone_with(self, **kwargs) -> "StdLoggerConfigurator":
+    def clone(self, **overrides) -> "StdLoggerConfigurator":
         """
-        kwargs:
+        overrides:
             ``level`` - active logging level.
 
             ``cmd_name`` - The command name to register the command logging level to. If ``None`` then the default
@@ -287,24 +287,24 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
             ``same_fmt_per_lvl`` and ``stream_set`` args.
         :return: new ``StdLoggerConfigurator`` with supplied overrides.
         """
-        level = kwargs.pop("level", self.level)
-        cmd_name = kwargs.pop("cmd_name", self.cmd_name)
-        same_fmt_per_lvl = kwargs.pop(
+        level = overrides.pop("level", self.level)
+        cmd_name = overrides.pop("cmd_name", self.cmd_name)
+        same_fmt_per_lvl = overrides.pop(
             "same_fmt_per_lvl", StdLoggerConfigurator.FMT_PER_LEVEL_NONE
         )
-        stream_set = kwargs.pop("stream_set", StdLoggerConfigurator.STREAM_SET_NONE)
-        stream_fmt_mapper = kwargs.pop("stream_fmt_mapper", None)
+        stream_set = overrides.pop("stream_set", StdLoggerConfigurator.STREAM_SET_NONE)
+        stream_fmt_mapper = overrides.pop("stream_fmt_mapper", None)
         self.validate_args(stream_fmt_mapper, stream_set, same_fmt_per_lvl)
         stream_fmt_mapper = (
             stream_fmt_mapper
             if stream_fmt_mapper is not None
             else self.stream_fmt_mapper
         )
-        level_name_map = kwargs.pop("level_name_map", self.level_name_map)
-        no_warn = kwargs.pop("no_warn", self.no_warn)
-        propagate = kwargs.pop("propagate", StdLoggerConfigurator.PROPAGATE_FALSE)
-        handlr_cfgr = kwargs.pop("handlr_cfgr", self.handlr_cfgr)
-        stream_fmt_mapper_computer = kwargs.pop(
+        level_name_map = overrides.pop("level_name_map", self.level_name_map)
+        no_warn = overrides.pop("no_warn", self.no_warn)
+        propagate = overrides.pop("propagate", StdLoggerConfigurator.PROPAGATE_FALSE)
+        handlr_cfgr = overrides.pop("handlr_cfgr", self.handlr_cfgr)
+        stream_fmt_mapper_computer = overrides.pop(
             "stream_fmt_mapper_computer", self.stream_fmt_mapper_computer
         )
         if stream_fmt_mapper is not None:
@@ -543,9 +543,9 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         return self._underlying_configurator  # pragma: no cover
 
     @override
-    def clone_with(self, **kwargs) -> "VQSepLoggerConfigurator":
+    def clone(self, **overrides) -> "VQSepLoggerConfigurator":
         """
-        kwargs:
+        overrides:
             ``configurator`` - The logger configurator to decorate.
 
             ``verbosity`` - verbosity level. Cannot be given with ``quietness``.
@@ -560,14 +560,14 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
             ``default_log_level`` - log level when none of the verbosity or quietness is supplied.
         :return: a new ``VQSepLoggerConfigurator``.
         """
-        configurator = kwargs.pop("configurator", self.configurator)
-        verbosity = kwargs.pop("verbosity", self.verbosity)
-        quietness = kwargs.pop("quietness", self.quietness)
-        vq_level_map = kwargs.pop("vq_level_map", self.vq_level_map)
-        vq_sep_configurator = kwargs.pop(
+        configurator = overrides.pop("configurator", self.configurator)
+        verbosity = overrides.pop("verbosity", self.verbosity)
+        quietness = overrides.pop("quietness", self.quietness)
+        vq_level_map = overrides.pop("vq_level_map", self.vq_level_map)
+        vq_sep_configurator = overrides.pop(
             "vq_sep_configurator", self.vq_sep_configurator
         )
-        default_log_level = kwargs.pop("default_log_level", self.default_log_level)
+        default_log_level = overrides.pop("default_log_level", self.default_log_level)
         return VQSepLoggerConfigurator(
             configurator,
             verbosity,
@@ -708,9 +708,9 @@ class VQCommLoggerConfigurator(
         return self.ver_qui
 
     @override
-    def clone_with(self, **kwargs) -> "VQCommLoggerConfigurator":
+    def clone(self, **overrides) -> "VQCommLoggerConfigurator":
         """
-        kwargs:
+        overrides:
             ``configurator`` - The logger configurator to decorate.
 
             ``ver_qui`` - verbosity or quietness level.
@@ -723,13 +723,13 @@ class VQCommLoggerConfigurator(
             ``default_log_level`` - log level when none of the verbosity or quietness is supplied.
         :return: a new ``VQCommLoggerConfigurator``.
         """
-        configurator = kwargs.pop("configurator", self.configurator)
-        ver_qui = kwargs.pop("ver_qui", self.ver_qui)
-        vq_level_map = kwargs.pop("vq_level_map", self.vq_level_map)
-        vq_comm_configurator = kwargs.pop(
+        configurator = overrides.pop("configurator", self.configurator)
+        ver_qui = overrides.pop("ver_qui", self.ver_qui)
+        vq_level_map = overrides.pop("vq_level_map", self.vq_level_map)
+        vq_comm_configurator = overrides.pop(
             "vq_comm_configurator", self.vq_comm_configurator
         )
-        default_log_level = kwargs.pop("default_log_level", self.default_log_level)
+        default_log_level = overrides.pop("default_log_level", self.default_log_level)
         return VQCommLoggerConfigurator(
             ver_qui, configurator, vq_level_map, vq_comm_configurator, default_log_level
         )

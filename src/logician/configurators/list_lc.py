@@ -70,9 +70,9 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
         return self._level_list
 
     @override
-    def clone_with(self, **kwargs) -> "ListLoggerConfigurator[T]":
+    def clone(self, **overrides) -> "ListLoggerConfigurator[T]":
         """
-        kwargs:
+        overrides:
             ``level_list`` - list of log levels which may contain ``None``. First non-``None`` value is picked-up by
             default for logger configuration.
 
@@ -82,9 +82,9 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
             Default is to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
         :return: a new ``ListLoggerConfigurator``.
         """
-        level_list = kwargs.pop("level_list", self.level_list.copy())
-        configurator = kwargs.pop("configurator", self.configurator)
-        level_pickup_strategy = kwargs.pop(
+        level_list = overrides.pop("level_list", self.level_list.copy())
+        configurator = overrides.pop("configurator", self.configurator)
+        level_pickup_strategy = overrides.pop(
             "level_pickup_strategy", self.level_pickup_strategy
         )
         return ListLoggerConfigurator[T](

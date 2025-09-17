@@ -51,9 +51,9 @@ class EnvListLC[T](ListLoggerConfigurator[T]):
         return [cast(T | None, os.getenv(e)) for e in self.env_list]
 
     @override
-    def clone_with(self, **kwargs) -> "EnvListLC[T]":
+    def clone(self, **overrides) -> "EnvListLC[T]":
         """
-        kwargs:
+        overrides:
             ``env_list`` - list of environment variables. Default behavior is to take precedence in decreasing order.
 
             ``configurator`` - configurator which is decorated by this logger-configurator.
@@ -62,9 +62,9 @@ class EnvListLC[T](ListLoggerConfigurator[T]):
             to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
         :return: a new ``EnvListLC``.
         """
-        env_list = kwargs.pop("env_list", self.env_list.copy())
-        configurator = kwargs.pop("configurator", self.configurator)
-        level_pickup_strategy = kwargs.pop(
+        env_list = overrides.pop("env_list", self.env_list.copy())
+        configurator = overrides.pop("configurator", self.configurator)
+        level_pickup_strategy = overrides.pop(
             "level_pickup_strategy", self.level_pickup_strategy
         )
         return EnvListLC[T](env_list, configurator, level_pickup_strategy)
@@ -128,7 +128,7 @@ class EnvListLC[T](ListLoggerConfigurator[T]):
             _env_list = [*self.env_list, env, *envs]
         else:
             _env_list = [env, *envs, *self.env_list]
-        return self.clone_with(env_list=_env_list)
+        return self.clone(env_list=_env_list)
 
 
 class LgcnEnvListLC[T](EnvListLC[T]):
@@ -163,9 +163,9 @@ class LgcnEnvListLC[T](EnvListLC[T]):
         super().__init__(env_list, configurator, level_pickup_strategy)
 
     @override
-    def clone_with(self, **kwargs) -> "LgcnEnvListLC[T]":
+    def clone(self, **overrides) -> "LgcnEnvListLC[T]":
         """
-        kwargs:
+        overrides:
             ``env_list`` - list of environment variables. Default behavior is to take precedence in decreasing order.
 
             ``configurator`` - configurator which is decorated by this logger-configurator.
@@ -174,9 +174,9 @@ class LgcnEnvListLC[T](EnvListLC[T]):
             to pick up the first non-``None`` level. ``DEFAULT_LEVEL_PICKUP_FIRST_NON_NONE``.
         :return: a new ``LgcnEnvListLC``.
         """
-        level_list = kwargs.pop("env_list", self.env_list.copy())
-        configurator = kwargs.pop("configurator", self.configurator)
-        level_pickup_strategy = kwargs.pop(
+        level_list = overrides.pop("env_list", self.env_list.copy())
+        configurator = overrides.pop("configurator", self.configurator)
+        level_pickup_strategy = overrides.pop(
             "level_pickup_strategy", self.level_pickup_strategy
         )
         return LgcnEnvListLC[T](level_list, configurator, level_pickup_strategy)
