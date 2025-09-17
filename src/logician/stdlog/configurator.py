@@ -34,7 +34,12 @@ from logician.stdlog import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL, WARNING_LEVEL
 from logician.stdlog.all_levels_impl import DirectAllLevelLoggerImpl
 from logician.stdlog.format_mappers import StdStrFmtMprComputer
 from logician.stdlog.hndlr_cfgr import HandlerConfigurator, SimpleHandlerConfigurator
-from logician.stdlog.constants import EX_LOG_LVL as E, LOG_LVL as L, LOG_FMT as F, LOG_STR_LVL as S
+from logician.stdlog.constants import (
+    EX_LOG_LVL as E,
+    LOG_LVL as L,
+    LOG_FMT as F,
+    LOG_STR_LVL as S,
+)
 
 
 class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
@@ -70,8 +75,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
         *,
         level: E = LOG_LEVEL_WARNING,
         cmd_name: str | None = CMD_NAME_NONE,
-        stream_fmt_mapper: dict[IO, LogLevelFmt[L, F]]
-        | None = STREAM_FMT_MAPPER_NONE,
+        stream_fmt_mapper: dict[IO, LogLevelFmt[L, F]] | None = STREAM_FMT_MAPPER_NONE,
         level_name_map: dict[L, S] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
@@ -86,8 +90,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
         *,
         level: E = LOG_LEVEL_WARNING,
         cmd_name: str | None = CMD_NAME_NONE,
-        stream_fmt_mapper: dict[IO, LogLevelFmt[L, F]]
-        | None = STREAM_FMT_MAPPER_NONE,
+        stream_fmt_mapper: dict[IO, LogLevelFmt[L, F]] | None = STREAM_FMT_MAPPER_NONE,
         same_fmt_per_lvl: F | bool | None = FMT_PER_LEVEL_NONE,
         stream_set: set[IO] | None = STREAM_SET_NONE,
         level_name_map: dict[L, S] | None = LEVEL_NAME_MAP_NONE,
@@ -205,9 +208,9 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
         )
         try:
             match level:
-                case L():   # typically int
+                case L():  # typically int
                     int_level = level
-                case S():   # typically str
+                case S():  # typically str
                     int_level = (
                         L(level)
                         if level.isdigit()
@@ -391,10 +394,8 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         configurator: LevelLoggerConfigurator[E],
         verbosity: int | None,
         quietness: int | None,
-        vq_level_map: VQ_DICT_LITERAL[E]
-        | None = VQ_LEVEL_MAP_NONE,
-        vq_sep_configurator: VQSepConfigurator[E]
-        | None = VQ_SEP_CONF_NONE,
+        vq_level_map: VQ_DICT_LITERAL[E] | None = VQ_LEVEL_MAP_NONE,
+        vq_sep_configurator: VQSepConfigurator[E] | None = VQ_SEP_CONF_NONE,
         default_log_level: E = LOG_LEVEL_WARNING,
     ): ...
 
@@ -404,10 +405,8 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         configurator: LevelLoggerConfigurator[E],
         verbosity: V_LITERAL | None,
         quietness: Q_LITERAL | None,
-        vq_level_map: VQ_DICT_LITERAL[E]
-        | None = VQ_LEVEL_MAP_NONE,
-        vq_sep_configurator: VQSepConfigurator[E]
-        | None = VQ_SEP_CONF_NONE,
+        vq_level_map: VQ_DICT_LITERAL[E] | None = VQ_LEVEL_MAP_NONE,
+        vq_sep_configurator: VQSepConfigurator[E] | None = VQ_SEP_CONF_NONE,
         default_log_level: E = LOG_LEVEL_WARNING,
     ): ...
 
@@ -416,10 +415,8 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         configurator: LevelLoggerConfigurator[E],
         verbosity: V_LITERAL | int | None,
         quietness: Q_LITERAL | int | None,
-        vq_level_map: VQ_DICT_LITERAL[E]
-        | None = VQ_LEVEL_MAP_NONE,
-        vq_sep_configurator: VQSepConfigurator[E]
-        | None = VQ_SEP_CONF_NONE,
+        vq_level_map: VQ_DICT_LITERAL[E] | None = VQ_LEVEL_MAP_NONE,
+        vq_sep_configurator: VQSepConfigurator[E] | None = VQ_SEP_CONF_NONE,
         default_log_level: E = LOG_LEVEL_WARNING,
     ):
         """
@@ -621,10 +618,8 @@ class VQCommLoggerConfigurator(
         self,
         ver_qui: V_LITERAL | Q_LITERAL | None,
         configurator: LevelLoggerConfigurator[E],
-        vq_level_map: VQ_DICT_LITERAL[E]
-        | None = VQ_LEVEL_MAP_NONE,
-        vq_comm_configurator: VQCommConfigurator[E]
-        | None = VQ_COMM_CONF_NONE,
+        vq_level_map: VQ_DICT_LITERAL[E] | None = VQ_LEVEL_MAP_NONE,
+        vq_comm_configurator: VQCommConfigurator[E] | None = VQ_COMM_CONF_NONE,
         default_log_level: E = LOG_LEVEL_WARNING,
     ):
         """

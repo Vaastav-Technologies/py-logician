@@ -20,6 +20,7 @@ from logician.stdlog import (
 )
 from logician.stdlog.constants import LOG_LVL as L, LOG_FMT as F
 
+
 class StdLogLevelFmt(LogLevelFmt[L, F], Protocol):
     """
     Base interface for all the level-format mappers for stdlog.
