@@ -4,12 +4,15 @@
 """
 A repo implementation for observability of logger configurators.
 """
+import configparser
 import json
+import os
 import tempfile
+import tomllib
 from abc import abstractmethod
 from collections import defaultdict
 from pathlib import Path
-from typing import Protocol, Any, override, Callable
+from typing import Protocol, Any, override
 
 
 class Persister[DS](Protocol):
@@ -43,9 +46,104 @@ class Persister[DS](Protocol):
         """
 
 
+class PathProvider(Protocol):
+
+    @abstractmethod
+    def get_path(self) -> Path:
+        ...
+
+
+class HasPathProvider(Protocol):
+
+    @property
+    @abstractmethod
+    def path_provider(self) -> PathProvider:
+        ...
+
+
+class HandlerPathProvider(PathProvider, HasPathProvider, Protocol):
+    pass
+
+
+class FilePathProvider(HandlerPathProvider):
+    def __init__(self, path_provider: "FilePathProvider"):
+        self._path_provider = path_provider
+
+    @abstractmethod
+    def _get_file_path(self) -> Path | None:
+        ...
+
+    @override
+    @property
+    def path_provider(self) -> "FilePathProvider":
+        return self._path_provider
+
+    @override
+    def get_path(self) -> Path:
+        ret_path = self._get_file_path()
+        return ret_path if ret_path else self.path_provider.get_path()
+
+
+class EnvFilePathProvider(FilePathProvider):
+    def __init__(self, env: str, path_provider: FilePathProvider):
+        self.env = env
+        super().__init__(path_provider)
+
+    @override
+    def _get_file_path(self) -> Path | None:
+        env_val: str | None = os.getenv(self.env)
+        return Path(env_val) if env_val is not None else None
+
+
+class IniFilePathProvider(FilePathProvider):
+    def __init__(self, path_provider: FilePathProvider, ini_file_path: Path = Path.cwd()):
+        super().__init__(path_provider)
+        self.ini_file_path = Path(ini_file_path, "ittusa.ini")
+        self.parser = configparser.ConfigParser()
+
+    @override
+    def _get_file_path(self) -> Path | None:
+        if not self.ini_file_path.exists():
+            return None
+        self.parser.read_file(str(self.ini_file_path))
+        file_path = self.parser.get("ittusa", "index_store")
+        return Path(file_path) if file_path is not None else None
+
+
+class PyprojectFilePathProvider(FilePathProvider):
+    def __init__(self, path_provider: FilePathProvider, pyproject_root_file_path: Path = Path.cwd()):
+        super().__init__(path_provider)
+        self.pyproject_file_path = Path(pyproject_root_file_path, "pyproject.toml")
+
+    @override
+    def _get_file_path(self) -> Path | None:
+        if not self.pyproject_file_path.exists():
+            return None
+        try:
+            file_path = tomllib.loads(self.pyproject_file_path.read_text())["tool"]["ittusa"]["ini"]["file_path"]
+        except KeyError:
+            return None
+        return Path(file_path) if file_path is not None else None
+
+
+class ConstTmpDirFPP(FilePathProvider):
+    def __init__(self, file_path: Path = Path(tempfile.gettempdir(), ".0-MY-LOG-DETAILS.json")):
+        # Type ignoring arg of super().__init__() as FilePathProvider is required but None is provided
+        super().__init__(None)  # type: ignore[arg-type]
+        self.file_path = file_path
+
+    @override
+    def get_path(self) -> Path:
+        return self._get_file_path()
+
+    @override
+    def _get_file_path(self) -> Path:
+        return self.file_path
+
+
 class FilePersister[DS](Persister):
-    def __init__(self, file_path_provider: Callable[[], Path] = lambda : Path(tempfile.gettempdir(), ".0-MY-LOG-DETAILS.json")):
-        self.file_path: Path = file_path_provider()
+    def __init__(self, path_provider: PathProvider):
+        self.file_path: Path = path_provider.get_path()
 
     def init(self):
         if not self.file_path.exists():
@@ -170,7 +268,10 @@ class DictRepo(Repo):
         self.repo = self.persister.reload()
 
 
-__the_instance: Repo = DictRepo(FilePersister[dict]())
+__the_instance: Repo = DictRepo(FilePersister[dict](EnvFilePathProvider("ITTU_FP",
+                                                                        IniFilePathProvider(
+                                                                            PyprojectFilePathProvider(
+                                                                                ConstTmpDirFPP())))))
 
 
 def get_repo() -> Repo:
