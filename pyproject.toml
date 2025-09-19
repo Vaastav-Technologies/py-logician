@@ -80,3 +80,8 @@ legacy_tox_ini = """
 [tool.pytest.ini_options]
 addopts = ["--doctest-modules", # Test all the doctests
     "--doctest-glob=*.md"] # Test doctests included as examples in the md files.
+
+[tool.coverage.run]
+omit = [
+    "logician/_repo.py" # as this will soon be a separate project
+]
