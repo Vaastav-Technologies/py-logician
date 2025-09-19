@@ -10,6 +10,7 @@ import logging
 from typing import Callable, override
 
 from logician import DirectStdAllLevelLogger
+from logician._repo import get_repo
 from logician.configurators import (
     LoggerConfigurator,
     HasUnderlyingConfigurator,
@@ -43,6 +44,7 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurato
         """
         self.level_supplier = level_supplier
         self.configurator = configurator
+        get_repo().init()
 
     def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
         """
@@ -77,6 +79,7 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurato
             else self.underlying_configurator.level
         )
         self.underlying_configurator.set_level(final_level)
+        get_repo().index(logger.name, level=final_level)
         return self.underlying_configurator.configure(logger)
 
     @override

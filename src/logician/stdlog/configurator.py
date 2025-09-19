@@ -13,6 +13,7 @@ from vt.utils.errors.warnings import vt_warn
 
 from logician import DirectAllLevelLogger, DirectStdAllLevelLogger
 from logician import errmsg_creator
+from logician._repo import get_repo
 from logician.configurators import (
     LoggerConfigurator,
     HasUnderlyingConfigurator,
@@ -148,6 +149,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
             self.stream_fmt_mapper = self.stream_fmt_mapper_computer.compute(
                 same_fmt_per_lvl, stream_set
             )
+        get_repo().init()
 
     @override
     def configure(self, logger: logging.Logger) -> DirectAllLevelLogger:
@@ -237,6 +239,9 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
         logger.setLevel(int_level)
         self.handlr_cfgr.configure(int_level, logger, stream_fmt_map)
         logger.propagate = self.propagate
+        possible_level_str: E = logging.getLevelName(level)
+        get_repo().index(logger.name, level=possible_level_str, propagate=self.propagate)
+        get_repo().commit()
         return DirectAllLevelLogger(
             DirectAllLevelLoggerImpl(logger), cmd_name=self.cmd_name
         )
@@ -532,6 +537,7 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
             self.verbosity, self.quietness, self.default_log_level
         )
         self.configurator.set_level(int_level)
+        get_repo().index(logger.name, level=int_level, verbosity=self.verbosity, quietness=self.quietness)
         return self.configurator.configure(logger)
 
     @property

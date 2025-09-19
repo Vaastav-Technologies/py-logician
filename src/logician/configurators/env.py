@@ -5,10 +5,12 @@
 """
 Logger configurators that configure log levels using environment variables.
 """
-
+import logging
 import os
 from typing import override, cast
 
+from logician import DirectStdAllLevelLogger
+from logician._repo import get_repo
 from logician.constants import LGCN_ALL_LOG_ENV_VAR
 from logician.configurators import LevelLoggerConfigurator
 from logician.configurators.list_lc import ListLoggerConfigurator
@@ -40,6 +42,7 @@ class EnvListLC[T](ListLoggerConfigurator[T]):
         """
         super().__init__([], configurator, level_pickup_strategy)
         self._env_list = env_list
+        get_repo().init()
 
     @property
     def env_list(self) -> list[str]:
@@ -49,6 +52,11 @@ class EnvListLC[T](ListLoggerConfigurator[T]):
     @property
     def level_list(self) -> list[T | None]:
         return [cast(T | None, os.getenv(e)) for e in self.env_list]
+
+    @override
+    def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
+        get_repo().index(logger.name, env_list=self.env_list)
+        return super().configure(logger)
 
     @override
     def clone(self, **overrides) -> "EnvListLC[T]":

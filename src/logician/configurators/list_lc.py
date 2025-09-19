@@ -12,6 +12,7 @@ import logging
 from typing import override
 
 from logician import DirectStdAllLevelLogger
+from logician._repo import get_repo
 from logician.configurators import (
     LoggerConfigurator,
     HasUnderlyingConfigurator,
@@ -52,12 +53,14 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
         self._level_list = level_list
         self.configurator = configurator
         self.level_pickup_strategy = level_pickup_strategy
+        get_repo().init()
 
     def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
         final_level = self.level_pickup_strategy(
             self.level_list, self.underlying_configurator.level
         )
         self.underlying_configurator.set_level(final_level)
+        get_repo().index(logger.name, level_list=self.level_list, level=final_level)
         return self.underlying_configurator.configure(logger)
 
     @override
