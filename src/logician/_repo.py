@@ -170,7 +170,7 @@ class DictRepo(Repo):
         self.repo = self.persister.reload()
 
 
-__the_instance: Repo = DictRepo(FilePersister())
+__the_instance: Repo = DictRepo(FilePersister[dict]())
 
 
 def get_repo() -> Repo:
