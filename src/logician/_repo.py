@@ -106,6 +106,19 @@ class Repo(Protocol):
         ...
 
     @abstractmethod
+    def read_all(self) -> dict[str, dict[str, Any]]:
+        """
+        Retrieve all the stored properties related to all object ``_id`` from the index (or memory) without making
+        expensive ``reload`` calls.
+
+        Is an idempotent operation and does not contact the persister.
+
+        :return: object-id -> {property-name -> property-value} dictionary for the properties stored in-memory for
+            all object id(s).
+        """
+        ...
+
+    @abstractmethod
     def reload(self):
         """
         Refresh the contents of memory or index by contacting the persister.
@@ -144,6 +157,9 @@ class DictRepo(Repo):
     @override
     def read(self, id_: str) -> dict[str, Any]:
         return self.repo[id_].copy()
+
+    def read_all(self) -> dict[str, dict[str, Any]]:
+        return self.repo
 
     @override
     def commit(self):
