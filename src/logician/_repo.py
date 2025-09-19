@@ -257,7 +257,7 @@ class DictRepo(Repo):
         return self.repo[id_].copy()
 
     def read_all(self) -> dict[str, dict[str, Any]]:
-        return self.repo
+        return self.repo.copy()
 
     @override
     def commit(self):
