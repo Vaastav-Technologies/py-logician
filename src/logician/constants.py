@@ -12,3 +12,8 @@ LGCN_ALL_LOG_ENV_VAR -> Logician All Log Env Var.
 
 Set logging level for all logging that applies to Logician.
 """
+
+LGCN_MAIN_CMD_NAME = "lgcn"
+"""
+CLI command name for logician CLI.
+"""
