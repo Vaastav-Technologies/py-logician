@@ -4,6 +4,7 @@
 """
 A repo implementation for observability of logger configurators.
 """
+import abc
 import configparser
 import json
 import os
@@ -143,7 +144,7 @@ class ConstTmpDirFPP(FilePathProvider):
         return self.file_path
 
 
-class FilePersister[DS](Persister):
+class FilePersister[DS](Persister, abc.ABC):
     def __init__(self, path_provider: PathProvider):
         self.file_path: Path = path_provider.get_path()
 
@@ -151,12 +152,18 @@ class FilePersister[DS](Persister):
         if not self.file_path.exists():
             self.file_path.write_text("")  # create the file
 
-    def commit(self, ds: DS):
+
+class JSONFilePersister(FilePersister[dict]):
+
+    def commit(self, ds: dict):
         with open(self.file_path, mode="w+") as fp:
             json.dump(ds, fp)
 
-    def reload(self) -> DS:
-        return json.loads(self.file_path.read_text())
+    def reload(self) -> dict:
+        try:
+            return json.loads(self.file_path.read_text())
+        except json.decoder.JSONDecodeError:
+            return {}
 
 
 class Repo(Protocol):
@@ -270,11 +277,11 @@ class DictRepo(Repo):
         self.repo = self.persister.reload()
 
 
-__the_instance: Repo = DictRepo(FilePersister[dict](EnvFilePathProvider(LGCN_INFO_FP_ENV_VAR,
-                                                                        EnvFilePathProvider("ITTU_FP",
-                                                                                            IniFilePathProvider(
-                                                                                                PyprojectFilePathProvider(
-                                                                                                    ConstTmpDirFPP()))))))
+__the_instance: Repo = DictRepo(JSONFilePersister(EnvFilePathProvider(LGCN_INFO_FP_ENV_VAR,
+                                                                      EnvFilePathProvider("ITTU_FP",
+                                                                                          IniFilePathProvider(
+                                                                                              PyprojectFilePathProvider(
+                                                                                                  ConstTmpDirFPP()))))))
 
 
 def get_repo() -> Repo:
