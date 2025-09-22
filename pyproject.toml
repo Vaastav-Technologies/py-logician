@@ -36,7 +36,7 @@ classifiers = [
 ]
 dependencies = [
     "vt-err-hndlr == 0.0.0dev1",
-    "vt-commons == 0.0.1.dev3"
+    "vt-commons == 0.0.1.dev4"
 ]
 
 [dependency-groups]
