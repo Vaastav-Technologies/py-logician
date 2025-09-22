@@ -45,6 +45,9 @@ test = ["pytest", "pytest-cov"]
 multitest = ["tox"]
 doc = ["sphinx", "sphinx-argparse"]
 
+[project.scripts]
+lgcn = "logician.__main__:main_cli"
+
 [project.urls]
 homepage = "https://github.com/Vaastav-Technologies/py-logician"
 source = "https://github.com/Vaastav-Technologies/py-logician"
