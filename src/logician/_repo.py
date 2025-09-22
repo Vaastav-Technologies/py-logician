@@ -14,6 +14,8 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Protocol, Any, override
 
+from logician.constants import LGCN_INFO_FP_ENV_VAR
+
 
 class Persister[DS](Protocol):
     """
@@ -147,7 +149,7 @@ class FilePersister[DS](Persister):
 
     def init(self):
         if not self.file_path.exists():
-            self.file_path.write_text("")   # create the file
+            self.file_path.write_text("")  # create the file
 
     def commit(self, ds: DS):
         with open(self.file_path, mode="w+") as fp:
@@ -268,10 +270,11 @@ class DictRepo(Repo):
         self.repo = self.persister.reload()
 
 
-__the_instance: Repo = DictRepo(FilePersister[dict](EnvFilePathProvider("ITTU_FP",
-                                                                        IniFilePathProvider(
-                                                                            PyprojectFilePathProvider(
-                                                                                ConstTmpDirFPP())))))
+__the_instance: Repo = DictRepo(FilePersister[dict](EnvFilePathProvider(LGCN_INFO_FP_ENV_VAR,
+                                                                        EnvFilePathProvider("ITTU_FP",
+                                                                                            IniFilePathProvider(
+                                                                                                PyprojectFilePathProvider(
+                                                                                                    ConstTmpDirFPP()))))))
 
 
 def get_repo() -> Repo:
