@@ -130,7 +130,7 @@ class PyprojectFilePathProvider(FilePathProvider):
 
 
 class ConstTmpDirFPP(FilePathProvider):
-    def __init__(self, file_path: Path = Path(tempfile.gettempdir(), ".0-MY-LOG-DETAILS.json")):
+    def __init__(self, file_path: Path = Path(tempfile.gettempdir(), ".0-LGCN-LOG-DETAILS.json")):
         # Type ignoring arg of super().__init__() as FilePathProvider is required but None is provided
         super().__init__(None)  # type: ignore[arg-type]
         self.file_path = file_path
