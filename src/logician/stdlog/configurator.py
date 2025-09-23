@@ -240,7 +240,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
         self.handlr_cfgr.configure(int_level, logger, stream_fmt_map)
         logger.propagate = self.propagate
         possible_level_str: E = logging.getLevelName(level)
-        get_repo().index(logger.name, level=possible_level_str, propagate=self.propagate)
+        get_repo().index(logger.name, level=possible_level_str, propagate=self.propagate, logger="stdlog")
         get_repo().commit()
         return DirectAllLevelLogger(
             DirectAllLevelLoggerImpl(logger), cmd_name=self.cmd_name
