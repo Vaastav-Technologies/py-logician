@@ -515,8 +515,11 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
 
     @override
     def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
+        # TODO: write extensive tests for the
+        #  self.configurator.level or self.default_log_level
+        #  logic
         int_level = self.vq_sep_configurator.get_effective_level(
-            self.verbosity, self.quietness, self.default_log_level
+            self.verbosity, self.quietness, self.configurator.level or self.default_log_level
         )
         self.configurator.set_level(int_level)
         return self.configurator.configure(logger)
@@ -659,8 +662,11 @@ class VQCommLoggerConfigurator(
 
     @override
     def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
+        # TODO: write extensive tests for the
+        #  self.configurator.level or self.default_log_level
+        #  logic
         int_level = self.vq_comm_configurator.get_effective_level(
-            self.ver_qui, self.default_log_level
+            self.ver_qui, self.configurator.level or self.default_log_level
         )
         self.configurator.set_level(int_level)
         return self.configurator.configure(logger)
