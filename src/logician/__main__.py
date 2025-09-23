@@ -13,6 +13,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+import vt.utils.errors.error_specs.exceptions
 from vt.utils.commons.commons.string import generate_random_string
 
 from logician.constants import LGCN_MAIN_CMD_NAME, LGCN_INFO_FP_ENV_VAR
@@ -23,11 +24,12 @@ def main(*commands: str, ls: bool, env_list: bool, fmt: str | None = None):
     """
     Assumes that each command supports -h option.
 
-    :param commands:
-    :param ls:
-    :param env_list:
-    :param fmt:
+    :param commands: commands to get the logger configurator details for.
+    :param ls: Use long listing format
+    :param env_list: show supported env vars.
+    :param fmt: list in supplied formats. Can only be used when ``ls`` is True.
     :return:
+    :raises VTCmdException: if error in running ``<<supplied-command>> --help`` for each command.
     """
     cmd_det_dict: dict[str, dict[str, dict[str, Any]]] = dict()
     env_fp = Path(tempfile.gettempdir(), f".0-LGCN-{'-'.join(commands)}-{generate_random_string()}.json")
@@ -35,8 +37,26 @@ def main(*commands: str, ls: bool, env_list: bool, fmt: str | None = None):
     from logician._repo import get_repo
     get_repo().init()
     for command in commands:
-        command = shlex.split(command)[0]
-        subprocess.run([command, "--help"], capture_output=True, check=True)
+        env_fp.write_text("")   # quick and dirty way to reinitialise the repo files.
+        # This logic must somehow be handled into the repo provider itself.
+        # TODO: If the env_fp.write("") statement is removed then, the file present in the /tmp dir formed by env_fp
+        #  remains with the previous command's logger-configurator details. This is erroneous as then any command which
+        #  does not use logger-configurators actually gets the configurator details which are already stored in the
+        #  env_fp file from the previous command run.
+        #  To get a feel of what this error entails, run these two commands:
+        #  lgcn grep <a-command-that-uses-logician> # this will output grep: {}, i.e. grep has no logger-configurators
+        #  lgcn <a-command-that-uses-logician> grep # this will output grep: <details-of-logger-configurators-of-the-second-program>,
+        #  i.e. grep is incorrectly shown the logger configurator values of other programs as the env_fp file still
+        #  stores those details from the previous run.
+        #  FIX THIS!
+        try:
+            subprocess.run([*shlex.split(command), "--help"], capture_output=True, check=True)
+        except subprocess.CalledProcessError as e:
+            raise vt.utils.errors.error_specs.exceptions.VTCmdException(f"Command failed: {e.cmd}",
+                                                                        f"Stderr: {e.stderr}",
+                                                                        f"Stdout: {e.stdout}",
+                                                                        called_process_error=e,
+                                                                        exit_code=e.returncode) from e
         get_repo().reload()
         cmd_det_dict[command] = get_repo().read_all()
 
