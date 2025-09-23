@@ -687,6 +687,7 @@ class VQCommLoggerConfigurator(
         int_level = self.vq_comm_configurator.get_effective_level(
             self.ver_qui, self.default_log_level
         )
+        get_repo().index(logger.name, vq=self.ver_qui, level=int_level)
         self.configurator.set_level(int_level)
         return self.configurator.configure(logger)
 
