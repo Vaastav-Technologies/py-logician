@@ -76,9 +76,27 @@ def cli(args: list[str]) -> argparse.Namespace:
     """
     Examples:
 
-    >>> cli([])
-
     >>> cli(["cmd1"])
+    Namespace(command=['cmd1'], ls=False, fmt=None, env_list=False)
+
+    >>> cli(["cmd1", "cmd2"])
+    Namespace(command=['cmd1', 'cmd2'], ls=False, fmt=None, env_list=False)
+
+    >>> cli(["cmd1", "cmd2", "-l"])
+    Namespace(command=['cmd1', 'cmd2'], ls=True, fmt=None, env_list=False)
+
+    >>> cli(["cmd1", "cmd2", "-le"])
+    Namespace(command=['cmd1', 'cmd2'], ls=True, fmt=None, env_list=True)
+
+    >>> cli([])
+    Traceback (most recent call last):
+    ...
+    SystemExit: 2
+
+    >>> cli(['cmd1', '--fmt'])
+    Traceback (most recent call last):
+    ...
+    SystemExit: 2
 
     :param args: arguments to the ``lgcn`` CLI.
     :return: Calculated ``argparse.Namespace`` from ``lgcn`` CLI.
