@@ -123,9 +123,9 @@ def cli(args: list[str]) -> argparse.Namespace:
         "--format",
         const="{name}\t{level}\t{vq-support}\t{env-support}",
         nargs="?",
-        help="""Print formatted information about logger-configurators.
-                              More headers, like, {lib}, {stream}, {no-of-handlers}, ...etc are available.
-                              check documentation. Can only be used with -l option""",
+        help="""Can only be used with -l option. 
+        Print formatted information about logger-configurators. 
+        More headers, like, {lib}, {stream}, {no-of-handlers}, ...etc are available. Check documentation.""",
         dest="fmt",
     )
     parser.add_argument(
