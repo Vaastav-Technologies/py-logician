@@ -518,7 +518,9 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         #  self.underlying_configurator.level or self.default_log_level
         #  logic
         int_level = self.vq_sep_configurator.get_effective_level(
-            self.verbosity, self.quietness, self.underlying_configurator.level or self.default_log_level
+            self.verbosity,
+            self.quietness,
+            self.underlying_configurator.level or self.default_log_level,
         )
         self.underlying_configurator.set_level(int_level)
         return self.underlying_configurator.configure(logger)
@@ -529,7 +531,9 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
 
     @override
     @property
-    def underlying_configurator(self) -> LevelLoggerConfigurator[VQLoggerConfigurator.T]:
+    def underlying_configurator(
+        self,
+    ) -> LevelLoggerConfigurator[VQLoggerConfigurator.T]:
         return self._underlying_configurator  # pragma: no cover
 
     @override
