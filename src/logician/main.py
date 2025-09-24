@@ -16,19 +16,17 @@ from typing import Any
 
 import vt.utils.errors.error_specs.exceptions
 from vt.utils.commons.commons.string import generate_random_string
+from pprint import pp
 
 from logician.constants import LGCN_MAIN_CMD_NAME, LGCN_INFO_FP_ENV_VAR
 
 
-def main(*commands: str, ls: bool, env_list: bool, fmt: str | None = None):
+def main(*commands: str) -> dict[str, dict[str, dict[str, Any]]]:
     """
     Assumes that each command supports -h option.
 
     :param commands: commands to get the logger configurator details for.
-    :param ls: Use long listing format
-    :param env_list: show supported env vars.
-    :param fmt: list in supplied formats. Can only be used when ``ls`` is True.
-    :return:
+    :return: a dictionary of command and their individual logger-configurator properties.
     :raises VTCmdException: if error in running ``<<supplied-command>> --help`` for each command.
     """
     cmd_det_dict: dict[str, dict[str, dict[str, Any]]] = dict()
@@ -138,15 +136,32 @@ def cli(args: list[str]) -> argparse.Namespace:
     return namespace
 
 
+def main_view(info_dict: dict[str, dict[str, dict[str, Any]]], ls: bool, env_list: bool, fmt: str | None = None):
+    """
+    View that will print info about ``info_dict`` on ``stdout`` according to the required formats.
+
+    :param info_dict: mappings of commands and their individual logger configurator details.
+    :param ls: Use long listing format
+    :param env_list: show supported env vars.
+    :param fmt: list in supplied formats. Can only be used when ``ls`` is True.
+    """
+    pp(info_dict)
+
+
 def main_cli(args: list[str] | None = None):
+    """
+    Main CLI, this runs:
+
+    - Just the CLI to get namespace.
+    - Main logic to get a mapping of command and its individual logger-configurators.
+    - Print the command -> logger-configurator mappings according to user supplied options.
+
+    :param args: CLI args to ``lgcn``.
+    """
     args: list[str] = args if args else sys.argv[1:]
     namespace: argparse.Namespace = cli(args)
-    info_dict: dict[str, dict[str, dict[str, Any]]] = main(
-        *namespace.command,
-        ls=namespace.ls,
-        env_list=namespace.env_list,
-        fmt=namespace.fmt,
-    )
+    info_dict: dict[str, dict[str, dict[str, Any]]] = main(*namespace.command,)
+    main_view(info_dict, ls=namespace.ls, env_list=namespace.env_list, fmt=namespace.fmt,)
 
 
 if __name__ == "__main__":
