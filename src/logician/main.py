@@ -18,7 +18,6 @@ import vt.utils.errors.error_specs.exceptions
 from vt.utils.commons.commons.string import generate_random_string
 
 from logician.constants import LGCN_MAIN_CMD_NAME, LGCN_INFO_FP_ENV_VAR
-from pprint import pp
 
 
 def main(*commands: str, ls: bool, env_list: bool, fmt: str | None = None):
@@ -33,7 +32,7 @@ def main(*commands: str, ls: bool, env_list: bool, fmt: str | None = None):
     :raises VTCmdException: if error in running ``<<supplied-command>> --help`` for each command.
     """
     cmd_det_dict: dict[str, dict[str, dict[str, Any]]] = dict()
-    env_fp = Path(
+    env_fp: Path = Path(
         tempfile.gettempdir(),
         f".0-LGCN-{'-'.join(commands)}-{generate_random_string()}.json",
     )
@@ -68,8 +67,7 @@ def main(*commands: str, ls: bool, env_list: bool, fmt: str | None = None):
             ) from e
         get_repo().reload()
         cmd_det_dict[command] = get_repo().read_all()
-
-    pp(cmd_det_dict)
+    return cmd_det_dict
 
 
 def cli(args: list[str]) -> argparse.Namespace:
@@ -134,16 +132,16 @@ def cli(args: list[str]) -> argparse.Namespace:
         action="store_true",
         help="Get supported environment variables list.",
     )
-    namespace = parser.parse_args(args)
+    namespace: argparse.Namespace = parser.parse_args(args)
     if namespace.fmt and not namespace.ls:
         parser.error("--format is only allowed with --list")
     return namespace
 
 
 def main_cli(args: list[str] | None = None):
-    args = args if args else sys.argv[1:]
-    namespace = cli(args)
-    main(
+    args: list[str] = args if args else sys.argv[1:]
+    namespace: argparse.Namespace = cli(args)
+    info_dict: dict[str, dict[str, dict[str, Any]]] = main(
         *namespace.command,
         ls=namespace.ls,
         env_list=namespace.env_list,
