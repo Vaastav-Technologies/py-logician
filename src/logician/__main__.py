@@ -8,4 +8,5 @@ Extract and showcase details about a program's logger configurators.
 """
 from logician.main import main_cli
 
-main_cli()
+if __name__ == "__main__":
+    main_cli()
