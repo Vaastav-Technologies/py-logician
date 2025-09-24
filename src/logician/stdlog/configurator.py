@@ -455,7 +455,7 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         >>> with warnings.catch_warnings(record=True) as w:
         ...     vq_log = VQSepLoggerConfigurator(StdLoggerConfigurator(), verbosity='v', quietness='qq')
         ...     assert "verbosity and quietness are not allowed together" in str(w.pop().message)
-        >>> assert vq_log.configurator.level == vq_log.default_log_level
+        >>> assert vq_log.underlying_configurator.level == vq_log.default_log_level
 
         Default ``VQLoggerConfigurator.VQ_LEVEL_MAP`` is used as ``vq_level_map`` when ``vq_level_map`` is ``None``
         -----------------------------------------------------------------------------------------------------------
@@ -525,27 +525,30 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
             quietness, {0: None, 1: "q", 2: "qq", 3: "qqq"}
         )
         self.vq_sep_configurator.validate(c_verbosity, c_quietness)
-        self.configurator = configurator
+        self._underlying_configurator = configurator
         self.verbosity = c_verbosity
         self.quietness = c_quietness
-        self._underlying_configurator = self.configurator
         self.default_log_level = default_log_level
 
     @override
     def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
+        # TODO: write extensive tests for the
+        #  self.underlying_configurator.level or self.default_log_level
+        #  logic
         int_level = self.vq_sep_configurator.get_effective_level(
-            self.verbosity, self.quietness, self.default_log_level
+            self.verbosity, self.quietness, self.underlying_configurator.level or self.default_log_level
         )
-        self.configurator.set_level(int_level)
+        self.underlying_configurator.set_level(int_level)
         get_repo().index(logger.name, level=int_level, verbosity=self.verbosity, quietness=self.quietness)
-        return self.configurator.configure(logger)
+        return self.underlying_configurator.configure(logger)
 
     @property
     def vq_level_map(self) -> VQ_DICT_LITERAL[E]:
         return self._vq_level_map
 
+    @override
     @property
-    def underlying_configurator(self) -> LoggerConfigurator:
+    def underlying_configurator(self) -> LevelLoggerConfigurator[E]:
         return self._underlying_configurator  # pragma: no cover
 
     @override
@@ -566,7 +569,7 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
             ``default_log_level`` - log level when none of the verbosity or quietness is supplied.
         :return: a new ``VQSepLoggerConfigurator``.
         """
-        configurator = overrides.pop("configurator", self.configurator)
+        configurator = overrides.pop("configurator", self.underlying_configurator)
         verbosity = overrides.pop("verbosity", self.verbosity)
         quietness = overrides.pop("quietness", self.quietness)
         vq_level_map = overrides.pop("vq_level_map", self.vq_level_map)
@@ -677,18 +680,20 @@ class VQCommLoggerConfigurator(
             else VQCommon(self.vq_level_map, warn_only=True)
         )
         self.vq_comm_configurator.validate(ver_qui)
-        self.configurator = configurator
+        self._underlying_configurator = configurator
         self.ver_qui = ver_qui
-        self._underlying_configurator = self.configurator
         self.default_log_level = default_log_level
 
     @override
     def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
+        # TODO: write extensive tests for the
+        #  self.underlying_configurator.level or self.default_log_level
+        #  logic
         int_level = self.vq_comm_configurator.get_effective_level(
-            self.ver_qui, self.default_log_level
+            self.ver_qui, self.underlying_configurator.level or self.default_log_level
         )
-        self.configurator.set_level(int_level)
-        return self.configurator.configure(logger)
+        self.underlying_configurator.set_level(int_level)
+        return self.underlying_configurator.configure(logger)
 
     @property
     def vq_level_map(self) -> VQ_DICT_LITERAL[E]:
@@ -729,7 +734,7 @@ class VQCommLoggerConfigurator(
             ``default_log_level`` - log level when none of the verbosity or quietness is supplied.
         :return: a new ``VQCommLoggerConfigurator``.
         """
-        configurator = overrides.pop("configurator", self.configurator)
+        configurator = overrides.pop("configurator", self.underlying_configurator)
         ver_qui = overrides.pop("ver_qui", self.ver_qui)
         vq_level_map = overrides.pop("vq_level_map", self.vq_level_map)
         vq_comm_configurator = overrides.pop(

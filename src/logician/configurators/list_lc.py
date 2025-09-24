@@ -51,7 +51,7 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
         if level_list is None:
             raise ValueError("Level list must not be None.")
         self._level_list = level_list
-        self.configurator = configurator
+        self._underlying_configurator = configurator
         self.level_pickup_strategy = level_pickup_strategy
         get_repo().init()
 
@@ -66,7 +66,7 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
     @override
     @property
     def underlying_configurator(self) -> LevelLoggerConfigurator[T]:
-        return self.configurator
+        return self._underlying_configurator
 
     @property
     def level_list(self) -> list[T | None]:
@@ -86,7 +86,7 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
         :return: a new ``ListLoggerConfigurator``.
         """
         level_list = overrides.pop("level_list", self.level_list.copy())
-        configurator = overrides.pop("configurator", self.configurator)
+        configurator = overrides.pop("configurator", self.underlying_configurator)
         level_pickup_strategy = overrides.pop(
             "level_pickup_strategy", self.level_pickup_strategy
         )
