@@ -102,7 +102,7 @@ def cli(args: list[str]) -> argparse.Namespace:
         nargs="?",
         help="""Print formatted information about logger-configurators.
                               More headers, like, {lib}, {stream}, {no-of-handlers}, ...etc are available.
-                              check documentation.""",
+                              check documentation. Can only be used with -l option""",
         dest="fmt",
     )
     parser.add_argument(
