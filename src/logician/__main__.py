@@ -96,6 +96,7 @@ def cli(args: list[str]) -> argparse.Namespace:
         "-l", "--list", action="store_true", help="Use long listing format.", dest="ls"
     )
     lister_group.add_argument(
+        "--fmt",
         "--format",
         const="{name}\t{level}\t{vq-support}\t{env-support}",
         nargs="?",
