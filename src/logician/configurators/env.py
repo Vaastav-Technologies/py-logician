@@ -71,7 +71,7 @@ class EnvListLC[T](ListLoggerConfigurator[T]):
         :return: a new ``EnvListLC``.
         """
         env_list = overrides.pop("env_list", self.env_list.copy())
-        configurator = overrides.pop("configurator", self.configurator)
+        configurator = overrides.pop("configurator", self.underlying_configurator)
         level_pickup_strategy = overrides.pop(
             "level_pickup_strategy", self.level_pickup_strategy
         )
@@ -183,7 +183,7 @@ class LgcnEnvListLC[T](EnvListLC[T]):
         :return: a new ``LgcnEnvListLC``.
         """
         level_list = overrides.pop("env_list", self.env_list.copy())
-        configurator = overrides.pop("configurator", self.configurator)
+        configurator = overrides.pop("configurator", self.underlying_configurator)
         level_pickup_strategy = overrides.pop(
             "level_pickup_strategy", self.level_pickup_strategy
         )
