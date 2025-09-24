@@ -50,7 +50,7 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
         if level_list is None:
             raise ValueError("Level list must not be None.")
         self._level_list = level_list
-        self.configurator = configurator
+        self._underlying_configurator = configurator
         self.level_pickup_strategy = level_pickup_strategy
 
     def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
@@ -63,7 +63,7 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
     @override
     @property
     def underlying_configurator(self) -> LevelLoggerConfigurator[T]:
-        return self.configurator
+        return self._underlying_configurator
 
     @property
     def level_list(self) -> list[T | None]:
@@ -83,7 +83,7 @@ class ListLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurator):
         :return: a new ``ListLoggerConfigurator``.
         """
         level_list = kwargs.pop("level_list", self.level_list.copy())
-        configurator = kwargs.pop("configurator", self.configurator)
+        configurator = kwargs.pop("configurator", self.underlying_configurator)
         level_pickup_strategy = kwargs.pop(
             "level_pickup_strategy", self.level_pickup_strategy
         )

@@ -63,7 +63,7 @@ class EnvListLC[T](ListLoggerConfigurator[T]):
         :return: a new ``EnvListLC``.
         """
         env_list = kwargs.pop("env_list", self.env_list.copy())
-        configurator = kwargs.pop("configurator", self.configurator)
+        configurator = kwargs.pop("configurator", self.underlying_configurator)
         level_pickup_strategy = kwargs.pop(
             "level_pickup_strategy", self.level_pickup_strategy
         )
@@ -175,7 +175,7 @@ class LgcnEnvListLC[T](EnvListLC[T]):
         :return: a new ``LgcnEnvListLC``.
         """
         level_list = kwargs.pop("env_list", self.env_list.copy())
-        configurator = kwargs.pop("configurator", self.configurator)
+        configurator = kwargs.pop("configurator", self.underlying_configurator)
         level_pickup_strategy = kwargs.pop(
             "level_pickup_strategy", self.level_pickup_strategy
         )
