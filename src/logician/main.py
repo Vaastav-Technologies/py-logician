@@ -11,6 +11,7 @@ import sys
 import argparse
 import subprocess
 import tempfile
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
@@ -18,7 +19,11 @@ import vt.utils.errors.error_specs.exceptions
 from vt.utils.commons.commons.string import generate_random_string
 from pprint import pp
 
+from vt.utils.errors.error_specs import ERR_INVALID_USAGE
+
 from logician.constants import LGCN_MAIN_CMD_NAME, LGCN_INFO_FP_ENV_VAR
+
+CONST_FMT = "{cmd}\t{name}\t{level}\t{vq-support}\t{env-support}"
 
 
 def main(*commands: str) -> dict[str, dict[str, dict[str, Any]]]:
@@ -105,7 +110,7 @@ def cli(args: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "command",
         help="get logger-configurator details of these commands. Assumes that all of these commands "
-        "support the --help CLI option.",
+             "support the --help CLI option.",
         nargs="+",
     )
     lister_group = parser.add_argument_group(
@@ -117,7 +122,7 @@ def cli(args: list[str]) -> argparse.Namespace:
     lister_group.add_argument(
         "--fmt",
         "--format",
-        const="{name}\t{level}\t{vq-support}\t{env-support}",
+        const=CONST_FMT,
         nargs="?",
         help="""Can only be used with -l option. 
         Print formatted information about logger-configurators. 
@@ -145,7 +150,61 @@ def main_view(info_dict: dict[str, dict[str, dict[str, Any]]], ls: bool, env_lis
     :param env_list: show supported env vars.
     :param fmt: list in supplied formats. Can only be used when ``ls`` is True.
     """
-    pp(info_dict)
+    if fmt is not None and ls:
+        errmsg = "fmt cannot be used when ls is Falsy."
+        raise vt.utils.errors.error_specs.exceptions.VTExitingException(errmsg,
+                                                                        exit_code=ERR_INVALID_USAGE) from ValueError(
+            errmsg)
+
+    el_det = defaultdict(list)  # env list details. cmd -> env-list mapping
+    ls_det = defaultdict(dict)  # ls default details. cmd -> {name, level, vq_support, env_support}
+
+    # Prepare env-vars
+    for cmd in info_dict:
+        for lgr in info_dict[cmd]:
+            if "env_list" in info_dict[cmd][lgr]:
+                el_det[cmd].extend(info_dict[cmd][lgr]["env_list"])
+
+    # Prepare list in the predetermined fmt
+    for cmd in info_dict:
+        for lgr in info_dict[cmd]:
+            ls_det[cmd][lgr] = defaultdict(dict)
+            if "vq" in info_dict[cmd][lgr]:
+                ls_det[cmd][lgr]["vq_support"] = True
+            else:
+                ls_det[cmd][lgr]["vq_support"] = False
+
+            if cmd in el_det:
+                if "env_list" in info_dict[cmd][lgr]:
+                    if env_list:
+                        ls_det[cmd][lgr]["env_support"] = info_dict[cmd][lgr]["env_list"]
+                    else:
+                        ls_det[cmd][lgr]["env_support"] = True
+                else:
+                    ls_det[cmd][lgr]["env_support"] = False
+            ls_det[cmd][lgr]["level"] = info_dict[cmd][lgr]["level"]
+
+    if ls:
+        # Only print list in the predetermined fmt
+        frmt = "{:<30}\t" * 5  # 5 columns
+        print(frmt.format("command", "logger", "level", "vq-support", "env-support"))
+        print("-"*30*5)
+        for cmd, lgr in ls_det.items():
+            [print(frmt.format(cmd, c, l["level"], str(l["vq_support"]), str(l["env_support"])))
+             for c, l in lgr.items()]
+        return
+
+    if env_list:
+        # Only print env-list per command
+        [print(f"{c}: {l}") for c, l in el_det.items()]
+        return
+
+    # Simply print logger names per command
+    ln_det = defaultdict(list)  # logger names per command
+    for cmd in info_dict:
+        for lgr in info_dict[cmd]:
+            ln_det[cmd].append(lgr)
+    [print(f"{c}: {l}") for c, l in ln_det.items()]
 
 
 def main_cli(args: list[str] | None = None):
@@ -160,8 +219,8 @@ def main_cli(args: list[str] | None = None):
     """
     args: list[str] = args if args else sys.argv[1:]
     namespace: argparse.Namespace = cli(args)
-    info_dict: dict[str, dict[str, dict[str, Any]]] = main(*namespace.command,)
-    main_view(info_dict, ls=namespace.ls, env_list=namespace.env_list, fmt=namespace.fmt,)
+    info_dict: dict[str, dict[str, dict[str, Any]]] = main(*namespace.command, )
+    main_view(info_dict, ls=namespace.ls, env_list=namespace.env_list, fmt=namespace.fmt, )
 
 
 if __name__ == "__main__":
