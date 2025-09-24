@@ -47,6 +47,9 @@ doc = ["sphinx", "sphinx-argparse"]
 
 [project.scripts]
 lgcn = "logician.__main__:main_cli"
+inlog = "in_log:main"
+trylog = "try_log:main"
+ano = "ano:main"
 
 [project.urls]
 homepage = "https://github.com/Vaastav-Technologies/py-logician"
