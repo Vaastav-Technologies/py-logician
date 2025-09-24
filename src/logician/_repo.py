@@ -4,6 +4,7 @@
 """
 A repo implementation for observability of logger configurators.
 """
+
 import abc
 import configparser
 import json
@@ -50,18 +51,14 @@ class Persister[DS](Protocol):
 
 
 class PathProvider(Protocol):
-
     @abstractmethod
-    def get_path(self) -> Path:
-        ...
+    def get_path(self) -> Path: ...
 
 
 class HasPathProvider(Protocol):
-
     @property
     @abstractmethod
-    def path_provider(self) -> PathProvider:
-        ...
+    def path_provider(self) -> PathProvider: ...
 
 
 class HandlerPathProvider(PathProvider, HasPathProvider, Protocol):
@@ -73,8 +70,7 @@ class FilePathProvider(HandlerPathProvider):
         self._path_provider = path_provider
 
     @abstractmethod
-    def _get_file_path(self) -> Path | None:
-        ...
+    def _get_file_path(self) -> Path | None: ...
 
     @override
     @property
@@ -99,7 +95,9 @@ class EnvFilePathProvider(FilePathProvider):
 
 
 class IniFilePathProvider(FilePathProvider):
-    def __init__(self, path_provider: FilePathProvider, ini_file_path: Path = Path.cwd()):
+    def __init__(
+        self, path_provider: FilePathProvider, ini_file_path: Path = Path.cwd()
+    ):
         super().__init__(path_provider)
         self.ini_file_path = Path(ini_file_path, "ittusa.ini")
         self.parser = configparser.ConfigParser()
@@ -114,7 +112,11 @@ class IniFilePathProvider(FilePathProvider):
 
 
 class PyprojectFilePathProvider(FilePathProvider):
-    def __init__(self, path_provider: FilePathProvider, pyproject_root_file_path: Path = Path.cwd()):
+    def __init__(
+        self,
+        path_provider: FilePathProvider,
+        pyproject_root_file_path: Path = Path.cwd(),
+    ):
         super().__init__(path_provider)
         self.pyproject_file_path = Path(pyproject_root_file_path, "pyproject.toml")
 
@@ -123,14 +125,18 @@ class PyprojectFilePathProvider(FilePathProvider):
         if not self.pyproject_file_path.exists():
             return None
         try:
-            file_path = tomllib.loads(self.pyproject_file_path.read_text())["tool"]["ittusa"]["ini"]["file_path"]
+            file_path = tomllib.loads(self.pyproject_file_path.read_text())["tool"][
+                "ittusa"
+            ]["ini"]["file_path"]
         except KeyError:
             return None
         return Path(file_path) if file_path is not None else None
 
 
 class ConstTmpDirFPP(FilePathProvider):
-    def __init__(self, file_path: Path = Path(tempfile.gettempdir(), ".0-LGCN-LOG-DETAILS.json")):
+    def __init__(
+        self, file_path: Path = Path(tempfile.gettempdir(), ".0-LGCN-LOG-DETAILS.json")
+    ):
         # Type ignoring arg of super().__init__() as FilePathProvider is required but None is provided
         super().__init__(None)  # type: ignore[arg-type]
         self.file_path = file_path
@@ -154,7 +160,6 @@ class FilePersister[DS](Persister, abc.ABC):
 
 
 class JSONFilePersister(FilePersister[dict]):
-
     def commit(self, ds: dict):
         with open(self.file_path, mode="w+") as fp:
             json.dump(ds, fp)
@@ -243,7 +248,6 @@ class Repo(Protocol):
 
 
 class DictRepo(Repo):
-
     def __init__(self, persister: Persister[dict]):
         """
         Repo implementation using a ``defaultdict``.
@@ -277,11 +281,17 @@ class DictRepo(Repo):
         self.repo = self.persister.reload()
 
 
-__the_instance: Repo = DictRepo(JSONFilePersister(EnvFilePathProvider(LGCN_INFO_FP_ENV_VAR,
-                                                                      EnvFilePathProvider("ITTU_FP",
-                                                                                          IniFilePathProvider(
-                                                                                              PyprojectFilePathProvider(
-                                                                                                  ConstTmpDirFPP()))))))
+__the_instance: Repo = DictRepo(
+    JSONFilePersister(
+        EnvFilePathProvider(
+            LGCN_INFO_FP_ENV_VAR,
+            EnvFilePathProvider(
+                "ITTU_FP",
+                IniFilePathProvider(PyprojectFilePathProvider(ConstTmpDirFPP())),
+            ),
+        )
+    )
+)
 
 
 def get_repo() -> Repo:

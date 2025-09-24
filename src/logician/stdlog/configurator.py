@@ -240,7 +240,12 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
         self.handlr_cfgr.configure(int_level, logger, stream_fmt_map)
         logger.propagate = self.propagate
         possible_level_str: E = logging.getLevelName(level)
-        get_repo().index(logger.name, level=possible_level_str, propagate=self.propagate, logger="stdlog")
+        get_repo().index(
+            logger.name,
+            level=possible_level_str,
+            propagate=self.propagate,
+            logger="stdlog",
+        )
         get_repo().commit()
         return DirectAllLevelLogger(
             DirectAllLevelLoggerImpl(logger), cmd_name=self.cmd_name
@@ -536,10 +541,17 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         #  self.underlying_configurator.level or self.default_log_level
         #  logic
         int_level = self.vq_sep_configurator.get_effective_level(
-            self.verbosity, self.quietness, self.underlying_configurator.level or self.default_log_level
+            self.verbosity,
+            self.quietness,
+            self.underlying_configurator.level or self.default_log_level,
         )
         self.underlying_configurator.set_level(int_level)
-        get_repo().index(logger.name, level=int_level, verbosity=self.verbosity, quietness=self.quietness)
+        get_repo().index(
+            logger.name,
+            level=int_level,
+            verbosity=self.verbosity,
+            quietness=self.quietness,
+        )
         return self.underlying_configurator.configure(logger)
 
     @property
