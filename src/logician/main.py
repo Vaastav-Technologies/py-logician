@@ -11,10 +11,11 @@ Examples:
 Just see the logger names of a command that uses logician:
 
     # use `lgcn command [command...]` syntax    
-    $ lgcn prog-using-logician another-prog-using-lgcn prog-not-using-lgcn
+    $ lgcn prog-using-logician another-prog-using-lgcn prog-using-lgcn-but-no-loggers prog-not-using-lgcn
     prog-using-logician: ['prog', 'prog.child', 'sibling'] # list of logger names
     ano-prog-using-lgcn: ['r', 'r.c', 's', 's.c'] # list of logger names
-    prog-not-using-lgcn: [] # no logger names visible
+    prog-using-lgcn-but-no-loggers: [] # no logger names visible
+    # prog-not-using-lgcn is not visible.
     
 Use the long listing format:
 
