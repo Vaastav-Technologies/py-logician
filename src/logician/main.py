@@ -93,7 +93,7 @@ def main(*commands: str) -> dict[str, dict[str, dict[str, Any]]]:
     :return: a dictionary of command and their individual logger-configurator properties.
     :raises VTCmdException: if error in running ``<<supplied-command>> --help`` for each command.
     """
-    cmd_det_dict: dict[str, dict[str, dict[str, Any]]] = dict()
+    cmd_det_dict: dict[str, dict[str, dict[str, Any]]] = dict() # pragma: no cover
     env_fp: Path = Path(
         tempfile.gettempdir(),
         f".0-LGCN-{'-'.join(commands)}-{generate_random_string()}.json",
