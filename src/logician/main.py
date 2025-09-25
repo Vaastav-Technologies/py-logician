@@ -216,12 +216,25 @@ def main_view(info_dict: dict[str, dict[str, dict[str, Any]]], ls: bool, env_lis
     """
     View that will print info about ``info_dict`` on ``stdout`` according to the required formats.
 
+    Examples:
+
+    >>> main_view(dict(), False, True, "{name}")
+    Traceback (most recent call last):
+    ...
+    vt.utils.errors.error_specs.exceptions.VTExitingException: ValueError: fmt cannot be used when ls is Falsy.
+
+    >>> main_view(dict(), None, # type: ignore[arg-type]
+    ...             True, "{name}")
+    Traceback (most recent call last):
+    ...
+    vt.utils.errors.error_specs.exceptions.VTExitingException: ValueError: fmt cannot be used when ls is Falsy.
+
     :param info_dict: mappings of commands and their individual logger configurator details.
     :param ls: Use long listing format
     :param env_list: show supported env vars.
     :param fmt: list in supplied formats. Can only be used when ``ls`` is True.
     """
-    if fmt is not None and ls:
+    if fmt is not None and not ls:
         errmsg = "fmt cannot be used when ls is Falsy."
         raise vt.utils.errors.error_specs.exceptions.VTExitingException(errmsg,
                                                                         exit_code=ERR_INVALID_USAGE) from ValueError(
