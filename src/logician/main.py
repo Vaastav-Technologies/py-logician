@@ -5,6 +5,66 @@
 Extract and showcase details about a program's logger configurators.
 """
 
+examples = """
+Examples:
+
+Just see the logger names of a command that uses logician:
+
+    # use `lgcn command [command...]` syntax    
+    $ lgcn prog-using-logician another-prog-using-lgcn prog-not-using-lgcn
+    prog-using-logician: ['prog', 'prog.child', 'sibling'] # list of logger names
+    ano-prog-using-lgcn: ['r', 'r.c', 's', 's.c'] # list of logger names
+    prog-not-using-lgcn: [] # no logger names visible
+    
+Use the long listing format:
+
+    # using `lgcn -l command [command...]` syntax
+    # uses default `{cmd}\t{name}\t{level}\t{vq-support}\t{env-support}` format
+    $ lgcn -l prog-1 prog-2 prog-3
+    command             logger              level               vq-support          env-support         
+    ----------------------------------------------------------------------------------------------------
+    prog-1              ro                  Level 14            False                ['IN_ENV', 'IN.ENV']
+    prog-1              ro.or               Level 14            False               False
+    prog-1              r                   Level 32            True                ['ENV']
+    prog-1              r.c                 Level 32            True                ['ENV.C', 'ENV_C', 'ENV']
+    prog-1              c.r                 Level 12            False               False
+    prog-2              .ano                WARNING             False               {}
+    
+    # prog-1 and prog-2 use logician, prog-3 doesn't.
+    # vq-support denotes whether the env-vars can take 'v', 'vv', 'vvv' for verbosity levels and 
+    # 'q', 'qq', 'qqq' for quietness level settings.
+    
+List all the log env-vars supported by programs:
+
+    # using `lgcn -e command [command...]` syntax
+    $ lgcn -e prog-1 prog-2 prog-3
+    prog-1: ['IN_ENV', 'IN.ENV', 'ENV', 'ENV.C', 'ENV_C', 'ENV']
+    prog-2: []
+    
+    # prog-1 uses logician and exposes ['IN_ENV', 'IN.ENV', 'ENV', 'ENV.C', 'ENV_C', 'ENV'] env-vars
+    # prog-2 uses logician but does not export any env-vars.
+    # prog-3 does not use logician
+    
+Use long listing format with env-vars:
+
+    # using `lgcn -l -e command [command...]` syntax
+    # uses default `{cmd}\t{name}\t{level}\t{vq-support}\t{env-support}` format
+    $ lgcn -le prog-1 prog-2 prog-3
+    command             logger              level               vq-support          env-support         
+    ----------------------------------------------------------------------------------------------------
+    prog-1              ro                  Level 14            False                ['IN_ENV', 'IN.ENV']
+    prog-1              ro.or               Level 14            False               []
+    prog-1              r                   Level 32            True                ['ENV']
+    prog-1              r.c                 Level 32            True                ['ENV.C', 'ENV_C', 'ENV']
+    prog-1              c.r                 Level 12            False               []
+    prog-2              .ano                WARNING             False               []
+
+    # prog-1 uses logician and exposes ['IN_ENV', 'IN.ENV', 'ENV', 'ENV.C', 'ENV_C', 'ENV'] env-vars
+    # prog-2 uses logician but does not export any env-vars.
+    # prog-3 does not use logician
+    
+"""
+
 import os
 import shlex
 import sys
@@ -17,7 +77,6 @@ from typing import Any
 
 import vt.utils.errors.error_specs.exceptions
 from vt.utils.commons.commons.string import generate_random_string
-from pprint import pp
 
 from vt.utils.errors.error_specs import ERR_INVALID_USAGE
 
@@ -102,10 +161,10 @@ def cli(args: list[str]) -> argparse.Namespace:
     :param args: arguments to the ``lgcn`` CLI.
     :return: Calculated ``argparse.Namespace`` from ``lgcn`` CLI.
     """
-
     parser = argparse.ArgumentParser(
         LGCN_MAIN_CMD_NAME,
         description=__doc__,
+        add_help=False,
     )
     parser.add_argument(
         "command",
@@ -113,6 +172,10 @@ def cli(args: list[str]) -> argparse.Namespace:
              "support the --help CLI option.",
         nargs="+",
     )
+    # Helpers group
+    helper_group = parser.add_argument_group("helps", "Get help regarding logician")
+    helper_group.add_argument("-h", help="Show compact help and exit.", action="help")
+    helper_group.add_argument("--help", help="Show extended help and exit.", action="help")
     lister_group = parser.add_argument_group(
         "listing", "options related to listing details about the logger-configurators"
     )
@@ -135,6 +198,11 @@ def cli(args: list[str]) -> argparse.Namespace:
         action="store_true",
         help="Get supported environment variables list.",
     )
+
+    if "--help" in args:
+        print(parser.format_help()+examples)
+        sys.exit()
+
     namespace: argparse.Namespace = parser.parse_args(args)
     if namespace.fmt and not namespace.ls:
         parser.error("--format is only allowed with --list")
