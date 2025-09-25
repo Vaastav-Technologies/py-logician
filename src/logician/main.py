@@ -162,8 +162,13 @@ def main_view(info_dict: dict[str, dict[str, dict[str, Any]]], ls: bool, env_lis
     # Prepare env-vars
     for cmd in info_dict:
         for lgr in info_dict[cmd]:
+            # Run for all the registered loggers.
+            # makes sure that programs not using logician do not get registered here.
             if "env_list" in info_dict[cmd][lgr]:
                 el_det[cmd].extend(info_dict[cmd][lgr]["env_list"])
+            else:
+                if not el_det[cmd]:
+                    el_det[cmd] = []
 
     # Prepare list in the predetermined fmt
     for cmd in info_dict:
