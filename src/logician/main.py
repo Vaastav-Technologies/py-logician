@@ -194,9 +194,9 @@ def main_view(info_dict: dict[str, dict[str, dict[str, Any]]], ls: bool, env_lis
 
     if ls:
         # Only print list in the predetermined fmt
-        frmt = "{:<30}\t" * 5  # 5 columns
+        frmt = "{:<20}" * 5  # 5 columns
         print(frmt.format("command", "logger", "level", "vq-support", "env-support"))
-        print("-"*30*5)
+        print("-"*20*5)
         for cmd, lgr in ls_det.items():
             [print(frmt.format(cmd, c, l["level"], str(l["vq_support"]), str(l["env_support"])))
              for c, l in lgr.items()]
