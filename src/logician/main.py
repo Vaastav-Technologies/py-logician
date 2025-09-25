@@ -5,6 +5,8 @@
 Extract and showcase details about a program's logger configurators.
 """
 
+# TODO: add extensive examples in the README. Better yet, create a whole separate file/section for examples.
+
 examples = """
 Examples:
 
