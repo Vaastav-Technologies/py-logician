@@ -4,6 +4,7 @@
 """
 Extract and showcase details about a program's logger configurators.
 """
+from logician.errors import LogicianExitingException
 
 # TODO: add extensive examples in the README. Better yet, create a whole separate file/section for examples.
 
@@ -221,13 +222,13 @@ def main_view(info_dict: dict[str, dict[str, dict[str, Any]]], ls: bool, env_lis
     >>> main_view(dict(), False, True, "{name}")
     Traceback (most recent call last):
     ...
-    vt.utils.errors.error_specs.exceptions.VTExitingException: ValueError: fmt cannot be used when ls is Falsy.
+    logician.errors.LogicianExitingException: ValueError: fmt cannot be used when ls is Falsy.
 
     >>> main_view(dict(), None, # type: ignore[arg-type]
     ...             True, "{name}")
     Traceback (most recent call last):
     ...
-    vt.utils.errors.error_specs.exceptions.VTExitingException: ValueError: fmt cannot be used when ls is Falsy.
+    logician.errors.LogicianExitingException: ValueError: fmt cannot be used when ls is Falsy.
 
     :param info_dict: mappings of commands and their individual logger configurator details.
     :param ls: Use long listing format
@@ -236,9 +237,7 @@ def main_view(info_dict: dict[str, dict[str, dict[str, Any]]], ls: bool, env_lis
     """
     if fmt is not None and not ls:
         errmsg = "fmt cannot be used when ls is Falsy."
-        raise vt.utils.errors.error_specs.exceptions.VTExitingException(errmsg,
-                                                                        exit_code=ERR_INVALID_USAGE) from ValueError(
-            errmsg)
+        raise LogicianExitingException(errmsg, exit_code=ERR_INVALID_USAGE) from ValueError(errmsg)
 
     el_det = defaultdict(list)  # env list details. cmd -> env-list mapping
     ls_det = defaultdict(dict)  # ls default details. cmd -> {name, level, vq_support, env_support}
