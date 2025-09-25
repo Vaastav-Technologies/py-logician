@@ -186,7 +186,10 @@ def main_view(info_dict: dict[str, dict[str, dict[str, Any]]], ls: bool, env_lis
                     else:
                         ls_det[cmd][lgr]["env_support"] = True
                 else:
-                    ls_det[cmd][lgr]["env_support"] = False
+                    if env_list:
+                        ls_det[cmd][lgr]["env_support"] = []
+                    else:
+                        ls_det[cmd][lgr]["env_support"] = False
             ls_det[cmd][lgr]["level"] = info_dict[cmd][lgr]["level"]
 
     if ls:
