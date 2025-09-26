@@ -4,7 +4,7 @@
 """
 Extract and showcase details about a program's logger configurators.
 """
-from logician.errors import LogicianExitingException
+from logician.errors import LogicianExitingException, LogicianCmdException, LogicianCmdNotFoundError, LogicianException
 
 # TODO: add extensive examples in the README. Better yet, create a whole separate file/section for examples.
 
@@ -79,10 +79,9 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-import vt.utils.errors.error_specs.exceptions
 from vt.utils.commons.commons.string import generate_random_string
 
-from vt.utils.errors.error_specs import ERR_INVALID_USAGE
+from vt.utils.errors.error_specs import ERR_INVALID_USAGE, ERR_CMD_NOT_FOUND
 
 from logician.constants import LGCN_MAIN_CMD_NAME, LGCN_INFO_FP_ENV_VAR
 
@@ -123,8 +122,11 @@ def main(*commands: str) -> dict[str, dict[str, dict[str, Any]]]:
             subprocess.run(
                 [*shlex.split(command), "--help"], capture_output=True, check=True
             )
+        except FileNotFoundError as f:
+            raise LogicianCmdNotFoundError(command=shlex.split(command), file_not_found_error=f,
+                                           exit_code=ERR_CMD_NOT_FOUND) from f
         except subprocess.CalledProcessError as e:
-            raise vt.utils.errors.error_specs.exceptions.VTCmdException(
+            raise LogicianCmdException(
                 f"Command failed: {e.cmd}",
                 f"Stderr: {e.stderr}",
                 f"Stdout: {e.stdout}",
@@ -308,10 +310,16 @@ def main_cli(args: list[str] | None = None):
 
     :param args: CLI args to ``lgcn``.
     """
-    args: list[str] = args if args else sys.argv[1:]
-    namespace: argparse.Namespace = cli(args)
-    info_dict: dict[str, dict[str, dict[str, Any]]] = main(*namespace.command, )
-    main_view(info_dict, ls=namespace.ls, env_list=namespace.env_list, fmt=namespace.fmt, )
+    try:
+        args: list[str] = args if args else sys.argv[1:]
+        namespace: argparse.Namespace = cli(args)
+        info_dict: dict[str, dict[str, dict[str, Any]]] = main(*namespace.command, )
+        main_view(info_dict, ls=namespace.ls, env_list=namespace.env_list, fmt=namespace.fmt, )
+    except LogicianExitingException as le:
+        print(le, file=sys.stderr)
+        sys.exit(le.exit_code)
+    except LogicianException as l:
+        print(l, file=sys.stderr)
 
 
 if __name__ == "__main__":

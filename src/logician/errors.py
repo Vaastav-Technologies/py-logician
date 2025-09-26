@@ -1,4 +1,4 @@
-from vt.utils.errors.error_specs.exceptions import VTException, VTExitingException, VTCmdException
+from vt.utils.errors.error_specs.exceptions import VTException, VTExitingException, VTCmdException, VTCmdNotFoundError
 
 
 class LogicianException(VTException):
@@ -18,5 +18,12 @@ class LogicianExitingException(LogicianException, VTExitingException):
 class LogicianCmdException(LogicianExitingException, VTCmdException):
     """
     A ``logician`` exception that can denote exceptional scenario from a command run.
+    """
+    pass
+
+
+class LogicianCmdNotFoundError(LogicianExitingException, VTCmdNotFoundError):
+    """
+    A ``logician`` exception that specifies a command not found.
     """
     pass
