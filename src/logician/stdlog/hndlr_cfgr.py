@@ -10,6 +10,7 @@ from typing import Protocol, IO, override
 
 from logician.formatters import LogLevelFmt
 from logician.stdlog.utils import form_stream_handlers_map, add_new_formatter
+from logician.stdlog.constants import LOG_LVL as L, LOG_FMT as F
 
 
 class HandlerConfigurator(Protocol):
@@ -20,16 +21,16 @@ class HandlerConfigurator(Protocol):
     @abstractmethod
     def configure(
         self,
-        level: int,
+        level: L,
         logger: logging.Logger,
-        stream_fmt_map: dict[IO, LogLevelFmt[int, str]],
+        stream_fmt_map: dict[IO, LogLevelFmt[L, F]],
     ) -> None:
         """
         Logger handler's configurator.
 
         Configure the logger's handlers from a user supplied stream-fmt-map.
 
-        :param level: int logging level.
+        :param level: L logging level.
         :param logger: the logger to configure.
         :param stream_fmt_map: the stream-format-handler-map that will configure the supplied logger's handlers.
         """
@@ -50,7 +51,7 @@ class SimpleHandlerConfigurator(HandlerConfigurator):
 
     @override
     def configure(
-        self, level: int, logger: logging.Logger, stream_fmt_map: dict[IO, LogLevelFmt]
+        self, level: L, logger: logging.Logger, stream_fmt_map: dict[IO, LogLevelFmt]
     ) -> None:
         """
         Logger handler's configurator.
@@ -88,7 +89,7 @@ class SimpleHandlerConfigurator(HandlerConfigurator):
             >>> str_hn_map = form_stream_handlers_map(lgr2_1) # obtain the updated stream->list[handlers] map
             >>> assert "%(name)s" == str_hn_map[sys.stdout][0].formatter._fmt # type: ignore[attr-defined] only the 0th handler is configured
 
-        :param level: int logging level.
+        :param level: L logging level.
         :param logger: the logger to configure.
         :param stream_fmt_map: the stream-format-handler-map that will configure the supplied logger's handlers.
         """

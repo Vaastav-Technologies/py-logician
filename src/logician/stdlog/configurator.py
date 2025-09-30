@@ -13,6 +13,7 @@ from vt.utils.errors.warnings import vt_warn
 
 from logician import DirectAllLevelLogger, DirectStdAllLevelLogger
 from logician import errmsg_creator
+from logician._repo import get_repo
 from logician.configurators import (
     LoggerConfigurator,
     HasUnderlyingConfigurator,
@@ -28,24 +29,26 @@ from logician.configurators.vq import (
 )
 from logician.configurators.vq.comm import VQCommon
 from logician.configurators.vq.sep import VQSepExclusive
+from logician.format_mappers import StreamFormatMapperComputer
 from logician.formatters import LogLevelFmt
 from logician.stdlog import TRACE_LOG_LEVEL, FATAL_LOG_LEVEL, WARNING_LEVEL
 from logician.stdlog.all_levels_impl import DirectAllLevelLoggerImpl
-from logician.stdlog.formatters import (
-    StdLogAllLevelDiffFmt,
-    StdLogAllLevelSameFmt,
-    STDERR_ALL_LVL_SAME_FMT,
-    STDERR_ALL_LVL_DIFF_FMT,
-)
+from logician.stdlog.format_mappers import StdStrFmtMprComputer
 from logician.stdlog.hndlr_cfgr import HandlerConfigurator, SimpleHandlerConfigurator
+from logician.stdlog.constants import (
+    EX_LOG_LVL as E,
+    LOG_LVL as L,
+    LOG_FMT as F,
+    LOG_STR_LVL as S,
+)
 
 
-class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
+class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
     LOG_LEVEL_WARNING = WARNING_LEVEL
     CMD_NAME_NONE = None
     STREAM_FMT_MAPPER_NONE = None
     FMT_PER_LEVEL_NONE = None
-    STREAM_LIST_NONE = None
+    STREAM_SET_NONE = None
     LEVEL_NAME_MAP_NONE = None
     NO_WARN_FALSE = False
     PROPAGATE_FALSE = False
@@ -54,67 +57,84 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
     def __init__(
         self,
         *,
-        level: int | str = LOG_LEVEL_WARNING,
+        level: E = LOG_LEVEL_WARNING,
         cmd_name: str | None = CMD_NAME_NONE,
-        same_fmt_per_level: bool | None = FMT_PER_LEVEL_NONE,
-        stream_list: list[IO] | None = STREAM_LIST_NONE,
-        handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
-        level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
+        same_fmt_per_lvl: F | bool | None = FMT_PER_LEVEL_NONE,
+        stream_set: set[IO] | None = STREAM_SET_NONE,
+        level_name_map: dict[L, S] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
+        handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
+        stream_fmt_mapper_computer: StreamFormatMapperComputer[
+            L, F
+        ] = StdStrFmtMprComputer(),
     ): ...
 
     @overload
     def __init__(
         self,
         *,
-        level: int | str = LOG_LEVEL_WARNING,
+        level: E = LOG_LEVEL_WARNING,
         cmd_name: str | None = CMD_NAME_NONE,
-        stream_fmt_mapper: dict[IO, LogLevelFmt[int, str]]
-        | None = STREAM_FMT_MAPPER_NONE,
-        handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
-        level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
+        stream_fmt_mapper: dict[IO, LogLevelFmt[L, F]] | None = STREAM_FMT_MAPPER_NONE,
+        level_name_map: dict[L, S] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
+        handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
+        stream_fmt_mapper_computer: StreamFormatMapperComputer[
+            L, F
+        ] = StdStrFmtMprComputer(),
     ): ...
 
     def __init__(
         self,
         *,
-        level: int | str = LOG_LEVEL_WARNING,
+        level: E = LOG_LEVEL_WARNING,
         cmd_name: str | None = CMD_NAME_NONE,
-        stream_fmt_mapper: dict[IO, LogLevelFmt[int, str]]
-        | None = STREAM_FMT_MAPPER_NONE,
-        same_fmt_per_level: bool | None = FMT_PER_LEVEL_NONE,
-        stream_list: list[IO] | None = STREAM_LIST_NONE,
-        handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
-        level_name_map: dict[int, str] | None = LEVEL_NAME_MAP_NONE,
+        stream_fmt_mapper: dict[IO, LogLevelFmt[L, F]] | None = STREAM_FMT_MAPPER_NONE,
+        same_fmt_per_lvl: F | bool | None = FMT_PER_LEVEL_NONE,
+        stream_set: set[IO] | None = STREAM_SET_NONE,
+        level_name_map: dict[L, S] | None = LEVEL_NAME_MAP_NONE,
         no_warn: bool = NO_WARN_FALSE,
         propagate: bool = PROPAGATE_FALSE,
+        handlr_cfgr: HandlerConfigurator = SimpleHandlerConfigurator(),
+        stream_fmt_mapper_computer: StreamFormatMapperComputer[
+            L, F
+        ] = StdStrFmtMprComputer(),
     ):
         """
         Perform logger configuration using the python's std logger calls.
+
+        ``L`` - python std log logging level type, typically ``int``.
+
+        ``S`` - python std log logging level name type, typically ``str``.
+
+        ``E`` - python std log extended logging level type, typically ``int | str``.
+
+        ``F`` - python std log logging format type, typically ``str``.
 
         :param level: active logging level.
         :param cmd_name: The command name to register the command logging level to. If ``None`` then the default
             ``COMMAND`` is picked-up and that will be shown on the ``log.cmd()`` call.
         :param stream_fmt_mapper: an output-stream -> log format mapper. Defaults to ``STDERR_ALL_LVL_DIFF_FMT`` if
-            ``None`` is supplied. Cannot be used with ``same_fmt_per_level``
-            and ``stream_list``. Note that ``{}`` denoting an empty ``stream_fmt_mapper`` is accepted and specifies
+            ``None`` is supplied. Cannot be used with ``same_fmt_per_lvl``
+            and ``stream_set``. Note that ``{}`` denoting an empty ``stream_fmt_mapper`` is accepted and specifies
             the user's intent of not logging to any stream.
-        :param same_fmt_per_level: Use same log format per logging level. Cannot be provided with
-            ``stream_fmt_mapper``.
-        :param stream_list: list of streams to apply level formatting logic to. Cannot be provided with
-            ``stream_fmt_mapper``. Note that ``[]`` denoting an empty stream_list is accepted and specifies
+        :param same_fmt_per_lvl: Use same log format per logging level. A string argument can be passed to enforce
+            that format across all levels. Cannot be provided with ``stream_fmt_mapper``.
+        :param stream_set: set of streams to apply level formatting logic to. Cannot be provided with
+            ``stream_fmt_mapper``. Note that ``{}`` denoting an empty stream_set is accepted and specifies
             the user's intent of not logging to any stream.
-        :param handlr_cfgr: The configurator for logger's handlers. Strategy to configure logger's handlers to
-            introduce formats on each stream.
         :param level_name_map: log level - name mapping. This mapping updates the std python logging library's
             registered log levels . Check ``DirectAllLevelLogger.register_levels()`` for more info.
         :param no_warn: do not warn if a supplied level is not registered with the logging library.
         :param propagate: propagate logger records to parent loggers.
+        :param handlr_cfgr: The configurator for logger's handlers. Strategy to configure logger's handlers to
+            introduce formats on each stream.
+        :param stream_fmt_mapper_computer: A computer that computes resulting ``stream_fmt_mapper`` from the supplied
+            ``same_fmt_per_lvl`` and ``stream_set`` args.
         """
-        self.validate_args(stream_fmt_mapper, stream_list, same_fmt_per_level)
+        self.validate_args(stream_fmt_mapper, stream_set, same_fmt_per_lvl)
 
         self._level = level
         self.cmd_name = cmd_name
@@ -122,33 +142,14 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         self.handlr_cfgr = handlr_cfgr
         self.no_warn = no_warn
         self.propagate = propagate
+        self.stream_fmt_mapper_computer = stream_fmt_mapper_computer
         if stream_fmt_mapper is not None:  # accepts empty i.e. falsy stream_fmt_mapper
             self.stream_fmt_mapper = stream_fmt_mapper
         else:
-            self.stream_fmt_mapper = self.compute_stream_fmt_mapper(
-                same_fmt_per_level, stream_list
+            self.stream_fmt_mapper = self.stream_fmt_mapper_computer.compute(
+                same_fmt_per_lvl, stream_set
             )
-
-    @staticmethod
-    def compute_stream_fmt_mapper(
-        same_fmt_per_level: bool | None, stream_list: list[IO] | None
-    ) -> dict[IO, LogLevelFmt[int, str]]:
-        """
-        Compute the stream format mapper form supplied arguments.
-
-        :param same_fmt_per_level: Want same format per logging level?
-        :param stream_list: List of streams this format configuration is to be applied to. Note that ``[]`` denoting an
-            empty stream_list is accepted and specifies the user's intent of not logging to any stream.
-        :return: a configured ``stream_fmt_mapper``.
-        """
-        if stream_list is not None:  # accepts empty stream_list
-            if same_fmt_per_level:
-                return {stream: StdLogAllLevelSameFmt() for stream in stream_list}
-            return {stream: StdLogAllLevelDiffFmt() for stream in stream_list}
-        else:
-            if same_fmt_per_level:
-                return STDERR_ALL_LVL_SAME_FMT
-            return STDERR_ALL_LVL_DIFF_FMT
+        get_repo().init()
 
     @override
     def configure(self, logger: logging.Logger) -> DirectAllLevelLogger:
@@ -204,16 +205,16 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         """
         stream_fmt_map = self.stream_fmt_mapper
         level = self.level
-        levels_to_choose_from: dict[int, str] = DirectAllLevelLogger.register_levels(
+        levels_to_choose_from: dict[L, S] = DirectAllLevelLogger.register_levels(
             self.level_name_map
         )
         try:
             match level:
-                case int():
+                case L():  # typically int
                     int_level = level
-                case str():
+                case S():  # typically str
                     int_level = (
-                        int(level)
+                        L(level)
                         if level.isdigit()
                         else logging.getLevelNamesMapping()[level]
                     )
@@ -238,127 +239,147 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[int | str]):
         logger.setLevel(int_level)
         self.handlr_cfgr.configure(int_level, logger, stream_fmt_map)
         logger.propagate = self.propagate
+        possible_level_str: E = logging.getLevelName(level)
+        get_repo().index(
+            logger.name,
+            level=possible_level_str,
+            propagate=self.propagate,
+            logger="stdlog",
+        )
+        get_repo().commit()
         return DirectAllLevelLogger(
             DirectAllLevelLoggerImpl(logger), cmd_name=self.cmd_name
         )
 
     @override
-    def set_level(self, new_level: int | str) -> int | str:
+    def set_level(self, new_level: E) -> E:
         orig_level = self.level
         self._level = new_level
         return orig_level
 
     @override
     @property
-    def level(self) -> int | str:
+    def level(self) -> E:
         return self._level
 
     @override
-    def clone_with(self, **kwargs) -> "StdLoggerConfigurator":
+    def clone(self, **overrides) -> "StdLoggerConfigurator":
         """
-        kwargs:
+        overrides:
             ``level`` - active logging level.
 
             ``cmd_name`` - The command name to register the command logging level to. If ``None`` then the default
             ``COMMAND`` is picked-up and that will be shown on the ``log.cmd()`` call.
 
             ``stream_fmt_mapper`` - an output-stream -> log format mapper. Defaults to ``STDERR_ALL_LVL_DIFF_FMT`` if
-            ``None`` is supplied. Cannot be used with ``same_fmt_per_level``
-            and ``stream_list``. Note that ``{}`` denoting an empty ``stream_fmt_mapper`` is accepted and specifies
+            ``None`` is supplied. Cannot be used with ``same_fmt_per_lvl``
+            and ``stream_set``. Note that ``{}`` denoting an empty ``stream_fmt_mapper`` is accepted and specifies
             the user's intent of not logging to any stream.
 
-            ``diff_fmt_per_level`` - Use different log format per logging level. Cannot be provided with
+            ``same_fmt_per_lvl`` - Use same log format per logging level. Cannot be provided with
             ``stream_fmt_mapper``.
 
-            ``stream_list`` - list of streams to apply level formatting logic to. Cannot be provided with
-            ``stream_fmt_mapper``.Note that ``[]`` denoting an empty stream_list is accepted and specifies the user's
+            ``stream_set`` - set of streams to apply level formatting logic to. Cannot be provided with
+            ``stream_fmt_mapper``.Note that ``{}`` denoting an empty stream_set is accepted and specifies the user's
             intent of not logging to any stream.
 
             ``level_name_map`` - log level - name mapping. This mapping updates the std python logging library's
             registered log levels . Check ``DirectAllLevelLogger.register_levels()`` for more info.
 
-            ``handlr_cfgr`` - The configurator for logger's handlers. Strategy to configure logger's handlers to
-            introduce formats on each stream. Check ``logician.stdlog.utils:simple_handlr_cfgr()`` for more info.
-
             ``no_warn`` - do not warn if a supplied level is not registered with the logging library.
 
             ``propagate`` - propagate logger records to parent loggers.
-        :return: new ``StdLoggerConfigurator``.
+
+            ``handlr_cfgr`` - The configurator for logger's handlers. Strategy to configure logger's handlers to
+            introduce formats on each stream. Check ``logician.stdlog.utils:simple_handlr_cfgr()`` for more info.
+
+            ``stream_fmt_mapper_computer`` - A computer that computes resulting ``stream_fmt_mapper`` from the supplied
+            ``same_fmt_per_lvl`` and ``stream_set`` args.
+        :return: new ``StdLoggerConfigurator`` with supplied overrides.
         """
-        level = kwargs.pop("level", self.level)
-        cmd_name = kwargs.pop("cmd_name", self.cmd_name)
-        diff_fmt_per_level = kwargs.pop(
-            "diff_fmt_per_level", StdLoggerConfigurator.FMT_PER_LEVEL_NONE
+        level = overrides.pop("level", self.level)
+        cmd_name = overrides.pop("cmd_name", self.cmd_name)
+        same_fmt_per_lvl = overrides.pop(
+            "same_fmt_per_lvl", StdLoggerConfigurator.FMT_PER_LEVEL_NONE
         )
-        stream_list = kwargs.pop("stream_list", StdLoggerConfigurator.STREAM_LIST_NONE)
-        stream_fmt_mapper = kwargs.pop("stream_fmt_mapper", None)
-        handlr_cfgr = kwargs.pop("handlr_cfgr", self.handlr_cfgr)
-        self.validate_args(stream_fmt_mapper, stream_list, diff_fmt_per_level)
+        stream_set = overrides.pop("stream_set", StdLoggerConfigurator.STREAM_SET_NONE)
+        stream_fmt_mapper = overrides.pop("stream_fmt_mapper", None)
+        self.validate_args(stream_fmt_mapper, stream_set, same_fmt_per_lvl)
         stream_fmt_mapper = (
             stream_fmt_mapper
             if stream_fmt_mapper is not None
             else self.stream_fmt_mapper
         )
-        level_name_map = kwargs.pop("level_name_map", self.level_name_map)
-        no_warn = kwargs.pop("no_warn", self.no_warn)
-        propagate = kwargs.pop("propagate", StdLoggerConfigurator.PROPAGATE_FALSE)
+        level_name_map = overrides.pop("level_name_map", self.level_name_map)
+        no_warn = overrides.pop("no_warn", self.no_warn)
+        propagate = overrides.pop("propagate", StdLoggerConfigurator.PROPAGATE_FALSE)
+        handlr_cfgr = overrides.pop("handlr_cfgr", self.handlr_cfgr)
+        stream_fmt_mapper_computer = overrides.pop(
+            "stream_fmt_mapper_computer", self.stream_fmt_mapper_computer
+        )
         if stream_fmt_mapper is not None:
             return StdLoggerConfigurator(
                 level=level,
                 cmd_name=cmd_name,
                 stream_fmt_mapper=stream_fmt_mapper,
                 level_name_map=level_name_map,
-                handlr_cfgr=handlr_cfgr,
                 no_warn=no_warn,
                 propagate=propagate,
+                handlr_cfgr=handlr_cfgr,
+                stream_fmt_mapper_computer=stream_fmt_mapper_computer,
             )
         else:
             return StdLoggerConfigurator(
                 level=level,
                 cmd_name=cmd_name,
-                stream_list=stream_list,
-                same_fmt_per_level=diff_fmt_per_level,
+                stream_set=stream_set,
+                same_fmt_per_lvl=same_fmt_per_lvl,
                 level_name_map=level_name_map,
-                handlr_cfgr=handlr_cfgr,
                 no_warn=no_warn,
                 propagate=propagate,
+                handlr_cfgr=handlr_cfgr,
+                stream_fmt_mapper_computer=stream_fmt_mapper_computer,
             )
 
     @staticmethod
     def validate_args(
-        stream_fmt_mapper: dict[IO, LogLevelFmt[int, str]] | None,
-        stream_list: list[IO] | None,
-        diff_fmt_per_level: bool | None,
+        stream_fmt_mapper: dict[IO, LogLevelFmt[L, F]] | None,
+        stream_set: set[IO] | None,
+        same_fmt_per_lvl: F | bool | None,
     ):
         """
-        :raises ValueError: if  ``stream_fmt_mapper`` is given with ``stream_list`` or
-            if  ``stream_fmt_mapper`` is given with ``diff_fmt_per_level``.
+        :raises ValueError: if  ``stream_fmt_mapper`` is given with ``stream_set`` or
+            if  ``stream_fmt_mapper`` is given with ``same_fmt_per_lvl``.
         """
-        if stream_fmt_mapper is not None and stream_list is not None:
+        if stream_fmt_mapper is not None and stream_set is not None:
             raise ValueError(
-                errmsg_creator.not_allowed_together("stream_fmt_mapper", "stream_list")
+                errmsg_creator.not_allowed_together("stream_fmt_mapper", "stream_set")
             )
-        if stream_fmt_mapper is not None and diff_fmt_per_level is not None:
+        if stream_fmt_mapper is not None and same_fmt_per_lvl is not None:
             raise ValueError(
                 errmsg_creator.not_allowed_together(
-                    "stream_fmt_mapper", "diff_fmt_per_level"
+                    "stream_fmt_mapper", "same_fmt_per_lvl"
                 )
             )
 
 
 class VQLoggerConfigurator(
-    LoggerConfigurator, VQConfigurator[int | str], HasUnderlyingConfigurator, Protocol
+    LoggerConfigurator, VQConfigurator[E], HasUnderlyingConfigurator, Protocol
 ):
     """
     Logger configurator that can decorate other configurators to set their underlying logger levels. This log level is
     to be set according to the supplied verbosity and quietness values.
+
+        ``L`` - python std log logging level type, typically ``int``.
+
+        ``S`` - python std log logging level name type, typically ``str``.
+
+        ``E`` - python std log extended logging level type, typically ``int | str``.
+
+        ``F`` - python std log logging format type, typically ``str``.
     """
 
-    type T = int | str
-    """
-    Type for python standard logger logging level.
-    """
-    VQ_LEVEL_MAP: VQ_DICT_LITERAL[T] = dict(
+    VQ_LEVEL_MAP: VQ_DICT_LITERAL[E] = dict(
         v=logging.INFO,
         vv=logging.DEBUG,
         vvv=TRACE_LOG_LEVEL,
@@ -369,7 +390,7 @@ class VQLoggerConfigurator(
     """
     Default {``verbosity-quietness -> logging-level``} mapping.
     """
-    LOG_LEVEL_WARNING: T = WARNING_LEVEL
+    LOG_LEVEL_WARNING: E = WARNING_LEVEL
 
 
 class VQSepLoggerConfigurator(VQLoggerConfigurator):
@@ -380,43 +401,45 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
     @overload
     def __init__(
         self,
-        configurator: LevelLoggerConfigurator[VQLoggerConfigurator.T],
+        configurator: LevelLoggerConfigurator[E],
         verbosity: int | None,
         quietness: int | None,
-        vq_level_map: VQ_DICT_LITERAL[VQLoggerConfigurator.T]
-        | None = VQ_LEVEL_MAP_NONE,
-        vq_sep_configurator: VQSepConfigurator[VQLoggerConfigurator.T]
-        | None = VQ_SEP_CONF_NONE,
-        default_log_level: VQLoggerConfigurator.T = LOG_LEVEL_WARNING,
+        vq_level_map: VQ_DICT_LITERAL[E] | None = VQ_LEVEL_MAP_NONE,
+        vq_sep_configurator: VQSepConfigurator[E] | None = VQ_SEP_CONF_NONE,
+        default_log_level: E = LOG_LEVEL_WARNING,
     ): ...
 
     @overload
     def __init__(
         self,
-        configurator: LevelLoggerConfigurator[VQLoggerConfigurator.T],
+        configurator: LevelLoggerConfigurator[E],
         verbosity: V_LITERAL | None,
         quietness: Q_LITERAL | None,
-        vq_level_map: VQ_DICT_LITERAL[VQLoggerConfigurator.T]
-        | None = VQ_LEVEL_MAP_NONE,
-        vq_sep_configurator: VQSepConfigurator[VQLoggerConfigurator.T]
-        | None = VQ_SEP_CONF_NONE,
-        default_log_level: VQLoggerConfigurator.T = LOG_LEVEL_WARNING,
+        vq_level_map: VQ_DICT_LITERAL[E] | None = VQ_LEVEL_MAP_NONE,
+        vq_sep_configurator: VQSepConfigurator[E] | None = VQ_SEP_CONF_NONE,
+        default_log_level: E = LOG_LEVEL_WARNING,
     ): ...
 
     def __init__(
         self,
-        configurator: LevelLoggerConfigurator[VQLoggerConfigurator.T],
+        configurator: LevelLoggerConfigurator[E],
         verbosity: V_LITERAL | int | None,
         quietness: Q_LITERAL | int | None,
-        vq_level_map: VQ_DICT_LITERAL[VQLoggerConfigurator.T]
-        | None = VQ_LEVEL_MAP_NONE,
-        vq_sep_configurator: VQSepConfigurator[VQLoggerConfigurator.T]
-        | None = VQ_SEP_CONF_NONE,
-        default_log_level: VQLoggerConfigurator.T = LOG_LEVEL_WARNING,
+        vq_level_map: VQ_DICT_LITERAL[E] | None = VQ_LEVEL_MAP_NONE,
+        vq_sep_configurator: VQSepConfigurator[E] | None = VQ_SEP_CONF_NONE,
+        default_log_level: E = LOG_LEVEL_WARNING,
     ):
         """
         A logger configurator that can decorate another logger configurator to accept and infer logging level based on
         ``verbosity`` and ``quietness`` values.
+
+        ``L`` - python std log logging level type, typically ``int``.
+
+        ``S`` - python std log logging level name type, typically ``str``.
+
+        ``E`` - python std log extended logging level type, typically ``int | str``.
+
+        ``F`` - python std log logging format type, typically ``str``.
 
         Default behavior is::
 
@@ -523,23 +546,27 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
             self.underlying_configurator.level or self.default_log_level,
         )
         self.underlying_configurator.set_level(int_level)
+        get_repo().index(
+            logger.name,
+            level=int_level,
+            verbosity=self.verbosity,
+            quietness=self.quietness,
+        )
         return self.underlying_configurator.configure(logger)
 
     @property
-    def vq_level_map(self) -> VQ_DICT_LITERAL[VQLoggerConfigurator.T]:
+    def vq_level_map(self) -> VQ_DICT_LITERAL[E]:
         return self._vq_level_map
 
     @override
     @property
-    def underlying_configurator(
-        self,
-    ) -> LevelLoggerConfigurator[VQLoggerConfigurator.T]:
+    def underlying_configurator(self) -> LevelLoggerConfigurator[E]:
         return self._underlying_configurator  # pragma: no cover
 
     @override
-    def clone_with(self, **kwargs) -> "VQSepLoggerConfigurator":
+    def clone(self, **overrides) -> "VQSepLoggerConfigurator":
         """
-        kwargs:
+        overrides:
             ``configurator`` - The logger configurator to decorate.
 
             ``verbosity`` - verbosity level. Cannot be given with ``quietness``.
@@ -554,14 +581,14 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
             ``default_log_level`` - log level when none of the verbosity or quietness is supplied.
         :return: a new ``VQSepLoggerConfigurator``.
         """
-        configurator = kwargs.pop("configurator", self.underlying_configurator)
-        verbosity = kwargs.pop("verbosity", self.verbosity)
-        quietness = kwargs.pop("quietness", self.quietness)
-        vq_level_map = kwargs.pop("vq_level_map", self.vq_level_map)
-        vq_sep_configurator = kwargs.pop(
+        configurator = overrides.pop("configurator", self.underlying_configurator)
+        verbosity = overrides.pop("verbosity", self.verbosity)
+        quietness = overrides.pop("quietness", self.quietness)
+        vq_level_map = overrides.pop("vq_level_map", self.vq_level_map)
+        vq_sep_configurator = overrides.pop(
             "vq_sep_configurator", self.vq_sep_configurator
         )
-        default_log_level = kwargs.pop("default_log_level", self.default_log_level)
+        default_log_level = overrides.pop("default_log_level", self.default_log_level)
         return VQSepLoggerConfigurator(
             configurator,
             verbosity,
@@ -611,16 +638,22 @@ class VQCommLoggerConfigurator(
     def __init__(
         self,
         ver_qui: V_LITERAL | Q_LITERAL | None,
-        configurator: LevelLoggerConfigurator[VQLoggerConfigurator.T],
-        vq_level_map: VQ_DICT_LITERAL[VQLoggerConfigurator.T]
-        | None = VQ_LEVEL_MAP_NONE,
-        vq_comm_configurator: VQCommConfigurator[VQLoggerConfigurator.T]
-        | None = VQ_COMM_CONF_NONE,
-        default_log_level: VQLoggerConfigurator.T = LOG_LEVEL_WARNING,
+        configurator: LevelLoggerConfigurator[E],
+        vq_level_map: VQ_DICT_LITERAL[E] | None = VQ_LEVEL_MAP_NONE,
+        vq_comm_configurator: VQCommConfigurator[E] | None = VQ_COMM_CONF_NONE,
+        default_log_level: E = LOG_LEVEL_WARNING,
     ):
         """
         A logger configurator that can decorate another logger configurator to accept and infer logging level based on
         ``verbosity`` or ``quietness`` values.
+
+        ``L`` - python std log logging level type, typically ``int``.
+
+        ``S`` - python std log logging level name type, typically ``str``.
+
+        ``E`` - python std log extended logging level type, typically ``int | str``.
+
+        ``F`` - python std log logging format type, typically ``str``.
 
         Default behavior is::
 
@@ -671,17 +704,18 @@ class VQCommLoggerConfigurator(
         int_level = self.vq_comm_configurator.get_effective_level(
             self.ver_qui, self.underlying_configurator.level or self.default_log_level
         )
+        get_repo().index(logger.name, vq=self.ver_qui, level=int_level)
         self.underlying_configurator.set_level(int_level)
         return self.underlying_configurator.configure(logger)
 
     @property
-    def vq_level_map(self) -> VQ_DICT_LITERAL[VQLoggerConfigurator.T]:
+    def vq_level_map(self) -> VQ_DICT_LITERAL[E]:
         return self._vq_level_map
 
     @property
     def underlying_configurator(
         self,
-    ) -> LevelLoggerConfigurator[VQLoggerConfigurator.T]:
+    ) -> LevelLoggerConfigurator[E]:
         return self._underlying_configurator  # pragma: no cover
 
     @override
@@ -698,9 +732,9 @@ class VQCommLoggerConfigurator(
         return self.ver_qui
 
     @override
-    def clone_with(self, **kwargs) -> "VQCommLoggerConfigurator":
+    def clone(self, **overrides) -> "VQCommLoggerConfigurator":
         """
-        kwargs:
+        overrides:
             ``configurator`` - The logger configurator to decorate.
 
             ``ver_qui`` - verbosity or quietness level.
@@ -713,13 +747,13 @@ class VQCommLoggerConfigurator(
             ``default_log_level`` - log level when none of the verbosity or quietness is supplied.
         :return: a new ``VQCommLoggerConfigurator``.
         """
-        configurator = kwargs.pop("configurator", self.underlying_configurator)
-        ver_qui = kwargs.pop("ver_qui", self.ver_qui)
-        vq_level_map = kwargs.pop("vq_level_map", self.vq_level_map)
-        vq_comm_configurator = kwargs.pop(
+        configurator = overrides.pop("configurator", self.underlying_configurator)
+        ver_qui = overrides.pop("ver_qui", self.ver_qui)
+        vq_level_map = overrides.pop("vq_level_map", self.vq_level_map)
+        vq_comm_configurator = overrides.pop(
             "vq_comm_configurator", self.vq_comm_configurator
         )
-        default_log_level = kwargs.pop("default_log_level", self.default_log_level)
+        default_log_level = overrides.pop("default_log_level", self.default_log_level)
         return VQCommLoggerConfigurator(
             ver_qui, configurator, vq_level_map, vq_comm_configurator, default_log_level
         )

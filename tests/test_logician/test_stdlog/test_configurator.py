@@ -44,28 +44,28 @@ class TestStdLoggerConfigurator:
     class TestArgs:
         class TestStreamMapperNotAllowed:
             @pytest.mark.parametrize("diff", [True, False])
-            def test_with_diff_fmt(self, diff):
+            def test_with_same_fmt(self, diff):
                 with pytest.raises(
                     ValueError,
-                    match="stream_fmt_mapper and diff_fmt_per_level are not allowed "
+                    match="stream_fmt_mapper and same_fmt_per_lvl are not allowed "
                     "together",
                 ):
                     StdLoggerConfigurator(
                         stream_fmt_mapper=STDERR_ALL_LVL_SAME_FMT,
-                        same_fmt_per_level=diff,
+                        same_fmt_per_lvl=diff,
                     )  # noqa
 
             @pytest.mark.parametrize(
-                "stream_list", [[sys.stderr], [sys.stderr, sys.stdout]]
+                "stream_set", [{sys.stderr}, {sys.stderr, sys.stdout}]
             )
-            def test_with_stream_list(self, stream_list):
+            def test_with_stream_set(self, stream_set):
                 with pytest.raises(
                     ValueError,
-                    match="stream_fmt_mapper and stream_list are not allowed together",
+                    match="stream_fmt_mapper and stream_set are not allowed together",
                 ):
                     StdLoggerConfigurator(
                         stream_fmt_mapper=STDERR_ALL_LVL_SAME_FMT,
-                        stream_list=stream_list,
+                        stream_set=stream_set,
                     )  # noqa
 
         class TestStreamList:
@@ -73,8 +73,8 @@ class TestStdLoggerConfigurator:
                 cfg = StdLoggerConfigurator()
                 assert cfg.stream_fmt_mapper == STDERR_ALL_LVL_DIFF_FMT
 
-            def test_none_stream_list_defaults_stream_formatter_list(self):
-                cfg = StdLoggerConfigurator(stream_list=None)
+            def test_none_stream_set_defaults_stream_formatter_set(self):
+                cfg = StdLoggerConfigurator(stream_set=None)
                 assert cfg.stream_fmt_mapper == STDERR_ALL_LVL_DIFF_FMT
 
             @pytest.mark.parametrize(
@@ -85,28 +85,26 @@ class TestStdLoggerConfigurator:
                     (None, STDERR_ALL_LVL_DIFF_FMT),
                 ],
             )
-            def test_diff_stream_list_defaults_stream_formatter_list(
-                self, diff, lvl_fmt
-            ):
-                cfg = StdLoggerConfigurator(stream_list=None, same_fmt_per_level=diff)
+            def test_diff_stream_set_defaults_stream_formatter_set(self, diff, lvl_fmt):
+                cfg = StdLoggerConfigurator(stream_set=None, same_fmt_per_lvl=diff)
                 assert cfg.stream_fmt_mapper == lvl_fmt
 
             # TODO: find a better way to have /dev/null. Previously this was done using TextIO() but since TextIO is
             #   an ABC hence, cannot be instantiated as that is not okay with mypy also. Just using open(os.devnull)
             #   works but does not look satisfactory.
             @pytest.mark.parametrize(
-                "stream_list",
+                "stream_set",
                 [
-                    [sys.stderr],
-                    [sys.stderr, sys.stdout],
-                    [sys.stdout, devnull_stream()],
+                    {sys.stderr},
+                    {sys.stderr, sys.stdout},
+                    {sys.stdout, devnull_stream()},
                 ],
             )
-            def test_supplied_stream_is_stored(self, stream_list):
-                cfg = StdLoggerConfigurator(stream_list=stream_list)
-                assert all(stream in cfg.stream_fmt_mapper for stream in stream_list)
+            def test_supplied_stream_is_stored(self, stream_set):
+                cfg = StdLoggerConfigurator(stream_set=stream_set)
+                assert all(stream in cfg.stream_fmt_mapper for stream in stream_set)
 
-            def test_stream_list_from_stream_formatter_mapper_keys(self):
+            def test_stream_set_from_stream_formatter_mapper_keys(self):
                 stream_fmt_mapper = {
                     sys.stderr: StdLogAllLevelSameFmt(),
                     sys.stdout: StdLogAllLevelDiffFmt(),
@@ -118,8 +116,8 @@ class TestStdLoggerConfigurator:
                 )
                 assert TextIO not in cfg.stream_fmt_mapper
 
-            def test_empty_stream_list_results_in_empty_stream_fmt_mapper(self):
-                cfg = StdLoggerConfigurator(stream_list=[])
+            def test_empty_stream_set_results_in_empty_stream_fmt_mapper(self):
+                cfg = StdLoggerConfigurator(stream_set=set())
                 assert cfg.stream_fmt_mapper is not None
                 assert len(cfg.stream_fmt_mapper) == 0
 
@@ -141,7 +139,7 @@ class TestStdLoggerConfigurator:
                 [(False, StdLogAllLevelDiffFmt), (True, StdLogAllLevelSameFmt)],
             )
             def test_diff_format_stored_when_arg_supplied(self, diff, lvl):
-                cfg = StdLoggerConfigurator(same_fmt_per_level=diff)
+                cfg = StdLoggerConfigurator(same_fmt_per_lvl=diff)
                 assert all(
                     isinstance(all_lvl_same_fmt, lvl)
                     for all_lvl_same_fmt in cfg.stream_fmt_mapper.values()
@@ -173,7 +171,7 @@ class TestStdLoggerConfigurator:
         @pytest.mark.parametrize(
             "cfg",
             [
-                StdLoggerConfigurator(stream_list=[]),
+                StdLoggerConfigurator(stream_set=set()),
                 StdLoggerConfigurator(stream_fmt_mapper={}),
             ],
         )
@@ -192,25 +190,25 @@ class TestStdLoggerConfigurator:
             [
                 (
                     StdLoggerConfigurator(
-                        stream_list=[sys.stderr, sys.stdout, sys.stdin]
+                        stream_set={sys.stderr, sys.stdout, sys.stdin}
                     ),
                     3,
                 ),
                 (
                     StdLoggerConfigurator(
-                        stream_list=[sys.stderr, sys.stdout, sys.stdin, sys.stderr]
+                        stream_set={sys.stderr, sys.stdout, sys.stdin, sys.stderr}
                     ),
                     3,
                 ),
                 (
                     StdLoggerConfigurator(
-                        stream_list=[
+                        stream_set={
                             sys.stderr,
                             sys.stdout,
                             sys.stdin,
                             sys.stderr,
                             devnull_stream(),
-                        ]
+                        }
                     ),
                     4,
                 ),
@@ -328,12 +326,13 @@ class TestStdLoggerConfigurator:
                 )
                 logger_name = request.node.name
                 log = logging.getLogger(logger_name)
-                if no_warn:
-                    logger = cfg.configure(log)
-                else:
+
+                if not no_warn:
                     with pytest.warns():
-                        logger = cfg.configure(log)
+                        lgr = cfg.configure(log)
+                else:
+                    lgr = cfg.configure(log)
                 assert (
-                    logger.underlying_logger.level
+                    lgr.underlying_logger.level
                     == StdLoggerConfigurator.LOG_LEVEL_WARNING
                 )

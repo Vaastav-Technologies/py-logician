@@ -23,9 +23,10 @@ from logician.stdlog import (
     EXCEPTION_TRACEBACK_LOG_LEVEL,
 )
 from logician.stdlog.utils import TempSetLevelName
+from logician.stdlog.constants import LOG_LVL as L
 
 
-class StdProtocolAllLevelLoggerImpl(AllLevelLoggerImplABC[int], Protocol):
+class StdProtocolAllLevelLoggerImpl(AllLevelLoggerImplABC[L], Protocol):
     """
     Interface for all logging levels provided by the standard logging protocol.
     """
@@ -175,7 +176,7 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
         )
 
     @override
-    def log(self, level: int, msg: str, *args, **kwargs) -> None:
+    def log(self, level: L, msg: str, *args, **kwargs) -> None:
         self.underlying_logger.log(
             level, msg, *args, stacklevel=self.stack_level, **kwargs
         )

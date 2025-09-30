@@ -10,6 +10,7 @@ import logging
 from typing import Callable, override
 
 from logician import DirectStdAllLevelLogger
+from logician._repo import get_repo
 from logician.configurators import (
     LoggerConfigurator,
     HasUnderlyingConfigurator,
@@ -43,6 +44,7 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurato
         """
         self.level_supplier = level_supplier
         self._underlying_configurator = configurator
+        get_repo().init()
 
     def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
         """
@@ -77,6 +79,7 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurato
             else self.underlying_configurator.level
         )
         self.underlying_configurator.set_level(final_level)
+        get_repo().index(logger.name, level=final_level)
         return self.underlying_configurator.configure(logger)
 
     @override
@@ -85,9 +88,9 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurato
         return self._underlying_configurator  # pragma: no cover
 
     @override
-    def clone_with(self, **kwargs) -> "SupplierLoggerConfigurator":
+    def clone(self, **overrides) -> "SupplierLoggerConfigurator":
         """
-        kwargs:
+        overrides:
             ``level_supplier`` - a supplier to supply level.
 
             ``configurator`` - underlying configurator.
@@ -100,29 +103,29 @@ class SupplierLoggerConfigurator[T](LoggerConfigurator, HasUnderlyingConfigurato
           * Simple clone, no overrides:
 
             >>> lc1 = SupplierLoggerConfigurator(lambda : logging.INFO, StdLoggerConfigurator())
-            >>> lc2 = lc1.clone_with()
+            >>> lc2 = lc1.clone()
             >>> assert lc1.underlying_configurator == lc2.underlying_configurator and lc1.level_supplier == lc2.level_supplier
 
           * Clone, override just ``level_supplier``:
 
             >>> lc1 = SupplierLoggerConfigurator(lambda : logging.INFO, StdLoggerConfigurator())
-            >>> lc2 = lc1.clone_with(level_supplier=lambda : logging.DEBUG)
+            >>> lc2 = lc1.clone(level_supplier=lambda : logging.DEBUG)
             >>> assert lc1.underlying_configurator == lc2.underlying_configurator and lc1.level_supplier != lc2.level_supplier
 
           * Clone, override just ``configurator``:
 
             >>> lc1 = SupplierLoggerConfigurator(lambda : logging.INFO, StdLoggerConfigurator())
-            >>> lc2 = lc1.clone_with(configurator=StdLoggerConfigurator(level=logging.CRITICAL))
+            >>> lc2 = lc1.clone(configurator=StdLoggerConfigurator(level=logging.CRITICAL))
             >>> assert lc1.underlying_configurator != lc2.underlying_configurator and lc1.level_supplier == lc2.level_supplier
 
           * Clone, override all:
 
             >>> lc1 = SupplierLoggerConfigurator(lambda : None, StdLoggerConfigurator())
-            >>> lc2 = lc1.clone_with(level_supplier=lambda : logging.WARNING, configurator=StdLoggerConfigurator(level=logging.CRITICAL))
+            >>> lc2 = lc1.clone(level_supplier=lambda : logging.WARNING, configurator=StdLoggerConfigurator(level=logging.CRITICAL))
             >>> assert lc1.underlying_configurator != lc2.underlying_configurator and lc1.level_supplier != lc2.level_supplier
 
         :return: a new ``SupplierLoggerConfigurator``.
         """
-        level_supplier = kwargs.pop("level_supplier", self.level_supplier)
-        configurator = kwargs.pop("configurator", self.underlying_configurator)
+        level_supplier = overrides.pop("level_supplier", self.level_supplier)
+        configurator = overrides.pop("configurator", self.underlying_configurator)
         return SupplierLoggerConfigurator(level_supplier, configurator)

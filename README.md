@@ -45,6 +45,38 @@ tested, and documented.
   ```
   This enables users to have fine-grained control over logging, and they can pin‑point issues just by
   enabling/disabling/verbosifying logging on a particular module of interest.
+* 👀 **Logger-configurator Observability** Check what logger-configurator facilities are provided by the programs that use `logician`.
+
+  For example:
+  ```shell
+  $ lgcn my-logician-using-command my-another-command cat
+  ```
+  ```terminaloutput
+  # details about logger configurators of each command:
+  {'my-logician-using-command': {'ro': {'env_list': ['IN_ENV', 'IN.ENV'],
+                                       'level_list': [None, None],
+                                       'level': 'Level 14',
+                                       'propagate': False},
+                                'ro.or': {'level': 'Level 14', 'propagate': False},
+                                'r': {'env_list': ['ENV'],
+                                      'level_list': [None],
+                                      'level': 'Level 32',
+                                      'propagate': False},
+                                'r.c': {'env_list': ['ENV.C', 'ENV_C', 'ENV'],
+                                        'level_list': [None, None, None],
+                                        'level': 'Level 32',
+                                        'propagate': False},
+                                'c.r': {'level': 'Level 12',
+                                        'verbosity': None,
+                                        'quietness': None,
+                                        'propagate': False}},
+  'my-another-command cat': {'ro': {'env_list': ['IN_ENV', 'IN.ENV'],
+                                    'level_list': [None, None],
+                                    'level': 'Level 14',
+                                    'propagate': False},
+                             'ro.or': {'level': 'Level 14', 'propagate': False}},
+  'cat': {}}    # no logger-configurator details for the `cat` command as it does not use logician.
+  ```
 
 ---
 

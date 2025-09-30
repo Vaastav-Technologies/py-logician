@@ -18,6 +18,11 @@ class LoggerConfigurator(Protocol):
     Stores configuration information to configure the std python logger.
     """
 
+    # TODO: make this accept logger param based on a type param from LoggerConfigurator. This will make
+    #  LoggerConfigurator configure different types of loggers with the same interface.
+    #  The decision to directly accept a python std logger instead of a type param was made to simplify and fast-pace
+    #  the POC.
+    #  This can later be changed to make it into a resilient interface .
     @abstractmethod
     def configure(self, logger: logging.Logger) -> DirectStdAllLevelLogger:
         """
@@ -29,9 +34,9 @@ class LoggerConfigurator(Protocol):
         pass  # pragma: no cover
 
     @abstractmethod
-    def clone_with(self, **kwargs) -> "LoggerConfigurator":
+    def clone(self, **overrides) -> "LoggerConfigurator":
         """
-        :param kwargs: overriding keyword args.
+        :param overrides: overriding keyword args.
         :return: a new instance of the ``LoggerConfigurator`` with the provided overrides.
         """
         ...  # pragma: no cover

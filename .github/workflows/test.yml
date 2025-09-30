@@ -2,7 +2,10 @@ name: 🔧 test
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - develop
+      - 'release/*'
   pull_request:
 
 jobs:
