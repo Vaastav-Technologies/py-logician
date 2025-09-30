@@ -241,8 +241,8 @@ def main_view(info_dict: dict[str, dict[str, dict[str, Any]]], ls: bool, env_lis
         errmsg = "fmt cannot be used when ls is Falsy."
         raise LogicianExitingException(errmsg, exit_code=ERR_INVALID_USAGE) from ValueError(errmsg)
 
-    el_det = defaultdict(list)  # env list details. cmd -> env-list mapping
-    ls_det = defaultdict(dict)  # ls default details. cmd -> {name, level, vq_support, env_support}
+    el_det: dict[str, list[str]] = defaultdict(list)  # env list details. cmd -> env-list mapping
+    ls_det: dict = defaultdict(dict)  # ls default details. cmd -> {name, level, vq_support, env_support}
 
     # Prepare env-vars
     for cmd in info_dict:
@@ -311,7 +311,7 @@ def main_cli(args: list[str] | None = None):
     :param args: CLI args to ``lgcn``.
     """
     try:
-        args: list[str] = args if args else sys.argv[1:]
+        args = args if args else sys.argv[1:]
         namespace: argparse.Namespace = cli(args)
         info_dict: dict[str, dict[str, dict[str, Any]]] = main(*namespace.command, )
         main_view(info_dict, ls=namespace.ls, env_list=namespace.env_list, fmt=namespace.fmt, )
