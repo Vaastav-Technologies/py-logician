@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "logician"
-version = "0.0.0.dev4"
+version = "0.0.0.dev5"
 description = "Fully typed, simple, intuitive, sensible and pragmatic logger configurator for standard python logging."
 readme = "README.md"
 keywords = ["log", "logging", "logger"]
