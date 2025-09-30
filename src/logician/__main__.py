@@ -6,6 +6,7 @@ CLI to
 
 Extract and showcase details about a program's logger configurators.
 """
+
 from logician.main import main_cli
 
 if __name__ == "__main__":

@@ -4,7 +4,28 @@
 """
 Extract and showcase details about a program's logger configurators.
 """
-from logician.errors import LogicianExitingException, LogicianCmdException, LogicianCmdNotFoundError, LogicianException
+
+import os
+import shlex
+import sys
+import argparse
+import subprocess
+import tempfile
+from collections import defaultdict
+from pathlib import Path
+from typing import Any
+from logician.errors import (
+    LogicianExitingException,
+    LogicianCmdException,
+    LogicianCmdNotFoundError,
+    LogicianException,
+)
+
+from vt.utils.commons.commons.string import generate_random_string
+
+from vt.utils.errors.error_specs import ERR_INVALID_USAGE, ERR_CMD_NOT_FOUND
+
+from logician.constants import LGCN_MAIN_CMD_NAME, LGCN_INFO_FP_ENV_VAR
 
 # TODO: add extensive examples in the README. Better yet, create a whole separate file/section for examples.
 
@@ -69,22 +90,6 @@ Use long listing format with env-vars:
     
 """
 
-import os
-import shlex
-import sys
-import argparse
-import subprocess
-import tempfile
-from collections import defaultdict
-from pathlib import Path
-from typing import Any
-
-from vt.utils.commons.commons.string import generate_random_string
-
-from vt.utils.errors.error_specs import ERR_INVALID_USAGE, ERR_CMD_NOT_FOUND
-
-from logician.constants import LGCN_MAIN_CMD_NAME, LGCN_INFO_FP_ENV_VAR
-
 CONST_FMT = "{cmd}\t{name}\t{level}\t{vq-support}\t{env-support}"
 
 
@@ -96,7 +101,7 @@ def main(*commands: str) -> dict[str, dict[str, dict[str, Any]]]:
     :return: a dictionary of command and their individual logger-configurator properties.
     :raises VTCmdException: if error in running ``<<supplied-command>> --help`` for each command.
     """
-    cmd_det_dict: dict[str, dict[str, dict[str, Any]]] = dict() # pragma: no cover
+    cmd_det_dict: dict[str, dict[str, dict[str, Any]]] = dict()  # pragma: no cover
     env_fp: Path = Path(
         tempfile.gettempdir(),
         f".0-LGCN-{'-'.join(commands)}-{generate_random_string()}.json",
@@ -123,8 +128,11 @@ def main(*commands: str) -> dict[str, dict[str, dict[str, Any]]]:
                 [*shlex.split(command), "--help"], capture_output=True, check=True
             )
         except FileNotFoundError as f:
-            raise LogicianCmdNotFoundError(command=shlex.split(command), file_not_found_error=f,
-                                           exit_code=ERR_CMD_NOT_FOUND) from f
+            raise LogicianCmdNotFoundError(
+                command=shlex.split(command),
+                file_not_found_error=f,
+                exit_code=ERR_CMD_NOT_FOUND,
+            ) from f
         except subprocess.CalledProcessError as e:
             raise LogicianCmdException(
                 f"Command failed: {e.cmd}",
@@ -175,13 +183,15 @@ def cli(args: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "command",
         help="get logger-configurator details of these commands. Assumes that all of these commands "
-             "support the --help CLI option.",
+        "support the --help CLI option.",
         nargs="+",
     )
     # Helpers group
     helper_group = parser.add_argument_group("helps", "Get help regarding logician")
     helper_group.add_argument("-h", help="Show compact help and exit.", action="help")
-    helper_group.add_argument("--help", help="Show extended help and exit.", action="help")
+    helper_group.add_argument(
+        "--help", help="Show extended help and exit.", action="help"
+    )
     lister_group = parser.add_argument_group(
         "listing", "options related to listing details about the logger-configurators"
     )
@@ -206,7 +216,7 @@ def cli(args: list[str]) -> argparse.Namespace:
     )
 
     if "--help" in args:
-        print(parser.format_help()+examples)
+        print(parser.format_help() + examples)
         sys.exit()
 
     namespace: argparse.Namespace = parser.parse_args(args)
@@ -215,7 +225,12 @@ def cli(args: list[str]) -> argparse.Namespace:
     return namespace
 
 
-def main_view(info_dict: dict[str, dict[str, dict[str, Any]]], ls: bool, env_list: bool, fmt: str | None = None):
+def main_view(
+    info_dict: dict[str, dict[str, dict[str, Any]]],
+    ls: bool,
+    env_list: bool,
+    fmt: str | None = None,
+):
     """
     View that will print info about ``info_dict`` on ``stdout`` according to the required formats.
 
@@ -239,10 +254,16 @@ def main_view(info_dict: dict[str, dict[str, dict[str, Any]]], ls: bool, env_lis
     """
     if fmt is not None and not ls:
         errmsg = "fmt cannot be used when ls is Falsy."
-        raise LogicianExitingException(errmsg, exit_code=ERR_INVALID_USAGE) from ValueError(errmsg)
+        raise LogicianExitingException(
+            errmsg, exit_code=ERR_INVALID_USAGE
+        ) from ValueError(errmsg)
 
-    el_det: dict[str, list[str]] = defaultdict(list)  # env list details. cmd -> env-list mapping
-    ls_det: dict = defaultdict(dict)  # ls default details. cmd -> {name, level, vq_support, env_support}
+    el_det: dict[str, list[str]] = defaultdict(
+        list
+    )  # env list details. cmd -> env-list mapping
+    ls_det: dict = defaultdict(
+        dict
+    )  # ls default details. cmd -> {name, level, vq_support, env_support}
 
     # Prepare env-vars
     for cmd in info_dict:
@@ -267,7 +288,9 @@ def main_view(info_dict: dict[str, dict[str, dict[str, Any]]], ls: bool, env_lis
             if cmd in el_det:
                 if "env_list" in info_dict[cmd][lgr]:
                     if env_list:
-                        ls_det[cmd][lgr]["env_support"] = info_dict[cmd][lgr]["env_list"]
+                        ls_det[cmd][lgr]["env_support"] = info_dict[cmd][lgr][
+                            "env_list"
+                        ]
                     else:
                         ls_det[cmd][lgr]["env_support"] = True
                 else:
@@ -281,15 +304,25 @@ def main_view(info_dict: dict[str, dict[str, dict[str, Any]]], ls: bool, env_lis
         # Only print list in the predetermined fmt
         frmt = "{:<20}" * 5  # 5 columns
         print(frmt.format("command", "logger", "level", "vq-support", "env-support"))
-        print("-"*20*5)
+        print("-" * 20 * 5)
         for cmd, lgr in ls_det.items():
-            [print(frmt.format(cmd, c, l["level"], str(l["vq_support"]), str(l["env_support"])))
-             for c, l in lgr.items()]
+            [
+                print(
+                    frmt.format(
+                        cmd,
+                        _c,
+                        _l["level"],
+                        str(_l["vq_support"]),
+                        str(_l["env_support"]),
+                    )
+                )
+                for _c, _l in lgr.items()
+            ]
         return
 
     if env_list:
         # Only print env-list per command
-        [print(f"{c}: {l}") for c, l in el_det.items()]
+        [print(f"{_c}: {_l}") for _c, _l in el_det.items()]
         return
 
     # Simply print logger names per command
@@ -297,7 +330,7 @@ def main_view(info_dict: dict[str, dict[str, dict[str, Any]]], ls: bool, env_lis
     for cmd in info_dict:
         for lgr in info_dict[cmd]:
             ln_det[cmd].append(lgr)
-    [print(f"{c}: {l}") for c, l in ln_det.items()]
+    [print(f"{_c}: {_l}") for _c, _l in ln_det.items()]
 
 
 def main_cli(args: list[str] | None = None):
@@ -313,13 +346,20 @@ def main_cli(args: list[str] | None = None):
     try:
         args = args if args else sys.argv[1:]
         namespace: argparse.Namespace = cli(args)
-        info_dict: dict[str, dict[str, dict[str, Any]]] = main(*namespace.command, )
-        main_view(info_dict, ls=namespace.ls, env_list=namespace.env_list, fmt=namespace.fmt, )
-    except LogicianExitingException as le:
-        print(le, file=sys.stderr)
-        sys.exit(le.exit_code)
-    except LogicianException as l:
-        print(l, file=sys.stderr)
+        info_dict: dict[str, dict[str, dict[str, Any]]] = main(
+            *namespace.command,
+        )
+        main_view(
+            info_dict,
+            ls=namespace.ls,
+            env_list=namespace.env_list,
+            fmt=namespace.fmt,
+        )
+    except LogicianExitingException as _le:
+        print(_le, file=sys.stderr)
+        sys.exit(_le.exit_code)
+    except LogicianException as _l:
+        print(_l, file=sys.stderr)
 
 
 if __name__ == "__main__":
