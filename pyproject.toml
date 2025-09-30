@@ -40,8 +40,11 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["mypy", "ruff"]
-test = ["pytest", "pytest-cov"]
+lint = ["ruff"]
+typecheck = ["mypy"]
+dev = [{include-group = "lint"}, {include-group = "typecheck"}]
+test = ["pytest"]
+cover = [{include-group = "test"}, "pytest-cov"]
 multitest = ["tox"]
 doc = ["sphinx", "sphinx-argparse"]
 
