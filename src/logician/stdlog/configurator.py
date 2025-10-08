@@ -443,7 +443,7 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
 
         Default behavior is::
 
-        - verbosity and quietness is to be supplied separately.
+        - verbosity and quietness are to be supplied separately.
         - default_log_level is returned if both are None or not supplied.
         - if both verbosity and quietness are supplied together then a ValueError is raised.
 
