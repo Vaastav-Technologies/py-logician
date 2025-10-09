@@ -290,11 +290,11 @@ class TestStdLoggerConfigurator:
                 assert (
                     warn_recs[1].message.args[0]
                     == f"{logger.name}: Setting log level to default: "
-                    f"'{logging.getLevelName(StdLoggerConfigurator.LOG_LEVEL_WARNING)}'."
+                    f"'{logging.getLevelName(StdLoggerConfigurator.LOG_LEVEL_DEFAULT)}'."
                 )
                 assert (
                     logger.underlying_logger.level
-                    == StdLoggerConfigurator.LOG_LEVEL_WARNING
+                    == StdLoggerConfigurator.LOG_LEVEL_DEFAULT
                 )
 
             def test_no_warn_on_incorrectly_given_levels_when_no_warn(
@@ -312,7 +312,7 @@ class TestStdLoggerConfigurator:
                     logger = cfg.configure(log)
                 assert (
                     logger.underlying_logger.level
-                    == StdLoggerConfigurator.LOG_LEVEL_WARNING
+                    == StdLoggerConfigurator.LOG_LEVEL_DEFAULT
                 )
 
             @pytest.mark.parametrize("no_warn", [True, False])
@@ -334,5 +334,5 @@ class TestStdLoggerConfigurator:
                     lgr = cfg.configure(log)
                 assert (
                     lgr.underlying_logger.level
-                    == StdLoggerConfigurator.LOG_LEVEL_WARNING
+                    == StdLoggerConfigurator.LOG_LEVEL_DEFAULT
                 )
