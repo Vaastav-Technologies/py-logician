@@ -17,6 +17,7 @@ from logician.stdlog import (
     DETAIL_LOG_FMT,
     SHORT_LOG_FMT,
     SHORTER_LOG_FMT,
+    SUCCESS_LOG_LEVEL,
 )
 from logician.stdlog.constants import LOG_LVL as L, LOG_FMT as F
 
@@ -48,7 +49,7 @@ class StdLogAllLevelDiffFmt(StdLogLevelFmt, DiffLevelDiffFmt[L, F]):
         TRACE_LOG_LEVEL: TIMED_DETAIL_LOG_FMT,
         logging.DEBUG: DETAIL_LOG_FMT,
         logging.INFO: SHORT_LOG_FMT,
-        logging.WARN: SHORTER_LOG_FMT,
+        SUCCESS_LOG_LEVEL: SHORTER_LOG_FMT,
     }
     """
     Different log formats for different log levels.
