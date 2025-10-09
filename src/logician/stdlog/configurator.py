@@ -40,12 +40,12 @@ from logician.stdlog.constants import (
     LOG_LVL as L,
     LOG_FMT as F,
     LOG_STR_LVL as S,
-    DEFAULT_LOG_LEVEL,
+    DEFAULT_LOG_LEVEL_SUCCESS,
 )
 
 
 class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
-    LOG_LEVEL_DEFAULT = DEFAULT_LOG_LEVEL
+    LOG_LEVEL_DEFAULT_SUCCESS = DEFAULT_LOG_LEVEL_SUCCESS
     CMD_NAME_NONE = None
     STREAM_FMT_MAPPER_NONE = None
     FMT_PER_LEVEL_NONE = None
@@ -58,7 +58,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
     def __init__(
         self,
         *,
-        level: E = LOG_LEVEL_DEFAULT,
+        level: E = LOG_LEVEL_DEFAULT_SUCCESS,
         cmd_name: str | None = CMD_NAME_NONE,
         same_fmt_per_lvl: F | bool | None = FMT_PER_LEVEL_NONE,
         stream_set: set[IO] | None = STREAM_SET_NONE,
@@ -75,7 +75,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
     def __init__(
         self,
         *,
-        level: E = LOG_LEVEL_DEFAULT,
+        level: E = LOG_LEVEL_DEFAULT_SUCCESS,
         cmd_name: str | None = CMD_NAME_NONE,
         stream_fmt_mapper: dict[IO, LogLevelFmt[L, F]] | None = STREAM_FMT_MAPPER_NONE,
         level_name_map: dict[L, S] | None = LEVEL_NAME_MAP_NONE,
@@ -90,7 +90,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
     def __init__(
         self,
         *,
-        level: E = LOG_LEVEL_DEFAULT,
+        level: E = LOG_LEVEL_DEFAULT_SUCCESS,
         cmd_name: str | None = CMD_NAME_NONE,
         stream_fmt_mapper: dict[IO, LogLevelFmt[L, F]] | None = STREAM_FMT_MAPPER_NONE,
         same_fmt_per_lvl: F | bool | None = FMT_PER_LEVEL_NONE,
@@ -182,7 +182,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
 
             >>> logger_none = (StdLoggerConfigurator(level=None) # noqa
             ...     .configure(logging.getLogger('logger-none')))
-            >>> assert logger_none.underlying_logger.level == StdLoggerConfigurator.LOG_LEVEL_DEFAULT
+            >>> assert logger_none.underlying_logger.level == StdLoggerConfigurator.LOG_LEVEL_DEFAULT_SUCCESS
 
         * Any other level type raises a ``TypeError``:
 
@@ -220,7 +220,7 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
                         else logging.getLevelNamesMapping()[level]
                     )
                 case None:
-                    int_level = StdLoggerConfigurator.LOG_LEVEL_DEFAULT
+                    int_level = StdLoggerConfigurator.LOG_LEVEL_DEFAULT_SUCCESS
                 case _:
                     raise TypeError(
                         f"Wrong level value supplied: '{level}', Expected int or str, got "
@@ -234,9 +234,9 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
                 )
                 vt_warn(
                     f"{logger.name}: Setting log level to default: "
-                    f"'{logging.getLevelName(StdLoggerConfigurator.LOG_LEVEL_DEFAULT)}'."
+                    f"'{logging.getLevelName(StdLoggerConfigurator.LOG_LEVEL_DEFAULT_SUCCESS)}'."
                 )
-            int_level = StdLoggerConfigurator.LOG_LEVEL_DEFAULT
+            int_level = StdLoggerConfigurator.LOG_LEVEL_DEFAULT_SUCCESS
         logger.setLevel(int_level)
         self.handlr_cfgr.configure(int_level, logger, stream_fmt_map)
         logger.propagate = self.propagate
@@ -391,13 +391,13 @@ class VQLoggerConfigurator(
     """
     Default {``verbosity-quietness -> logging-level``} mapping.
     """
-    LOG_LEVEL_DEFAULT: E = DEFAULT_LOG_LEVEL
+    LOG_LEVEL_DEFAULT_SUCCESS: E = DEFAULT_LOG_LEVEL_SUCCESS
 
 
 class VQSepLoggerConfigurator(VQLoggerConfigurator):
     VQ_LEVEL_MAP_NONE = None
     VQ_SEP_CONF_NONE = None
-    LOG_LEVEL_DEFAULT = VQLoggerConfigurator.LOG_LEVEL_DEFAULT
+    LOG_LEVEL_DEFAULT_SUCCESS = VQLoggerConfigurator.LOG_LEVEL_DEFAULT_SUCCESS
 
     @overload
     def __init__(
@@ -407,7 +407,7 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         quietness: int | None,
         vq_level_map: VQ_DICT_LITERAL[E] | None = VQ_LEVEL_MAP_NONE,
         vq_sep_configurator: VQSepConfigurator[E] | None = VQ_SEP_CONF_NONE,
-        default_log_level: E = LOG_LEVEL_DEFAULT,
+        default_log_level: E = LOG_LEVEL_DEFAULT_SUCCESS,
     ): ...
 
     @overload
@@ -418,7 +418,7 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         quietness: Q_LITERAL | None,
         vq_level_map: VQ_DICT_LITERAL[E] | None = VQ_LEVEL_MAP_NONE,
         vq_sep_configurator: VQSepConfigurator[E] | None = VQ_SEP_CONF_NONE,
-        default_log_level: E = LOG_LEVEL_DEFAULT,
+        default_log_level: E = LOG_LEVEL_DEFAULT_SUCCESS,
     ): ...
 
     def __init__(
@@ -428,7 +428,7 @@ class VQSepLoggerConfigurator(VQLoggerConfigurator):
         quietness: Q_LITERAL | int | None,
         vq_level_map: VQ_DICT_LITERAL[E] | None = VQ_LEVEL_MAP_NONE,
         vq_sep_configurator: VQSepConfigurator[E] | None = VQ_SEP_CONF_NONE,
-        default_log_level: E = LOG_LEVEL_DEFAULT,
+        default_log_level: E = LOG_LEVEL_DEFAULT_SUCCESS,
     ):
         """
         A logger configurator that can decorate another logger configurator to accept and infer logging level based on
@@ -634,7 +634,7 @@ class VQCommLoggerConfigurator(
 ):
     VQ_LEVEL_MAP_NONE = None
     VQ_COMM_CONF_NONE = None
-    LOG_LEVEL_DEFAULT = VQLoggerConfigurator.LOG_LEVEL_DEFAULT
+    LOG_LEVEL_DEFAULT_SUCCESS = VQLoggerConfigurator.LOG_LEVEL_DEFAULT_SUCCESS
 
     def __init__(
         self,
@@ -642,7 +642,7 @@ class VQCommLoggerConfigurator(
         configurator: LevelLoggerConfigurator[E],
         vq_level_map: VQ_DICT_LITERAL[E] | None = VQ_LEVEL_MAP_NONE,
         vq_comm_configurator: VQCommConfigurator[E] | None = VQ_COMM_CONF_NONE,
-        default_log_level: E = LOG_LEVEL_DEFAULT,
+        default_log_level: E = LOG_LEVEL_DEFAULT_SUCCESS,
     ):
         """
         A logger configurator that can decorate another logger configurator to accept and infer logging level based on
