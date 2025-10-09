@@ -77,17 +77,21 @@ Just one more level up on the stack for checking logs.
 see DEFAULT_STACK_LEVEL for more details on this.
 """
 
-TRACE_LOG_LEVEL = logging.DEBUG - 5 # 5, previous level at 3 -> TRACEBACK; next level at 10 -> DEBUG
+TRACE_LOG_LEVEL = (
+    logging.DEBUG - 5
+)  # 5, previous level at 3 -> TRACEBACK; next level at 10 -> DEBUG
 TRACE_LOG_STR = "TRACE"
 
-EXCEPTION_TRACEBACK_LOG_LEVEL = TRACE_LOG_LEVEL - 2 # 3, next level at 5 -> TRACEBACK
+EXCEPTION_TRACEBACK_LOG_LEVEL = TRACE_LOG_LEVEL - 2  # 3, next level at 5 -> TRACEBACK
 """
 Exception traces should only be printed when the user really wants to dig deep into the code and hence should have
 very low log level
 """
 EXCEPTION_TRACEBACK_LOG_STR = "TRACEBACK"
 
-CMD_LOG_LEVEL = logging.DEBUG + 5  # 15, previous level at 10 -> DEBUG; next level at 20 -> INFO
+CMD_LOG_LEVEL = (
+    logging.DEBUG + 5
+)  # 15, previous level at 10 -> DEBUG; next level at 20 -> INFO
 CMD_LOG_STR = "COMMAND"
 
 SUCCESS_LOG_LEVEL = logging.INFO + 3  # 23
