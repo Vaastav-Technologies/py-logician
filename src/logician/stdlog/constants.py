@@ -116,3 +116,8 @@ WARNING_LEVEL: LOG_LVL = logging.WARNING
 """
 Default logging level for the python std lib.
 """
+
+DEFAULT_LOG_LEVEL = SUCCESS_LOG_LEVEL
+"""
+Default log level for all std loggers.
+"""

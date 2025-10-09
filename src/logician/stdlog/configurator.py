@@ -40,11 +40,12 @@ from logician.stdlog.constants import (
     LOG_LVL as L,
     LOG_FMT as F,
     LOG_STR_LVL as S,
+    DEFAULT_LOG_LEVEL,
 )
 
 
 class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
-    LOG_LEVEL_DEFAULT = SUCCESS_LOG_LEVEL
+    LOG_LEVEL_DEFAULT = DEFAULT_LOG_LEVEL
     CMD_NAME_NONE = None
     STREAM_FMT_MAPPER_NONE = None
     FMT_PER_LEVEL_NONE = None
@@ -390,7 +391,7 @@ class VQLoggerConfigurator(
     """
     Default {``verbosity-quietness -> logging-level``} mapping.
     """
-    LOG_LEVEL_DEFAULT: E = SUCCESS_LOG_LEVEL
+    LOG_LEVEL_DEFAULT: E = DEFAULT_LOG_LEVEL
 
 
 class VQSepLoggerConfigurator(VQLoggerConfigurator):
