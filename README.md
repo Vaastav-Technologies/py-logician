@@ -101,10 +101,10 @@ The logician configured logger.
 """
 logger.trace("🌀 Trace from logician.")
 logger.debug("🐞 Debug from logician.")
+logger.cmd("📺 My command's output (maybe captured stderr)", cmd_name="MY_CMD")
 logger.info("ℹ️ Info from logician.")
 logger.success("✅ Success from logician.")  # majorly user/CLI facing log-level
 logger.notice("🔔 Notice from logician.")    # majorly user/CLI facing log-level
-logger.cmd("📺 My command's output (maybe captured stderr)", cmd_name="MY_CMD")
 logger.warning("⚠️ Warning from logician.")
 logger.error("❌ Error!")
 logger.exception("🔥 Exception!")
@@ -124,10 +124,10 @@ These are listed in increasing order of criticality:
 
 - TRACE
 - DEBUG
+- COMMAND
 - INFO
 - SUCCESS - usually user/CLI facing log-level
 - NOTICE  - usually user/CLI facing log-level
-- COMMAND
 - WARNING
 - ERROR 
 - EXCEPTION 
