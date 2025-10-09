@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "logician"
-version = "0.0.0.dev6"
+version = "0.0.0.dev7"
 description = "Fully typed, simple, intuitive, sensible and pragmatic logger configurator for standard python logging."
 readme = "README.md"
 keywords = ["log", "logging", "logger"]
@@ -40,8 +40,11 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["mypy", "ruff"]
-test = ["pytest", "pytest-cov"]
+lint = ["ruff"]
+typecheck = ["mypy"]
+dev = [{include-group = "lint"}, {include-group = "typecheck"}]
+test = ["pytest"]
+cover = [{include-group = "test"}, "pytest-cov"]
 multitest = ["tox"]
 doc = ["sphinx", "sphinx-argparse"]
 

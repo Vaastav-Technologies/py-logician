@@ -123,3 +123,7 @@ class SimpleHandlerConfigurator(HandlerConfigurator):
                 else:  # handlers not present for the current stream, as no stream->list[handlers] mapping present in the logger
                     # introduce a new handler
                     logger.addHandler(add_new_formatter(stream, fmt))
+
+
+# TODO: hava a handler configurator that does not affect existing handlers of the logger which are configured outside
+#  of logician
