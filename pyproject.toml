@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "logician"
-version = "0.0.0.dev7"
+version = "0.0.0.dev8"
 description = "Fully typed, simple, intuitive, sensible and pragmatic logger configurator for standard python logging."
 readme = "README.md"
 keywords = ["log", "logging", "logger"]
@@ -35,8 +35,8 @@ classifiers = [
   "Typing :: Typed"
 ]
 dependencies = [
-    "vt-err-hndlr >= 0.0.0dev3",
-    "vt-commons >= 0.0.1.dev4"
+    "vt-err-hndlr >= 0.0.0dev4",
+    "vt-commons >= 0.0.1.dev9"
 ]
 
 [dependency-groups]

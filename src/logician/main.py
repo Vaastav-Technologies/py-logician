@@ -21,7 +21,7 @@ from logician.errors import (
     LogicianException,
 )
 
-from vt.utils.commons.commons.string import generate_random_string
+from vt.utils.commons.commons.strings import generate_random_string
 
 from vt.utils.errors.error_specs import ERR_INVALID_USAGE, ERR_CMD_NOT_FOUND
 
