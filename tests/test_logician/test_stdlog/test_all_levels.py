@@ -71,6 +71,17 @@ class TestSuppliedCmdName:
         logger.info("initialised info")
         logger.cmd("initialised cmd", cmd_name=None)
 
+    def test_no_cmd_name_passed(self):
+        log = logging.getLogger("cmd-name-set-None")
+        sh = logging.StreamHandler()
+        sh.setFormatter(logging.Formatter(fmt=TIMED_DETAIL_LOG_FMT))
+        log.addHandler(sh)
+        log.setLevel(TRACE_LOG_LEVEL)
+        log.info("an info")
+        logger = DirectAllLevelLoggerImpl(log, DEFAULT_STACK_LEVEL)
+        logger.info("initialised info")
+        logger.cmd("initialised cmd")
+
 
 @pytest.mark.parametrize("cmd_lvl_name", ["CMD", None])
 def test_ctx_mgr_called_when_cmd_lvl_enabled(cmd_lvl_name):
