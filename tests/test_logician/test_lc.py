@@ -5,6 +5,7 @@
 """
 Test logger configurator for its logging capabilities.
 """
+
 import logging
 
 from logician.stdlog.configurator import StdLoggerConfigurator
