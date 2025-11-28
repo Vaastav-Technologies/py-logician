@@ -89,7 +89,7 @@ class BaseStdProtocolAllLevelLogger(StdProtocolAllLevelLogger, ABC):
         self.logger_impl.success(msg, *args, **kwargs)
 
     @override
-    def cmd(self, msg, cmd_name: str | None = None, *args, **kwargs) -> None:
+    def cmd(self, msg, *args, cmd_name: str | None = None, **kwargs) -> None:
         """
         Log a commands' captured output (maybe stderr or stdout)
 
@@ -98,7 +98,7 @@ class BaseStdProtocolAllLevelLogger(StdProtocolAllLevelLogger, ABC):
             ``COMMAND`` is picked-up. But as this is a ``DelegatingLogger`` hence this behavior can be altered in the
             delegatee class.
         """
-        self.logger_impl.cmd(msg, cmd_name, *args, **kwargs)
+        self.logger_impl.cmd(msg, *args, cmd_name=cmd_name, **kwargs)
 
     @override
     def warning(self, msg, *args, **kwargs) -> None:
@@ -169,7 +169,7 @@ class BaseDirectStdAllLevelLogger(
         return cast(Logger, self._underlying_logger)
 
     @override
-    def cmd(self, msg, cmd_name: str | None = None, *args, **kwargs) -> None:
+    def cmd(self, msg, *args, cmd_name: str | None = None, **kwargs) -> None:
         """
         Log a commands' captured output (maybe stderr or stdout)
 
@@ -180,7 +180,7 @@ class BaseDirectStdAllLevelLogger(
             delegatee class.
         """
         final_cmd_name = cmd_name or self.cmd_name
-        self.logger_impl.cmd(msg, final_cmd_name, *args, **kwargs)
+        self.logger_impl.cmd(msg, *args, cmd_name=final_cmd_name, **kwargs)
 
 
 class DirectAllLevelLogger(BaseDirectStdAllLevelLogger):

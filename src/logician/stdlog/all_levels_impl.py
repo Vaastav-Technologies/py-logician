@@ -39,7 +39,7 @@ class StdProtocolAllLevelLoggerImpl(AllLevelLoggerImplABC[L], Protocol):
 
     @override
     @abstractmethod
-    def cmd(self, msg, cmd_name: str | None = None, *args, **kwargs) -> None:
+    def cmd(self, msg, *args, cmd_name: str | None = None, **kwargs) -> None:
         """
         Log a commands' captured output (maybe stderr or stdout)
 
@@ -140,7 +140,7 @@ class DirectAllLevelLoggerImpl(BaseDirectStdAllLevelLoggerImpl):
         )
 
     @override
-    def cmd(self, msg, cmd_name: str | None = None, *args, **kwargs) -> None:
+    def cmd(self, msg, *args, cmd_name: str | None = None, **kwargs) -> None:
         if self.underlying_logger.isEnabledFor(CMD_LOG_LEVEL):
             with TempSetCmdLvlName(cmd_name):
                 self.underlying_logger.log(
