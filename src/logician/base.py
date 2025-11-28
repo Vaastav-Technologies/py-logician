@@ -71,7 +71,7 @@ class CommandLogProtocol(Protocol):
     """
 
     @abstractmethod
-    def cmd(self, msg, cmd_name: str | None = None, *args, **kwargs) -> None:
+    def cmd(self, msg, *args, cmd_name: str | None = None, **kwargs) -> None:
         """
         Log a commands' captured output (maybe stderr or stdout)
 
