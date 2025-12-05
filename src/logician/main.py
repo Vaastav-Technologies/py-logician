@@ -302,9 +302,9 @@ def main_view(
 
     if ls:
         # Only print list in the predetermined fmt
-        frmt = "{:<20}" * 5  # 5 columns
+        frmt = "{:<30} |" * 5  # 5 columns
         print(frmt.format("command", "logger", "level", "vq-support", "env-support"))
-        print("-" * 20 * 5)
+        print(frmt.format(*(["-" * 30] * 5)))
         for cmd, lgr in ls_det.items():
             [
                 print(

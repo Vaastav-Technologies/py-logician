@@ -43,7 +43,7 @@ class TestSuppliedCmdName:
         log.info("an info")
         logger = DirectAllLevelLoggerImpl(log, DEFAULT_STACK_LEVEL)
         logger.info("initialised info")
-        logger.cmd("initialised cmd", "A command")
+        logger.cmd("initialised cmd", cmd_name="A command")
 
     @pytest.mark.parametrize("cmd_name", ["", " ", "\n", """   """])
     def test_warns_when_empty_cmd_name_passed(self, cmd_name):
@@ -58,7 +58,7 @@ class TestSuppliedCmdName:
         with pytest.warns(
             match=r"Supplied log level name for command log level [\d]+ is empty."
         ):
-            logger.cmd("initialised cmd", cmd_name)
+            logger.cmd("initialised cmd", cmd_name=cmd_name)
 
     def test_warns_when_no_cmd_name_passed(self):
         log = logging.getLogger("cmd-name-set-None")
@@ -69,7 +69,18 @@ class TestSuppliedCmdName:
         log.info("an info")
         logger = DirectAllLevelLoggerImpl(log, DEFAULT_STACK_LEVEL)
         logger.info("initialised info")
-        logger.cmd("initialised cmd", None)
+        logger.cmd("initialised cmd", cmd_name=None)
+
+    def test_no_cmd_name_passed(self):
+        log = logging.getLogger("cmd-name-set-None")
+        sh = logging.StreamHandler()
+        sh.setFormatter(logging.Formatter(fmt=TIMED_DETAIL_LOG_FMT))
+        log.addHandler(sh)
+        log.setLevel(TRACE_LOG_LEVEL)
+        log.info("an info")
+        logger = DirectAllLevelLoggerImpl(log, DEFAULT_STACK_LEVEL)
+        logger.info("initialised info")
+        logger.cmd("initialised cmd")
 
 
 @pytest.mark.parametrize("cmd_lvl_name", ["CMD", None])
@@ -84,7 +95,7 @@ def test_ctx_mgr_called_when_cmd_lvl_enabled(cmd_lvl_name):
     logger.info("initialised info")
     method = TempSetCmdLvlName
     with patch(f"{method.__module__}.{method.__qualname__}") as mocked_fn:
-        logger.cmd("Command logged", cmd_lvl_name)
+        logger.cmd("Command logged", cmd_name=cmd_lvl_name)
         mocked_fn.assert_called_once_with(cmd_lvl_name)
 
 
@@ -100,5 +111,5 @@ def test_ctx_mgr_not_called_when_cmd_lvl_disabled(cmd_lvl_name):
     method = TempSetCmdLvlName
     with patch(f"{method.__module__}.{method.__qualname__}") as mocked_fn:
         cmd_lvl_name = "CMD"
-        logger.cmd("Command logged", cmd_lvl_name)
+        logger.cmd("Command logged", cmd_name=cmd_lvl_name)
         mocked_fn.assert_not_called()
