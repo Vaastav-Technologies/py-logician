@@ -82,7 +82,7 @@ TRACE_LOG_LEVEL = (
 )  # 5, previous level at 3 -> TRACEBACK; next level at 10 -> DEBUG
 TRACE_LOG_STR = "TRACE"
 
-EXCEPTION_TRACEBACK_LOG_LEVEL = logging.DEBUG + 1  # 11, next level at 20  -> TRACEBACK
+EXCEPTION_TRACEBACK_LOG_LEVEL = logging.DEBUG + 1  # 11, next level at 20  -> INFO
 """
 Exception traces should only be printed when the user really wants to dig deep into the code and hence should have
 very low log level
