@@ -336,3 +336,40 @@ class TestStdLoggerConfigurator:
                     lgr.underlying_logger.level
                     == StdLoggerConfigurator.LOG_LEVEL_DEFAULT_SUCCESS
                 )
+
+            def test_off_disables_logger(self):
+                log = logging.getLogger("off-disabled")
+                log.disabled = False
+
+                logger = StdLoggerConfigurator(level="OFF").configure(log)
+
+                assert logger.underlying_logger.disabled is True
+
+            def test_non_off_logger_is_enabled(self):
+                log = logging.getLogger("info-enabled")
+                log.disabled = False
+
+                logger = StdLoggerConfigurator(level="INFO").configure(log)
+
+                assert logger.underlying_logger.disabled is False
+
+            def test_off_logger_does_not_emit_records(self):
+                records = []
+
+                class ListHandler(logging.Handler):
+                    def emit(self, record):
+                        records.append(record)
+
+                log = logging.getLogger("off-no-records")
+                log.handlers.clear()
+                log.addHandler(ListHandler())
+                log.propagate = False
+
+                logger = StdLoggerConfigurator(level="OFF").configure(log)
+
+                logger.info("hello")
+                logger.error("world")
+
+                assert records == []
+
+

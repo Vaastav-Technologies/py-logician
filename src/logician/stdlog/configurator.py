@@ -209,16 +209,21 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
         levels_to_choose_from: dict[L, S] = DirectAllLevelLogger.register_levels(
             self.level_name_map
         )
+        is_off = False # logging off flag
         try:
             match level:
                 case L():  # typically int
                     int_level = level
                 case S():  # typically str
-                    int_level = (
-                        L(level)
-                        if level.isdigit()
-                        else logging.getLevelNamesMapping()[level]
-                    )
+                    if level.upper() == "OFF":
+                        int_level = logging.NOTSET
+                        is_off = True
+                    else:
+                        int_level = (
+                            L(level)
+                            if level.isdigit()
+                            else logging.getLevelNamesMapping()[level]
+                        )
                 case None:
                     int_level = StdLoggerConfigurator.LOG_LEVEL_DEFAULT_SUCCESS
                 case _:
@@ -237,10 +242,17 @@ class StdLoggerConfigurator(LevelLoggerConfigurator[E]):
                     f"'{logging.getLevelName(StdLoggerConfigurator.LOG_LEVEL_DEFAULT_SUCCESS)}'."
                 )
             int_level = StdLoggerConfigurator.LOG_LEVEL_DEFAULT_SUCCESS
-        logger.setLevel(int_level)
-        self.handlr_cfgr.configure(int_level, logger, stream_fmt_map)
-        logger.propagate = self.propagate
-        possible_level_str: E = logging.getLevelName(level)
+        
+
+        if is_off:
+            logger.disabled = True
+            possible_level_str = "OFF"
+        else:
+            logger.disabled = False
+            logger.setLevel(int_level)
+            self.handlr_cfgr.configure(int_level, logger, stream_fmt_map)
+            logger.propagate = self.propagate
+            possible_level_str = logging.getLevelName(level)
         get_repo().index(
             logger.name,
             level=possible_level_str,
